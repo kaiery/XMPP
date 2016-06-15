@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/fragment_btn"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="0dp"
+              android:background="#1D2025"
+              android:orientation="vertical"
+              android:padding="0dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/revlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/linearlayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/activity_horizontal_margin">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/logo_quzhou"/>
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/logo_mobile"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+            <com.softfun.components.TagsGridView
+                android:id="@+id/gv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/revlayout"
+                android:gravity="center"
+                android:isScrollContainer="false"
+                android:numColumns="3"
+                android:scrollbarAlwaysDrawVerticalTrack="false"
+                android:scrollbars="none"
+                android:stretchMode="columnWidth">
+            </com.softfun.components.TagsGridView>
+
+        </RelativeLayout>
+    </ScrollView>
+    <!--<ScrollView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:scrollbars="vertical">-->
+
+    <!--<com.softfun.components.TagsGridView-->
+    <!--android:id="@+id/gv"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:columnWidth="90dp"-->
+    <!--android:gravity="center"-->
+    <!--android:horizontalSpacing="10dp"-->
+    <!--android:isScrollContainer="true"-->
+    <!--android:numColumns="3"-->
+    <!--android:scrollbarAlwaysDrawVerticalTrack="true"-->
+    <!--android:scrollbars="vertical"-->
+    <!--android:stretchMode="columnWidth"-->
+    <!--android:verticalSpacing="10dp">-->
+    <!--</com.softfun.components.TagsGridView>-->
+    <!--</ScrollView>-->
+
+</LinearLayout>
