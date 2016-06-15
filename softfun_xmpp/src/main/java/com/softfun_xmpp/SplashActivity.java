@@ -17,6 +17,7 @@ public class SplashActivity extends BaseNoActionActivity implements View.OnClick
     private volatile boolean isEntered;
     private Button bt_enterApp;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
