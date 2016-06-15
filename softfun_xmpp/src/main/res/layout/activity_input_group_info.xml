@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackGround"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@id/iv"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/group_chat_ground_normal"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_click_color"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/activity_horizontal_margin_half"
+                android:paddingTop="@dimen/activity_horizontal_margin_half">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/et_groupname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/et_bord_background_corners_0"
+                        android:hint="填写群名字（至少2个字）"
+                        android:paddingBottom="20dp"
+                        android:paddingTop="20dp"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_subheading"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@id/item1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_click_color"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/activity_horizontal_margin_half"
+                android:paddingTop="@dimen/activity_horizontal_margin_half">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_game"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/et_bord_background_corners_0"
+                        android:hint="选择兴趣爱好"
+                        android:paddingBottom="20dp"
+                        android:paddingTop="20dp"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_subheading"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@id/item2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_click_color"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/activity_horizontal_margin_half"
+                android:paddingTop="@dimen/activity_horizontal_margin_half">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_city"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/et_bord_background_corners_0"
+                        android:hint="选择城市"
+                        android:paddingBottom="20dp"
+                        android:paddingTop="20dp"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_subheading"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@id/btn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:background="@drawable/button_theme_background"
+                android:text="创建群"
+                android:textColor="#ffffff"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+
+
+
+
+
+
+
+    <!--选择组件布局-->
+    <LinearLayout
+        android:id="@id/ll_group1"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px" android:background="@color/colorTabLine"/>
+        <!--控制布局-->
+        <RelativeLayout
+            android:padding="12dp"
+            android:background="#eeeeee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@id/tv_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin_half"
+                android:text="取消"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_subheading"/>
+            <TextView
+                android:id="@id/tv_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorBlackText"
+                android:textSize="@dimen/font_subheading"
+                tools:text="选择城市"/>
+            <TextView
+                android:id="@id/tv_ok"
+                android:layout_marginRight="@dimen/activity_horizontal_margin_half"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="确定"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_subheading"/>
+        </RelativeLayout>
+
+        <!--三级联动-->
+        <LinearLayout
+            android:id="@+id/wpgroup1"
+            android:visibility="gone"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.aigestudio.wheelpicker.view.WheelCurvedPicker
+                android:id="@id/wp1"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+            <com.aigestudio.wheelpicker.view.WheelCurvedPicker
+                android:id="@id/wp2"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+            <com.aigestudio.wheelpicker.view.WheelCurvedPicker
+                android:id="@id/wp3"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+
+
+        <!--二级联动-->
+        <LinearLayout
+            android:id="@+id/wpgroup2"
+            android:visibility="visible"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.aigestudio.wheelpicker.view.WheelCurvedPicker
+                android:id="@id/wp4"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                app:wheel_item_space="20dp"
+                android:layout_height="match_parent"/>
+            <com.aigestudio.wheelpicker.view.WheelCurvedPicker
+                android:id="@id/wp5"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                app:wheel_item_space="16dp"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

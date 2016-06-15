@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/panle_dialog_light_background"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/colorBlackText"
+            android:textSize="@dimen/font_title"
+            tools:text="提示"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dialog_title"
+            android:textColor="@color/colorBlackText"
+            android:textSize="@dimen/font_caption"
+            tools:text="为了提供更好的服务，请您为专家进行评价。"
+            />
+
+
+        <!--<RatingBar-->
+        <!--android:id="@id/rb"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/tv_dialog_content"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="@dimen/activity_horizontal_margin"-->
+        <!--android:rating="3.5"-->
+        <!--android:numStars="5"-->
+        <!--android:stepSize="0.5"-->
+        <!--/>-->
+        <RatingBar
+            android:id="@id/rb"
+            style="@style/myrating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dialog_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"/>
+
+
+        <EditText
+            android:id="@id/et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rb"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/et_bord_background"
+            android:ems="10"
+            android:gravity="top|left"
+            android:hint="您想说点什么呢？"
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:maxLength="100"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/et"
+            android:layout_marginTop="@dimen/activity_horizontal_margin_half"
+            android:text="最多100个字"/>
+
+        <TextView
+            android:id="@+id/tv_dialog_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/et"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:padding="@dimen/activity_horizontal_margin_half"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/font_caption"
+            tools:text="确定"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/et"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_toLeftOf="@id/tv_dialog_ok"
+            android:padding="@dimen/activity_horizontal_margin_half"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/font_caption"
+            tools:text="取消"
+            />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

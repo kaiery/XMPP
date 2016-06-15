@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#efefef"
+    >
+
+    <ImageView
+        android:id="@id/iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/nj110_login_logo"/>
+
+    <EditText
+        android:id="@id/et_username"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@id/iv"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:background="@drawable/et_bord_background"
+        android:hint="用户名"
+        android:lines="1"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textSize="@dimen/font_body"/>
+
+    <EditText
+        android:id="@id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@id/et_username"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:background="@drawable/et_bord_background"
+        android:hint="密码"
+        android:inputType="textPassword"
+        android:lines="1"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textSize="@dimen/font_body"/>
+
+    <Button
+        android:id="@id/bt_login"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@id/et_password"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:background="@drawable/button_theme_background"
+        android:text="登 录"
+        android:textColor="@android:color/white"
+        android:textSize="21sp"
+        android:visibility="visible"/>
+
+    <TextView
+        android:id="@id/tv_forgetpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:text="找回密码"
+        android:textColor="@color/colorSoftFunColor"
+        android:textSize="@dimen/font_caption"/>
+
+    <TextView
+        android:id="@id/tv_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:text="新注册"
+        android:textColor="@color/colorSoftFunColor"
+        android:textSize="@dimen/font_caption"/>
+
+
+    <RelativeLayout
+        android:id="@id/mask1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <fr.castorflex.android.circularprogressbar.CircularProgressBar
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:indeterminate="true"
+                app:cpb_color="#FFee44"
+                app:cpb_colors="@array/gplus_colors"
+                app:cpb_max_sweep_angle="300"
+                app:cpb_min_sweep_angle="10"
+                app:cpb_rotation_speed="1.0"
+                app:cpb_stroke_width="4dp"
+                app:cpb_sweep_speed="1.0"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_background_loading"
+                android:padding="5dp"
+                android:layout_marginTop="5dp"
+                android:text="正在登录，请稍候..."
+                android:textColor="#ffffff"
+                android:textSize="13dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

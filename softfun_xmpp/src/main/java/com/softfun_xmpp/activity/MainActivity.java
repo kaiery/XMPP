@@ -1,0 +1,448 @@
+package com.softfun_xmpp.activity;
+
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.softfun_xmpp.R;
+import com.softfun_xmpp.application.GlobalSoundPool;
+import com.softfun_xmpp.application.SystemVars;
+import com.softfun_xmpp.bean.DialogBean;
+import com.softfun_xmpp.bean.UpdateBean;
+import com.softfun_xmpp.connection.IMService;
+import com.softfun_xmpp.constant.Const;
+import com.softfun_xmpp.fragment.MainFragment;
+import com.softfun_xmpp.network.DownloadAPK;
+import com.softfun_xmpp.network.HttpUtil;
+import com.softfun_xmpp.utils.AppUtils;
+import com.softfun_xmpp.utils.FileUtils;
+import com.softfun_xmpp.utils.ImageLoaderUtils;
+import com.softfun_xmpp.utils.SpUtils;
+import com.softfun_xmpp.utils.ThreadUtils;
+import com.softfun_xmpp.utils.VipResouce;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    //导航视图
+    private NavigationView navigationView;
+    //抽屉布局
+    private DrawerLayout drawer;
+    //工具按钮栏
+    private Toolbar toolbar;
+    //抽屉开关
+    private ActionBarDrawerToggle toggle;
+    //抽屉头部视图
+    private View headerView;
+    //抽屉头部布局
+    private RelativeLayout ll_nav_header;
+    //抽屉头部背景
+    private ImageView iv_nav_header_background;
+    //抽屉头部视图:头像组件
+    private ImageView iv_nav_header_userface;
+    //抽屉头部视图:用户名称组件
+    private TextView tv_nav_header_showname;
+    //抽屉头部视图:vip组件
+    private ImageView iv_nav_header_vip;
+
+    //抽屉菜单
+    private Menu headerMenu;
+    //抽屉菜单内自定义条目布局
+    private MenuItem menuItem;
+    //抽屉菜单内自定义条目布局内的真正组件
+    private SwitchCompat swh_nav_menu_receivemsg;
+    private static final int permsRequestCode = 200;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+
+        SystemVars.getInstance().setMainActivity(this);
+        //初始化Fragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MainFragment()).commit();
+        }
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(toolbar);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
+                this,
+                drawer,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        );
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        headerView = navigationView.getHeaderView(0);
+        ll_nav_header = (RelativeLayout) headerView.findViewById(R.id.ll_nav_header);
+
+        tv_nav_header_showname = (TextView) headerView.findViewById(R.id.tv_nav_header_showname);
+        tv_nav_header_showname.setText(IMService.mCurNickName);
+
+        iv_nav_header_vip = (ImageView) headerView.findViewById(R.id.iv_nav_header_vip);
+
+        /**
+         * vip图标
+         */
+        if(IMService.mCurVip==null || IMService.mCurVip.equals("0")){
+            iv_nav_header_vip.setVisibility(View.GONE);
+        }else{
+            iv_nav_header_vip.setVisibility(View.VISIBLE);
+            iv_nav_header_vip.setImageResource(VipResouce.getVipResouce(IMService.mCurVip));
+        }
+
+        //得到抽屉菜单
+//        headerMenu = navigationView.getMenu();
+        //得到抽屉菜单内自定义组件条目布局（这里是自定义了一个开关条目布局）
+//        menuItem = headerMenu.findItem(R.id.nav_switch);
+        //得到抽屉菜单内自定义条目布局内的真正组件，通过组件id
+//        swh_nav_menu_receivemsg = (SwitchCompat) menuItem.getActionView().findViewById(R.id.swh_nav_menu_receivemsg);
+//        swh_nav_menu_receivemsg.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                System.out.println(isChecked);
+//            }
+//        });
+
+        initData();
+
+        initListener();
+    }
+
+    private void initListener() {
+        // 注册重复登录 的动态广播消息
+        IntentFilter filter_dynamic = new IntentFilter();
+        filter_dynamic.addAction(Const.RELOGIN_BROADCAST_ACTION);
+        registerReceiver(dynamicReceiver, filter_dynamic);
+    }
+
+    /**
+     * 广播接受者
+     */
+    private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Const.RELOGIN_BROADCAST_ACTION)){
+
+                //停止服务
+                Intent imservice = new Intent(MainActivity.this,IMService.class);
+                stopService(imservice);
+
+
+                final String msg = intent.getStringExtra("msg");
+                Intent intent_dialog = new Intent(MainActivity.this, DialogActivity.class);
+                Bundle bundle = new Bundle();
+                DialogBean dialogBean = new DialogBean();
+                dialogBean.setTitle("提示");
+                dialogBean.setContent(msg);
+                dialogBean.setDialogType(DialogBean.DialogType.toTick);
+                dialogBean.setButtonType(DialogBean.ButtonType.onebutton);
+                bundle.putSerializable("dialogBean", dialogBean);
+                intent_dialog.putExtras(bundle);
+                startActivity(intent_dialog);
+            }
+        }
+    };
+
+    private void initData() {
+        GlobalSoundPool.getInstance();
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
+            getPermission();
+        }
+
+        FileUtils.createFolder(getResources().getString(R.string.record_folder));
+
+        iv_nav_header_background = (ImageView) headerView.findViewById(R.id.iv_nav_header_background);
+        iv_nav_header_userface = (ImageView) headerView.findViewById(R.id.iv_nav_header_userface);
+        String background = IMService.mCurBackground;
+        if(background==null){
+            iv_nav_header_background.setImageResource(R.drawable.background01);
+        }else{
+            ImageLoader.getInstance().displayImage(background,iv_nav_header_background, ImageLoaderUtils.getOptions_NoCacheInMem_CacheInDisk_Exif_EXACTLY());
+        }
+
+        String avatarurl = IMService.mCurAvatarUrl;
+        if(avatarurl==null){
+            iv_nav_header_userface.setImageResource(R.drawable.useravatar);
+        }else{
+            ImageLoader.getInstance().displayImage(avatarurl,iv_nav_header_userface, ImageLoaderUtils.getOptions_NoCacheInMem_CacheInDisk_Exif_circular());
+        }
+
+        //检测版本是否需要升级
+        checkVersion();
+    }
+
+    /**
+     * 检测版本
+     */
+    private void checkVersion() {
+        ThreadUtils.runInThread(new Runnable() {
+            @Override
+            public void run() {
+                final UpdateBean updateBean = HttpUtil.okhttpGet_UpdateInfo("xmpp");
+                if(updateBean!=null){
+                    //获取应用程序的版本号
+                    int verCode = AppUtils.getVerCode(MainActivity.this);
+                    if(updateBean.getVercode()>verCode){
+                        //有新版本
+                        SpUtils.put(Const.UPDATE,0);
+                        //弹出对话框
+                        ThreadUtils.runInUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                builder.setTitle("提示");
+                                builder.setMessage(updateBean.getDesc());
+                                builder.setPositiveButton("立即升级！", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //下载升级文件
+                                        new DownloadAPK(updateBean.getFilesize()).execute(updateBean.getDownloadurl());
+                                    }
+                                });
+                                builder.setNegativeButton("下次再说。", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //取消
+                                    }
+                                });
+                                builder.show();
+                            }
+                        });
+                    }else{
+                        //已经是最新版本
+                        SpUtils.put(Const.UPDATE,1);
+                    }
+                    SpUtils.put(Const.UPDATEVERCODE,updateBean.getVercode());
+                    SpUtils.put(Const.UPDATEDESC, updateBean.getDesc());
+                    SpUtils.put(Const.UPDATEDOWNLOADURL,updateBean.getDownloadurl());
+                    SpUtils.put(Const.UPDATEFILESIZE,updateBean.getFilesize());
+                }
+            }
+        });
+    }
+
+
+
+
+    /**
+     * ANDROID6 权限申请
+     */
+    private void getPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //申请WRITE_EXTERNAL_STORAGE权限
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.CALL_PHONE,
+                            Manifest.permission.PROCESS_OUTGOING_CALLS,
+                            Manifest.permission.SEND_SMS,
+                            Manifest.permission.READ_SMS,
+                            Manifest.permission.RECEIVE_SMS,
+                            Manifest.permission.RECORD_AUDIO
+                    }, permsRequestCode );
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode){
+            case 200:
+                boolean cameraAccepted = grantResults[0]==PackageManager.PERMISSION_GRANTED;
+                if(cameraAccepted){
+                    //授权成功之后，调用系统相机进行拍照操作等
+                }else{
+
+                }
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            //****直接返回桌面
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.MAIN");
+            intent.addCategory("android.intent.category.HOME");
+            startActivity(intent);
+            //super.onBackPressed();
+        }
+    }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // 这里执行搜索操作
+                //System.out.println("开始搜索");
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //System.out.println("搜索内容改变了");
+                return false;
+            }
+        });
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch( item.getItemId() )
+        {
+            case R.id.action_add: {
+                //System.out.println("点击了添加好友菜单");
+                Intent intent = new Intent(MainActivity.this, AddFriends.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.action_addgroup: {
+                Intent intent1 = new Intent(this,SelectGroupTypeActivity.class);
+                startActivity(intent1);
+                break;
+            }
+            case R.id.action_share: {
+                Intent intent=new Intent(Intent.ACTION_SEND);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+                intent.putExtra(Intent.EXTRA_TEXT, "分享测试");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent.createChooser(intent, getTitle()));
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // 处理抽屉导航菜单的点击事件.
+        int id = item.getItemId();
+        if (id == R.id.nav_profile) {
+            //System.out.println("点击了我的资料菜单");
+            Intent intent = new Intent(MainActivity.this, MyProfile.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_blog) {
+            //System.out.println("点击了我的动态菜单");
+        } else if (id == R.id.nav_fav) {
+            //System.out.println("点击了我的收藏菜单");
+        } else if (id == R.id.nav_setting) {
+            Intent intent_setting = new Intent(this,SettingActivity.class);
+            startActivity(intent_setting);
+            //System.out.println("点击了系统设置菜单");
+        //} else if (id == R.id.nav_info) {
+            //System.out.println("点击了关于我们菜单");
+        } else if (id == R.id.nav_exit){
+            Intent intent = new Intent(MainActivity.this, DialogActivity.class);
+            Bundle bundle = new Bundle();
+            DialogBean dialogBean = new DialogBean();
+            dialogBean.setTitle("提示");
+            dialogBean.setContent("您是否需要退出，重新登录？");
+            dialogBean.setDialogType(DialogBean.DialogType.tologin);
+            dialogBean.setButtonType(DialogBean.ButtonType.twobutton);
+            bundle.putSerializable("dialogBean", dialogBean);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+        //点击条目后，关闭抽屉
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
+
+
+
+    private long firstTime = 0;
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch(keyCode)
+        {
+//            case KeyEvent.KEYCODE_BACK:
+//                long secondTime = System.currentTimeMillis();
+//                //如果两次按键时间间隔大于2秒，则不退出
+//                if (secondTime - firstTime > 2000) {
+//                    Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+//                    firstTime = secondTime;//更新firstTime
+//                    return true;
+//                } else {
+//                    //两次按键小于2秒时，退出应用
+//                    //GlobalUtil.getInstance().setMain(null);
+//                    finish();
+//                }
+//                break;
+            case KeyEvent.KEYCODE_HOME:{
+                break;
+            }
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+
+    /***
+     * 主界面销毁
+     */
+    @Override
+    protected void onDestroy() {
+        //System.out.println("主界面销毁");
+        super.onDestroy();
+    }
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+    }
+}

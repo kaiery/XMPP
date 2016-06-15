@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape>
+            <solid android:color="#FFFFFF" />
+            <corners android:radius="0dp" />
+            <padding android:left="@dimen/activity_horizontal_margin" android:right="@dimen/activity_horizontal_margin"/>
+            <stroke android:color="@color/colorTabLine" android:width="0.5dp"/>
+        </shape>
+    </item>
+</selector>
