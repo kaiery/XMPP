@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="softfun.mycamera.CustomCamera">
+
+
+
+    <SurfaceView
+        android:id="@+id/sfv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <Button
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/btn_capture"
+        android:text="拍摄"
+        android:textSize="19sp"
+        android:layout_width="80dp"
+        android:textColor="#66FFFFFF"
+        android:background="@drawable/capture_background"
+        android:layout_height="80dp"/>
+</RelativeLayout>
