@@ -154,9 +154,11 @@ public class BtnGridViewFragment extends Fragment {
 
                     try {
                         Intent intent = new Intent();
-                        intent.setAction(mPackageName + ".action");//"com.softfun_xmpp.action"
+                        String action = mPackageName + ".action";
+                        intent.setAction(action);//
                         // 指定数据格式
-                        intent.setData(Uri.parse("softfun://" + mPackageName + ":1702/" + mPackageNameSuffix )); //"softfun://com.softfun_xmpp:1702/xmpp"
+                        String uri = "softfun://" + mPackageName + ":1702/" + mPackageNameSuffix ;
+                        intent.setData(Uri.parse(uri));
                         // 3.指定清单文件中声明的类别
                         intent.addCategory("android.intent.category.DEFAULT");
                         // 4.开启界面

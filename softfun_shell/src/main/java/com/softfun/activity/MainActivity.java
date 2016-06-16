@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.softfun.R;
 import com.softfun.bean.PackageBean;
 import com.softfun.bean.UpdateBean;
+import com.softfun.bean.UserBean;
 import com.softfun.fragment.btngrid.BtnGridViewFragment;
 import com.softfun.network.DownloadAPK;
 import com.softfun.network.HttpUtil;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (savedInstanceState == null) {
+
+            UserBean userbean = getIntent().getParcelableExtra("USERBEAN");
+            System.out.println("====================    ====================="+userbean.getShowname());
             new InitDataAsycTask().execute();
         }
     }
