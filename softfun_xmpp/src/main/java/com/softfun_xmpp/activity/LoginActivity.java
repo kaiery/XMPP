@@ -55,6 +55,21 @@ public class LoginActivity extends BaseNoActionActivity implements View.OnClickL
         mBtLogin.setOnClickListener(this);
         mTvSignup.setOnClickListener(this);
         mTvForgetpassword.setOnClickListener(this);
+
+        //获取Intent传递的参数.自动登录
+        boolean is_autologin = getIntent().getBooleanExtra(Const.AUTOLOGIN,false);
+        String pUsername = getIntent().getStringExtra(Const.USERNAME);
+        String pPassword = getIntent().getStringExtra(Const.PASSWORD);
+        if(is_autologin){
+            mBtLogin.setEnabled(false);
+            mEtUsername.setEnabled(false);
+            mEtPassword.setEnabled(false);
+            mTvForgetpassword.setEnabled(false);
+            mTvSignup.setEnabled(false);
+            mMask.setVisibility(View.VISIBLE);
+            //自动登录
+            login(pUsername, pPassword);
+        }
     }
 
 
@@ -90,34 +105,7 @@ public class LoginActivity extends BaseNoActionActivity implements View.OnClickL
                     mMask.setVisibility(View.GONE);
                     return;
                 }
-
-                //耗时操作
-                ThreadUtils.runInThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(manager.login(username,password)){
-                            //等待服务开启
-                            while (!IMService.isCreate){
-                                SystemClock.sleep(100);
-                            }
-                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }else{
-                            ThreadUtils.runInUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mBtLogin.setEnabled(true);
-                                    mEtUsername.setEnabled(true);
-                                    mEtPassword.setEnabled(true);
-                                    mTvForgetpassword.setEnabled(true);
-                                    mTvSignup.setEnabled(true);
-                                    mMask.setVisibility(View.GONE);
-                                }
-                            });
-                        }
-                    }
-                });
+                login(username, password);
                 break;
             }
 
@@ -133,6 +121,35 @@ public class LoginActivity extends BaseNoActionActivity implements View.OnClickL
         }
     }
 
+    private void login(final String username, final String password) {
+        //耗时操作
+        ThreadUtils.runInThread(new Runnable() {
+            @Override
+            public void run() {
+                if(manager.login(username,password)){
+                    //等待服务开启
+                    while (!IMService.isCreate){
+                        SystemClock.sleep(100);
+                    }
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    ThreadUtils.runInUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBtLogin.setEnabled(true);
+                            mEtUsername.setEnabled(true);
+                            mEtPassword.setEnabled(true);
+                            mTvForgetpassword.setEnabled(true);
+                            mTvSignup.setEnabled(true);
+                            mMask.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+        });
+    }
 
 
     private long firstTime = 0;

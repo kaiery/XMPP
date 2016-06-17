@@ -109,7 +109,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mPb.setVisibility(View.VISIBLE);
+            waiting();
         }
 
         @Override
@@ -123,7 +123,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         protected void onPostExecute(UserBean bean) {
             super.onPostExecute(bean);
             if(bean!=null){
-                mPb.setVisibility(View.GONE);
+                idle();
                 SpUtils.put(Const.USERNAME, username);
                 SpUtils.put(Const.PASSWORD, password);
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
@@ -131,7 +131,22 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 mBundle.putParcelable("USERBEAN", bean);
                 intent.putExtras(mBundle);
                 startActivity(intent);
+                finish();
             }
         }
+    }
+
+    private void waiting() {
+        mPb.setVisibility(View.VISIBLE);
+        mEtUsername.setEnabled(false);
+        mEtPassword.setEnabled(false);
+        mBtnLogin.setEnabled(false);
+    }
+
+    private void idle(){
+        mPb.setVisibility(View.GONE);
+        mEtUsername.setEnabled(true);
+        mEtPassword.setEnabled(true);
+        mBtnLogin.setEnabled(true);
     }
 }

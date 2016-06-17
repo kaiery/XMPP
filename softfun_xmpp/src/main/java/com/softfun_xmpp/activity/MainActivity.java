@@ -42,10 +42,12 @@ import com.softfun_xmpp.fragment.MainFragment;
 import com.softfun_xmpp.network.DownloadAPK;
 import com.softfun_xmpp.network.HttpUtil;
 import com.softfun_xmpp.utils.AppUtils;
+import com.softfun_xmpp.utils.AsmackUtils;
 import com.softfun_xmpp.utils.FileUtils;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
 import com.softfun_xmpp.utils.SpUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
+import com.softfun_xmpp.utils.ToastUtils;
 import com.softfun_xmpp.utils.VipResouce;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -145,6 +147,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initListener();
     }
 
+    /**
+     * 写用户登录日志
+     */
+    private void writeUserLoginLog() {
+        ThreadUtils.runInThread(new Runnable() {
+            @Override
+            public void run() {
+                HttpUtil.okhttpPost_writeUserLoginLog(AsmackUtils.filterAccountToUserName(IMService.mCurAccount));
+            }
+        });
+    }
+
     private void initListener() {
         // 注册重复登录 的动态广播消息
         IntentFilter filter_dynamic = new IntentFilter();
@@ -182,8 +196,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initData() {
         GlobalSoundPool.getInstance();
+
+        //授权
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
             getPermission();
+        }else{
+            writeUserLoginLog();
         }
 
         FileUtils.createFolder(getResources().getString(R.string.record_folder));
@@ -265,7 +283,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * ANDROID6 权限申请
      */
     private void getPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (  (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) ) {
             //申请WRITE_EXTERNAL_STORAGE权限
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -276,7 +300,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Manifest.permission.SEND_SMS,
                             Manifest.permission.READ_SMS,
                             Manifest.permission.RECEIVE_SMS,
-                            Manifest.permission.RECORD_AUDIO
+                            Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.READ_PHONE_STATE
                     }, permsRequestCode );
         }
     }
@@ -284,12 +309,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch(requestCode){
             case 200:
-                boolean cameraAccepted = grantResults[0]==PackageManager.PERMISSION_GRANTED;
-                if(cameraAccepted){
-                    //授权成功之后，调用系统相机进行拍照操作等
-                }else{
-
+                for (int i = 0; i < grantResults.length; i++) {
+                    boolean Accepted = grantResults[i]==PackageManager.PERMISSION_GRANTED;
+                    if(Accepted){
+                        System.out.println(permissions[i]+"授权");
+                    }else{
+                        System.out.println(permissions[i]+"拒绝授权");
+                        ToastUtils.showToastSafe_Long("请授权，否则系统无法正常工作。");
+                        finish();
+                    }
                 }
+                System.out.println("====================  授权完毕  =====================");
+                writeUserLoginLog();
                 break;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

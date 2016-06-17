@@ -8,12 +8,12 @@ android {
         applicationId "com.softfun_xmpp"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 35
-        versionName "35.0"
+        versionCode 36
+        versionName "36.0"
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

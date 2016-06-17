@@ -286,6 +286,9 @@ public class ToolsUtil {
     }
 
 
-
-
+    public static String HashData(String username, String password) {
+        String encrypt_username = CipherUtils.encrypt(username, CipherUtils.getKey());
+        String encrypt_password = CipherUtils.encrypt(password, CipherUtils.getKey());
+        return encrypt_username+","+encrypt_password;
+    }
 }

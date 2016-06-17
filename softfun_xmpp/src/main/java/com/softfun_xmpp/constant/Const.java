@@ -142,6 +142,7 @@ public class Const {
     public static final int REQUEST_VIDEO = 1;
     public static final String REALIMAGEURL = "realImageURL";
 
+
     /**
      * 视频聊天的结果码
      */
@@ -219,4 +220,9 @@ public class Const {
      *重复登录的广播action
      */
     public static final String RELOGIN_BROADCAST_ACTION = "com.softfun.relogin_broadcast_action";
+    /**
+     * 自动登录常量标记
+     */
+    public static final String AUTOLOGIN = "autologin";
+
 }

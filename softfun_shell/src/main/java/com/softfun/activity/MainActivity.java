@@ -24,6 +24,7 @@ import com.softfun.network.HttpUtil;
 import com.softfun.utils.AppUtils;
 import com.softfun.utils.MatherListUtil;
 import com.softfun.utils.ThreadUtils;
+import com.softfun.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public List<PackageBean> mAppPackageList;
 
     private static final int permsRequestCode = 200;
-
-
-
+    public static UserBean mUserbean;
 
 
     @Override
@@ -62,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
 
-            UserBean userbean = getIntent().getParcelableExtra("USERBEAN");
-            System.out.println("====================    ====================="+userbean.getShowname());
+            mUserbean = getIntent().getParcelableExtra("USERBEAN");
+            System.out.println("====================    ====================="+ mUserbean.getShowname());
             new InitDataAsycTask().execute();
         }
     }
@@ -137,16 +136,28 @@ public class MainActivity extends AppCompatActivity {
             //权限检查
             if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
                 getPermission();
+            }else{
+                writeUserLoginLog();
             }
 
             //检测版本是否需要升级
             checkVersion();
-
-
         }
     }
 
-
+    /**
+     * 写用户登录日志
+     */
+    private void writeUserLoginLog() {
+        ThreadUtils.runInThread(new Runnable() {
+            @Override
+            public void run() {
+                //System.out.println("====================  网络类型  ====================="+NetWorkUtils.getCurrentNetType(MainActivity.this));
+                //System.out.println("====================  运营商  ====================="+NetWorkUtils.getProvider(MainActivity.this));
+                HttpUtil.okhttpPost_writeUserLoginLog(mUserbean.getUsername());
+            }
+        });
+    }
     /**
      * 版本检查
      */
@@ -195,10 +206,14 @@ public class MainActivity extends AppCompatActivity {
      * ANDROID6 权限申请
      */
     private void getPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if ( (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) ||
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) ) {
             //申请WRITE_EXTERNAL_STORAGE权限
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE
+                    },
                     permsRequestCode
             );
         }
@@ -207,11 +222,20 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch(requestCode){
             case 200:
-                boolean cameraAccepted = grantResults[0]==PackageManager.PERMISSION_GRANTED;
-                if(cameraAccepted){
-                    //授权成功之后，调用系统相机进行拍照操作等
+                boolean storageAccepted = grantResults[0]==PackageManager.PERMISSION_GRANTED;
+                if(storageAccepted){
+                    System.out.println("====================  手机存储授权成功  =====================");
                 }else{
-
+                    System.out.println("====================  手机存储授权失败  =====================");
+                }
+                boolean phoneStateAccepted = grantResults[1]==PackageManager.PERMISSION_GRANTED;
+                if(phoneStateAccepted){
+                    System.out.println("====================  手机状态授权成功  =====================");
+                    writeUserLoginLog();
+                }else{
+                    System.out.println("====================  手机状态授权失败  =====================");
+                    ToastUtils.showToastSafe_Long("请授权，否则系统无法正常工作。");
+                    finish();
                 }
                 break;
         }

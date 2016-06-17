@@ -15,6 +15,7 @@ import com.softfun_xmpp.bean.UpdateBean;
 import com.softfun_xmpp.bean.UserBean;
 import com.softfun_xmpp.connection.IMService;
 import com.softfun_xmpp.constant.Const;
+import com.softfun_xmpp.utils.NetWorkUtils;
 import com.softfun_xmpp.utils.ToolsUtil;
 
 import org.jivesoftware.smack.packet.Message;
@@ -1496,5 +1497,31 @@ public class HttpUtil {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * 写用户登录日志
+     * @param userName
+     */
+    public static void okhttpPost_writeUserLoginLog(String userName) {
+        try {
+            String url = context.getResources().getString(R.string.app_server)+"writeUserLoginLog";
+            String localIpAddress = NetWorkUtils.getLocalIpAddress(context);
+            RequestBody formBody = new FormBody.Builder()
+                    .add("username", userName)
+                    .add("ip", localIpAddress)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
+            }
+        }catch (Exception e){
+            System.out.println("网络访问异常:okhttpPost_writeUserLoginLog");
+            e.printStackTrace();
+        }
     }
 }

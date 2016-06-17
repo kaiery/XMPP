@@ -372,12 +372,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
             }else{
-                isLoadHistoryMsg = false;
                 mAdapter.swapCursor(null);
+                if(isLoadHistoryMsg){
+                    mLv.refreshFinish();
+                }
+                isLoadHistoryMsg = false;
             }
         }else{
-            isLoadHistoryMsg = false;
             mAdapter.swapCursor(null);
+            if(isLoadHistoryMsg){
+                mLv.refreshFinish();
+            }
+            isLoadHistoryMsg = false;
         }
     }
     @Override

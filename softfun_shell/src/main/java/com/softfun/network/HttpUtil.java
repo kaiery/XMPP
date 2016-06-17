@@ -8,6 +8,7 @@ import com.softfun.application.GlobalContext;
 import com.softfun.bean.ResultBean;
 import com.softfun.bean.UpdateBean;
 import com.softfun.bean.UserBean;
+import com.softfun.utils.NetWorkUtils;
 import com.softfun.utils.ToastUtils;
 
 import org.json.JSONObject;
@@ -70,6 +71,41 @@ public class HttpUtil {
         }
         return null;
     }
+
+
+    /**
+     * 获取平台内app组件模块
+     * @param suffix
+     * @return
+     */
+    public static UpdateBean okhttpPost_queryAppModule(String suffix) {
+        String url = context.getResources().getString(R.string.app_server)+"queryAppModule";
+        try {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("typedef", suffix)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                response.body().close();
+                throw new IOException("Unexpected code " + response);
+            }
+            String jsonstr = response.body().string();
+            //开始解析json数据，转为bean对象
+            UpdateBean updateBean;
+            updateBean = gson.fromJson(jsonstr, UpdateBean.class);
+            return updateBean;
+        } catch (Exception e) {
+            ToastUtils.showToastSafe("网络访问异常");
+        } finally {
+
+        }
+        return null;
+    }
+
 
 
     /**
@@ -137,4 +173,32 @@ public class HttpUtil {
         }
         return userBean;
     }
+
+
+    /**
+     * 写用户登录日志
+     * @param userName
+     */
+    public static void okhttpPost_writeUserLoginLog(String userName) {
+        try {
+            String url = context.getResources().getString(R.string.app_server)+"writeUserLoginLog";
+            String localIpAddress = NetWorkUtils.getLocalIpAddress(context);
+            RequestBody formBody = new FormBody.Builder()
+                    .add("username", userName)
+                    .add("ip", localIpAddress)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
+            }
+        }catch (Exception e){
+            System.out.println("网络访问异常:okhttpPost_writeUserLoginLog");
+            e.printStackTrace();
+        }
+    }
+
 }
