@@ -171,6 +171,7 @@ public class BtnGridViewFragment extends Fragment {
                             intent.setAction(action);
                             // 指定数据格式
                             String uri = "softfun://" + mPackageName + ":1702/" + mPackageNameSuffix+"/"+HashData ;
+                            System.out.println("====================  uri  ===================== "+uri);
                             intent.setData(Uri.parse(uri));
                             // 3.指定清单文件中声明的类别
                             intent.addCategory("android.intent.category.DEFAULT");
