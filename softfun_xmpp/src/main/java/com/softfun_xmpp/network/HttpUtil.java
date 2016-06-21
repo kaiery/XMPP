@@ -85,7 +85,7 @@ public class HttpUtil {
             updateBean = gson.fromJson(jsonstr, UpdateBean.class);
             return updateBean;
         } catch (Exception e) {
-            System.out.println("网络访问异常:okhttpGet_UpdateInfo");
+            //System.out.println("网络访问异常:okhttpGet_UpdateInfo");
             //ToastUtil.showToast("网络访问异常");
             e.printStackTrace();
         } finally {
@@ -116,13 +116,13 @@ public class HttpUtil {
 //                throw new IOException("Unexpected code " + response);
 //            }
 //            //得到图片流
-//            //System.out.println(response.body().byteStream());
+//            ////System.out.println(response.body().byteStream());
 //            //使用BufferedInputStream重新包装，携带缓冲区
 //            is = new BufferedInputStream(response.body().byteStream());
 //            bitmap = BitmapFactory.decodeStream(is);
 //            return bitmap;
 //        } catch (Exception e) {
-//            System.out.println("网络访问异常：okhttpGet_Bitmap");
+//            //System.out.println("网络访问异常：okhttpGet_Bitmap");
 //            e.printStackTrace();
 //        } finally {
 //            try {
@@ -168,7 +168,7 @@ public class HttpUtil {
 //            if(response!=null){
 //                response.body().close();
 //            }
-//            System.out.println("网络访问异常：okhttpGet_BackGround");
+//            //System.out.println("网络访问异常：okhttpGet_BackGround");
 //            e.printStackTrace();
 //        } finally {
 //            try {
@@ -217,12 +217,12 @@ public class HttpUtil {
 //        mOkHttpClient.newCall(request).enqueue(new Callback() {
 //            @Override
 //            public void onFailure(Call call, IOException e) {
-//                System.out.println("=====================================onFailure");
+//                //System.out.println("=====================================onFailure");
 //            }
 //
 //            @Override
 //            public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("=====================================onResponse==== response:" + response.toString());
+//                //System.out.println("=====================================onResponse==== response:" + response.toString());
 //                response.body().close();
 //            }
 //        });
@@ -262,7 +262,7 @@ public class HttpUtil {
         }catch (Exception e){
             //网络访问异常
             e.printStackTrace();
-            System.out.println("网络访问异常:okhttpPost_insertBBSNew");
+            //System.out.println("网络访问异常:okhttpPost_insertBBSNew");
         }
         return result;
     }
@@ -321,7 +321,7 @@ public class HttpUtil {
                 rb.setDatalist(list);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_QueryOracle_SearchUsersList");
+            //System.out.println("网络访问异常:okhttpPost_QueryOracle_SearchUsersList");
             e.printStackTrace();
         }
         return rb;
@@ -390,7 +390,7 @@ public class HttpUtil {
         }catch (Exception e){
             e.printStackTrace();
             //网络访问异常
-            System.out.println("网络访问异常:okhttpPost_QueryUserInfoByUserid");
+            //System.out.println("网络访问异常:okhttpPost_QueryUserInfoByUserid");
         }
         return userBean;
     }
@@ -456,7 +456,7 @@ public class HttpUtil {
         }catch (Exception e){
             //网络访问异常
             e.printStackTrace();
-            System.out.println("网络访问异常:okhttpPost_QueryUserInfoByUsername");
+            //System.out.println("网络访问异常:okhttpPost_QueryUserInfoByUsername");
         }
         return userBean;
     }
@@ -499,7 +499,7 @@ public class HttpUtil {
                 rb.setDatalist(list);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryNj110OrgFlat");
+            //System.out.println("网络访问异常:okhttpPost_queryNj110OrgFlat");
             e.printStackTrace();
         }
         return rb;
@@ -542,7 +542,7 @@ public class HttpUtil {
                 rb.setDatalist(list);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryNj110ParentOrgFlat");
+            //System.out.println("网络访问异常:okhttpPost_queryNj110ParentOrgFlat");
             e.printStackTrace();
         }
         return rb;
@@ -588,7 +588,7 @@ public class HttpUtil {
                 rb.setDatalist(list);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryNj110ZJList");
+            //System.out.println("网络访问异常:okhttpPost_queryNj110ZJList");
             e.printStackTrace();
         }
         return rb;
@@ -635,7 +635,7 @@ public class HttpUtil {
                 rb.setDatalist(list);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryRemoteExpertbyshowname");
+            //System.out.println("网络访问异常:okhttpPost_queryRemoteExpertbyshowname");
             e.printStackTrace();
         }
         return rb;
@@ -682,7 +682,7 @@ public class HttpUtil {
                 rb.setDatalist(list);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryRemoteExpertbytechang");
+            //System.out.println("网络访问异常:okhttpPost_queryRemoteExpertbytechang");
             e.printStackTrace();
         }
         return rb;
@@ -710,7 +710,7 @@ public class HttpUtil {
             }
             yzm = response.body().string();
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_sendsms");
+            //System.out.println("网络访问异常:okhttpPost_sendsms");
             e.printStackTrace();
         }
         return yzm;
@@ -737,7 +737,7 @@ public class HttpUtil {
             }
             yzm = response.body().string();
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_sendsms");
+            //System.out.println("网络访问异常:okhttpPost_sendsms");
             e.printStackTrace();
         }
         return yzm;
@@ -773,7 +773,7 @@ public class HttpUtil {
             }
             code = Integer.parseInt(response.body().string());
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_registUser");
+            //System.out.println("网络访问异常:okhttpPost_registUser");
             e.printStackTrace();
         }
         return code;
@@ -801,7 +801,7 @@ public class HttpUtil {
             }
             code = Integer.parseInt(response.body().string());
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_forgetPassword");
+            //System.out.println("网络访问异常:okhttpPost_forgetPassword");
             e.printStackTrace();
         }
         return code;
@@ -823,7 +823,7 @@ public class HttpUtil {
                 throw new IOException("Unexpected code " + response);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_sendsmsForMsg");
+            //System.out.println("网络访问异常:okhttpPost_sendsmsForMsg");
             e.printStackTrace();
         }
     }
@@ -852,7 +852,7 @@ public class HttpUtil {
                 }
                 response.body().string();
             }catch (Exception e){
-                System.out.println("网络访问异常:okhttpPost_updateVcard");
+                //System.out.println("网络访问异常:okhttpPost_updateVcard");
                 e.printStackTrace();
             }
         }
@@ -885,7 +885,7 @@ public class HttpUtil {
             }
             code = Integer.parseInt(response.body().string());
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_updatePassword");
+            //System.out.println("网络访问异常:okhttpPost_updatePassword");
             e.printStackTrace();
         }
         return code;
@@ -917,7 +917,7 @@ public class HttpUtil {
             }
             code = Integer.parseInt(response.body().string());
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_updateEvaluate");
+            //System.out.println("网络访问异常:okhttpPost_updateEvaluate");
             e.printStackTrace();
         }
         return code;
@@ -946,7 +946,7 @@ public class HttpUtil {
                 throw new IOException("Unexpected code " + response);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_updateEvaluate");
+            //System.out.println("网络访问异常:okhttpPost_updateEvaluate");
             e.printStackTrace();
         }
     }
@@ -990,7 +990,7 @@ public class HttpUtil {
                 }
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryOffPresences");
+            //System.out.println("网络访问异常:okhttpPost_queryOffPresences");
             e.printStackTrace();
         }
     }
@@ -1032,7 +1032,7 @@ public class HttpUtil {
                 }
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryAreaInfo");
+            //System.out.println("网络访问异常:okhttpPost_queryAreaInfo");
             e.printStackTrace();
             return list;
         }
@@ -1075,7 +1075,7 @@ public class HttpUtil {
                 }
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryInterest");
+            //System.out.println("网络访问异常:okhttpPost_queryInterest");
             e.printStackTrace();
             return list;
         }
@@ -1114,7 +1114,7 @@ public class HttpUtil {
             }
             code = Integer.parseInt(response.body().string());
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_insertGroup");
+            //System.out.println("网络访问异常:okhttpPost_insertGroup");
             e.printStackTrace();
             return code;
         }
@@ -1162,7 +1162,7 @@ public class HttpUtil {
                 }
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryMyGroups");
+            //System.out.println("网络访问异常:okhttpPost_queryMyGroups");
             e.printStackTrace();
             return list;
         }
@@ -1193,7 +1193,7 @@ public class HttpUtil {
             }
             result = Boolean.parseBoolean(response.body().string());
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryIsGroupMember");
+            //System.out.println("网络访问异常:okhttpPost_queryIsGroupMember");
             e.printStackTrace();
             return result;
         }
@@ -1246,7 +1246,7 @@ public class HttpUtil {
             }
         }catch (Exception e){
             //网络访问异常
-            System.out.println("网络访问异常:okhttpPost_queryGroupInfoByRoomName");
+            //System.out.println("网络访问异常:okhttpPost_queryGroupInfoByRoomName");
         }
         return groupBean;
     }
@@ -1277,7 +1277,7 @@ public class HttpUtil {
                 throw new IOException("Unexpected code " + response);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_insertGroupOfflineInvite");
+            //System.out.println("网络访问异常:okhttpPost_insertGroupOfflineInvite");
             e.printStackTrace();
         }
     }
@@ -1324,7 +1324,7 @@ public class HttpUtil {
                 }
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryOffGroupInvite");
+            //System.out.println("网络访问异常:okhttpPost_queryOffGroupInvite");
             e.printStackTrace();
         }
     }
@@ -1357,7 +1357,7 @@ public class HttpUtil {
                 }
                 response.body().string();
             }catch (Exception e){
-                System.out.println("网络访问异常:okhttpPost_updateGroupInfo");
+                //System.out.println("网络访问异常:okhttpPost_updateGroupInfo");
                 e.printStackTrace();
             }
         }
@@ -1405,14 +1405,54 @@ public class HttpUtil {
                 }
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_queryGroupMembers");
+            //System.out.println("网络访问异常:okhttpPost_queryGroupMembers");
             e.printStackTrace();
             return list;
         }
         return list;
     }
 
+    /**
+     * 查询我的群组里的新成员
+     * @param jid
+     * @return
+     */
+    public static GroupMemberBean okhttpPost_queryNewGroupMember(String jid,String username) {
+        GroupMemberBean bean = new GroupMemberBean();
+        try {
+            String url = context.getResources().getString(R.string.app_server)+"queryNewGroupMember";
+            RequestBody formBody = new FormBody.Builder()
+                    .add("username", username)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
+            }
 
+            //开始解析json数据
+            JSONObject jsonObject = new JSONObject(response.body().string());
+            if(jsonObject.getBoolean("success")){
+                JSONObject map = jsonObject.getJSONObject("datamap");
+                JSONObject jsonUserBean = map.getJSONObject("groupmemberbean");
+
+                bean.setJid(jid);
+                bean.setAccount(jsonUserBean.getString("account"));
+                bean.setNickname(jsonUserBean.getString("nickname"));
+                bean.setPinyin(jsonUserBean.getString("pinyin"));
+                bean.setAvatarurl(jsonUserBean.getString("avatarurl"));
+                bean.setMaster(jsonUserBean.getString("master"));
+            }
+        }catch (Exception e){
+            //System.out.println("网络访问异常:okhttpPost_queryNewGroupMember");
+            e.printStackTrace();
+            return bean;
+        }
+        return bean;
+    }
     /**
      * 删除群成员
      * @param groupname
@@ -1436,7 +1476,7 @@ public class HttpUtil {
             String result = response.body().string();
             return Integer.parseInt(result);
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_deleteGroupMember");
+            //System.out.println("网络访问异常:okhttpPost_deleteGroupMember");
             e.printStackTrace();
         }
         return 0;
@@ -1466,7 +1506,7 @@ public class HttpUtil {
             String result = response.body().string();
             return Integer.parseInt(result);
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_updateGroupMaster");
+            //System.out.println("网络访问异常:okhttpPost_updateGroupMaster");
             e.printStackTrace();
         }
         return 0;
@@ -1493,7 +1533,7 @@ public class HttpUtil {
             String result = response.body().string();
             return Integer.parseInt(result);
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_deleteGroup");
+            //System.out.println("网络访问异常:okhttpPost_deleteGroup");
             e.printStackTrace();
         }
         return 0;
@@ -1520,7 +1560,7 @@ public class HttpUtil {
                 throw new IOException("Unexpected code " + response);
             }
         }catch (Exception e){
-            System.out.println("网络访问异常:okhttpPost_writeUserLoginLog");
+            //System.out.println("网络访问异常:okhttpPost_writeUserLoginLog");
             e.printStackTrace();
         }
     }

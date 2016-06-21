@@ -124,7 +124,7 @@ public class GroupFragment extends Fragment implements LoaderManager.LoaderCallb
      */
     private void initData() {
         //AsmackUtils.getHostRooms();
-        //System.out.println("====================    =============================    =============================    =============================    =============================    =============================    =============================    =============================    =============================    =====================");
+        ////System.out.println("====================    =============================    =============================    =============================    =============================    =============================    =============================    =============================    =============================    =====================");
         //setOrUpdateAdapter();
 
 
@@ -169,120 +169,15 @@ public class GroupFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
 
-//    //步骤1：通过后台线程AsyncTask来读取数据库，放入更换Cursor
-//    private class RefreshList extends AsyncTask<Void, Void ,Void> {
-//        protected Void doInBackground(Void... params) {
-//            Cursor mCursor;
-//            String sqlWhere = " owner=? ";
-//            String[] sqlWhereArgs = new String[]{IMService.mCurAccount};
-//            String sqlOrder = GroupDbHelper.GroupTable.PINYIN+" asc ";
-//            mCursor = getActivity().getContentResolver().query(GroupProvider.URI_GROUP, null, sqlWhere, sqlWhereArgs, sqlOrder);
-//            if(mCursor!=null){
-//                if(mGroupList!=null){
-//                    mGroupList.clear();
-//                }else{
-//                    mGroupList = new ArrayList<>();
-//                }
-//                for (int i = 0; i <mCursor.getCount() ; i++) {
-//                    mCursor.moveToPosition(i);
-//                    GroupBean groupBean = new GroupBean();
-//                    groupBean.setChildid(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.JID)) );
-//                    groupBean.setChild(AsmackUtils.filterGroupName(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.JID))) );
-//                    groupBean.setGroupnum(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.ROOMNUM)) );
-//                    groupBean.setGroupface(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.FACE)) );
-//                    groupBean.setLvl(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.LVL)) );
-//                    mGroupList.add(groupBean);
-//                }
-//                mCursor.close();
-//            }else{
-//            }
-//            return null;
-//        }
-//
-//        protected void onPostExecute(Void aVoid) {
-//            if(mGroupList.size()>0){
-//                mNomsg.setVisibility(View.GONE);
-//                mAdapter.notifyDataSetChanged();
-//            }else {
-//                mNomsg.setVisibility(View.VISIBLE);
-//                mAdapter.notifyDataSetChanged();
-//            }
-//        }
-//    }
 
     /**
      * 更新或插入列表数据
      */
     private void setOrUpdateAdapter() {
-        System.out.println("====================  manager.restartLoader  GroupFragment =====================");
+        //System.out.println("====================  manager.restartLoader  GroupFragment =====================");
         manager.restartLoader(0,null,this);
 
 
-//        //判断mAdapter是否存在
-//        if(mAdapter!=null){
-//            //更新mAdapter
-//            new RefreshList().execute();
-//            return;
-//        }
-//        ThreadUtils.runInThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Cursor mCursor;
-//                String sqlWhere = " owner=? ";
-//                String[] sqlWhereArgs = new String[]{IMService.mCurAccount};
-//                String sqlOrder = GroupDbHelper.GroupTable.PINYIN+" asc ";
-//                mCursor = getActivity().getContentResolver().query(GroupProvider.URI_GROUP, null, sqlWhere, sqlWhereArgs, sqlOrder);
-//                if(mCursor!=null){
-//                    if(mGroupList!=null){
-//                        mGroupList.clear();
-//                    }else{
-//                        mGroupList = new ArrayList<>();
-//                    }
-//                    for (int i = 0; i <mCursor.getCount() ; i++) {
-//                        mCursor.moveToPosition(i);
-//                        GroupBean groupBean = new GroupBean();
-//                        groupBean.setChildid(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.JID)) );
-//                        groupBean.setChild(AsmackUtils.filterGroupName(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.JID))) );
-//                        groupBean.setGroupnum(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.ROOMNUM)) );
-//                        groupBean.setGroupface(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.FACE)) );
-//                        groupBean.setLvl(mCursor.getString(mCursor.getColumnIndex(GroupDbHelper.GroupTable.LVL)) );
-//                        mGroupList.add(groupBean);
-//                    }
-//                    mCursor.close();
-//                }else{
-//                    if(mGroupList==null){
-//                        mGroupList = new ArrayList<>();
-//                    }
-//                }
-//
-//                ThreadUtils.runInUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if(mGroupList.size()>0){
-//                            mNomsg.setVisibility(View.GONE);
-//                        }else {
-//                            mNomsg.setVisibility(View.VISIBLE);
-//                        }
-//                        mAdapter = new MyGroupAdapter(mGroupList, getContext());
-//                        mLv.setAdapter(mAdapter);
-//                        mLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                            @Override
-//                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                                try {
-//                                    Intent intent = new Intent(getContext(), MultiChatActivity.class);
-//                                    intent.putExtra(MultiChatActivity.F_ROOM_JID,mGroupList.get(position).getChildid());
-//                                    intent.putExtra(MultiChatActivity.F_ROOM_NAME,mGroupList.get(position).getChild());
-//                                    intent.putExtra(MultiChatActivity.F_ROOM_AVATARURL,mGroupList.get(position).getGroupface());
-//                                    startActivity(intent);
-//                                } catch (Exception e) {
-//                                    Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        });
-//                    }
-//                });
-//            }
-//        });
     }
 
 
@@ -339,7 +234,7 @@ public class GroupFragment extends Fragment implements LoaderManager.LoaderCallb
      * 注册内容观察者
      */
     public void registerContentObserver(){
-        //System.out.println("注册内容观察者");
+        ////System.out.println("注册内容观察者");
         //第2个参数为true：
         //content://" + AUTHORITIES + "/contact  的孩子 content://" + AUTHORITIES + "/contact/xxxx 也会被通知
         getActivity().getContentResolver().registerContentObserver(GroupProvider.URI_GROUP,true,observer);
@@ -349,7 +244,7 @@ public class GroupFragment extends Fragment implements LoaderManager.LoaderCallb
      * 销毁内容观察者
      */
     public void unRegisterContentObserver(){
-        //System.out.println("销毁内容观察者");
+        ////System.out.println("销毁内容观察者");
         getActivity().getContentResolver().unregisterContentObserver(observer);
     }
 

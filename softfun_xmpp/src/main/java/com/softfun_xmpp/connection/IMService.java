@@ -46,7 +46,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -93,7 +92,10 @@ public class IMService extends Service {
 
     public static Map<String,List<GroupMemberBean>> mGroupMemberMap;
 
-
+    /**
+     * 重复登录失败次数
+     */
+    public static int mReLoginCount;
     /**
      * 当前的离线消息
      */
@@ -114,7 +116,6 @@ public class IMService extends Service {
      * 是否正在聊天，独占
      */
     public static boolean isVideo;
-
 
     private Roster mRoster;
     /**
@@ -143,10 +144,11 @@ public class IMService extends Service {
      * 监听每一个群聊的状态事件的实例
      */
     private multiParticipantStatus mMultiPartcipantStatus = new multiParticipantStatus();
-//    /**
-//     * 监听每一个群聊的邀请被拒绝事件的实例
-//     */
-//    private multiInvitationRejectionListener mMultiInvitationRejectionListener = new multiInvitationRejectionListener();
+    /**
+     * 监听每一个群聊的邀请被拒绝事件的实例
+     */
+    private InvitationRejectionListener invitationRejectionListener;
+
 
 
     @Nullable
@@ -169,20 +171,20 @@ public class IMService extends Service {
 
     @Override
     public void onCreate() {
-        System.out.println("--------------service  onCreate-------------");
+        //System.out.println("--------------service  onCreate-------------");
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("--------------service  onStartCommand-------------");
+        //System.out.println("--------------service  onStartCommand-------------");
         initService();
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        System.out.println("====================  服务被销毁  =====================");
+        //System.out.println("====================  服务被销毁  =====================");
         clearxx();
         conn.disconnect();
         super.onDestroy();
@@ -192,7 +194,7 @@ public class IMService extends Service {
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("====================  initService initService initService  =====================");
+                //System.out.println("====================  initService initService initService  =====================");
                 String name;
                 String password ;
                 /*========    从服务器同步花名册     =====*/
@@ -258,21 +260,21 @@ public class IMService extends Service {
                 MultiUserChat.addInvitationListener(conn, new InvitationListener() {
                     @Override
                     public void invitationReceived(Connection connection, String roomjid, String inviter, String reason, String password, Message message) {
-                        System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
+                        //System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
                         String msg_to = message.getTo();
                         if(!TextUtils.isEmpty(msg_to) && msg_to.equals(mCurAccount)){
-                            System.out.println(roomjid);
-                            System.out.println(inviter);
-                            System.out.println(reason);
-                            System.out.println(password);
-                            System.out.println("type.name:"+message.getType().name());
-                            System.out.println("msg.from:"+message.getFrom());
-                            System.out.println("msg.to:"+message.getTo());
+                            //System.out.println(roomjid);
+                            //System.out.println(inviter);
+                            //System.out.println(reason);
+                            //System.out.println(password);
+                            //System.out.println("type.name:"+message.getType().name());
+                            //System.out.println("msg.from:"+message.getFrom());
+                            //System.out.println("msg.to:"+message.getTo());
                             message.setFrom(inviter); //群聊发起人
                             message.setBody(reason); //群聊消息内容
                             message.setType(Message.Type.groupchat); //聊天类型
                             message.setProperty(Const.MSGFLAG,Const.MSGFLAG_GROUP_INVITE);//    群聊消息的类型：群邀请的类型
-                            saveGroupMessage(roomjid,message);
+                            saveGroupMessage(AsmackUtils.filterGroupJid(roomjid),message);
                         }
                     }
                 });
@@ -314,6 +316,7 @@ public class IMService extends Service {
                 MultiUserChat multiUserChat = AsmackUtils.joinMultiUserChat(mCurNickName, groupBean.getChild(), "123456");
                 if(multiUserChat!=null){
                     if(!mMultiUserChatMap.containsKey(groupBean.getChild())){
+                        //System.out.println("====================  初始化群组（查询，进入、监听，更新本地数据库）  =====================");
                         mMultiUserChatMap.put(groupBean.getChildid(),multiUserChat);
                         //监听每一个群聊消息
                         mMultiMsgListener = new multiMsgListener();
@@ -321,22 +324,35 @@ public class IMService extends Service {
                         //监听每一个群聊的状态事件
                         multiUserChat.addParticipantStatusListener(mMultiPartcipantStatus);
                         //监听每一个群聊的邀请被拒绝事件
-                        multiUserChat.addInvitationRejectionListener(new InvitationRejectionListener() {
+                        invitationRejectionListener = new InvitationRejectionListener() {
                             @Override
                             public void invitationDeclined(String invitee, String reason) {
-                                System.out.println("邀请被拒绝了："+invitee +"  理由:"+reason);
+                                //System.out.println("邀请被拒绝了：" + invitee + "  理由:" + reason);
                             }
-                        });
-
+                        };
+                        multiUserChat.addInvitationRejectionListener(invitationRejectionListener);
                         //获取群成员
                         AsmackUtils.getGroupMember(AsmackUtils.filterGroupJid(groupBean.getChildid()));
                     }
                 }
                 insertOrUpdateGroup(groupBean);
             }
-            System.out.println(mGroupMemberMap);
         }
     }
+
+
+    /**
+     * 移除群聊坚挺
+     */
+    public void removeMultUserChatListener(String groupjid) {
+        if(IMService.mMultiUserChatMap.containsKey(groupjid)){
+            MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(groupjid);
+            multiUserChat.removeMessageListener(mMultiMsgListener);
+            multiUserChat.removeParticipantStatusListener(mMultiPartcipantStatus);
+            multiUserChat.removeInvitationRejectionListener(invitationRejectionListener);
+        }
+    }
+
 
     /**
      * 对比 本机群组 与  服务器数据库中的最新群组
@@ -364,7 +380,7 @@ public class IMService extends Service {
                 }
                 List<MatherListUtil.ListOPBean> list = MatherListUtil.compare(localList,xmppList);
                 for (MatherListUtil.ListOPBean listOPBean : list) {
-                    System.out.println("loaclList需要："+listOPBean.getOp()+"  "+listOPBean.getStr());
+                    //System.out.println("loaclList需要："+listOPBean.getOp()+"  "+listOPBean.getStr());
                     if(listOPBean.getOp().equals("-")){
                         //删除此条群组信息
                         getContentResolver().delete(
@@ -513,8 +529,8 @@ public class IMService extends Service {
             String account = presence.getFrom();
             Presence bestPresence = mRoster.getPresence(account);
             //修改数据库
-            //System.out.println("====================  presenceChanged  =====================");
-            updatePresence(account, bestPresence.getStatus());
+            ////System.out.println("====================  presenceChanged  =====================");
+            updatePresence(account, bestPresence.getType().name());
         }
     }
 
@@ -534,7 +550,7 @@ public class IMService extends Service {
                 //接收到消息，保存消息
                 String session_account = chat.getParticipant();
                 session_account = AsmackUtils.filterAccount(session_account);
-                System.out.println("####接收到的消息#######session_account:" + session_account + "   " + message.getFrom() + "      " + message.getTo());
+                //System.out.println("####接收到的消息#######session_account:" + session_account + "   " + message.getFrom() + "      " + message.getTo());
                 if (message.getProperty(Const.MSGFLAG).equals(Const.MSGFLAG_VIDEO)) {
                     enterVideoActivity(message.getFrom());
                 }else if(message.getProperty(Const.MSGFLAG).equals(Const.MSGFLAG_IMG)){
@@ -552,7 +568,7 @@ public class IMService extends Service {
      * @param form -
      */
     private void enterVideoActivity(String form) {
-        System.out.println("====================  IMService.isVideo  =====================" + IMService.isVideo);
+        //System.out.println("====================  IMService.isVideo  =====================" + IMService.isVideo);
         if (!IMService.isVideo) {
             Intent intent1 = new Intent();
             intent1.putExtra("sourceid", form);
@@ -589,9 +605,9 @@ public class IMService extends Service {
                 mCurChat = mChatMap.get(participant);
             }
             if (createdLocally) {
-                System.out.println("====================  自己创建的会话  =====================");
+                //System.out.println("====================  自己创建的会话  =====================");
             } else {
-                System.out.println("====================  别人创建的会话  =====================");
+                //System.out.println("====================  别人创建的会话  =====================");
             }
         }
     }
@@ -647,8 +663,9 @@ public class IMService extends Service {
         while (presences.hasNext()) {
             Presence presence = presences.next();
             Presence.Type type = presence.getType();
+            //System.out.println("====================  在线状态  ====================="+nickname+"   "+ type);
             if (type.equals(Presence.Type.available)) {
-                status = presence.getStatus();
+                status = presence.getType().name();
             } else {
                 status = "离线";
             }
@@ -852,30 +869,30 @@ public class IMService extends Service {
                 Presence presence = (Presence) packet;
                 String from = presence.getFrom();//发送方
                 String to = presence.getTo();//接收方
-                //System.out.println("from:" + from + "   to:" + to);
+                ////System.out.println("from:" + from + "   to:" + to);
                 //Presence.Type有7中状态
                 if (presence.getType().equals(Presence.Type.subscribe)) {//好友申请
-                    //System.out.println("====================  subscribe  =====================" + from + "   发出好友申请");
+                    ////System.out.println("====================  subscribe  =====================" + from + "   发出好友申请");
                     savePresenceSubscribe(presence);
 
                 } else if (presence.getType().equals(Presence.Type.subscribed)) {//同意添加好友
-                    //System.out.println("====================  subscribed  =====================" + from + "   同意添加好友");
+                    ////System.out.println("====================  subscribed  =====================" + from + "   同意添加好友");
 
                 } else if (presence.getType().equals(Presence.Type.unsubscribe)) {
-                    //System.out.println("====================  unsubscribe  =====================" + from + "   拒绝了好友关系");
+                    ////System.out.println("====================  unsubscribe  =====================" + from + "   拒绝了好友关系");
 
                 } else if (presence.getType().equals(Presence.Type.unsubscribed)) {
-                    //System.out.println("====================  unsubscribed  =====================" + from + "   删除了您");
+                    ////System.out.println("====================  unsubscribed  =====================" + from + "   删除了您");
                     savePresenceSubscribe(presence);
 
                 } else if (presence.getType().equals(Presence.Type.unavailable)) { //好友下线   要更新好友列表，可以在这收到包后，发广播到指定页面   更新列表
-                    //System.out.println("====================  unavailable  =====================" + from + "   下线");
+                    ////System.out.println("====================  unavailable  =====================" + from + "   下线");
                 } else if (presence.getType().equals(Presence.Type.available)) {//好友上线
-                    //System.out.println("====================  available  =====================");
+                    ////System.out.println("====================  available  =====================");
 
                 } else {
                     //error
-                    //System.out.println("====================  error  =====================");
+                    ////System.out.println("====================  error  =====================");
                 }
             }
         }
@@ -890,7 +907,7 @@ public class IMService extends Service {
     private class MyPacketMessageListener implements PacketListener {
         @Override
         public void processPacket(Packet packet) {
-            //System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+            ////System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
             if (packet instanceof Message) {
                 Message message = (Message) packet;
                 String body = message.getBody();
@@ -1023,7 +1040,7 @@ public class IMService extends Service {
         @Override
         public void processPacket(Packet packet) {
             Message message = (Message) packet;
-            //System.out.println(IMService.mCurAccount+"==================== 接收到聊天室的聊天消息   ===================== "+message.getBody());
+            ////System.out.println(IMService.mCurAccount+"==================== 接收到聊天室的聊天消息   ===================== "+message.getBody());
             if(message.getType().equals(org.jivesoftware.smack.packet.Message.Type.groupchat)){
                 if(message.getBody()!=null){
                     DelayInformation inf = (DelayInformation) message.getExtension("x", "jabber:x:delay");
@@ -1040,10 +1057,18 @@ public class IMService extends Service {
                     }else{
                         msgflag = "";
                     }
-
+                    //消息类型是  有新成员加入本群
+                    if(msgflag.equals(Const.MSGFLAG_GROUP_NEW_MEMBER)){
+                        //System.out.println("====================  有新成员加入本群 消息  =====================");
+                        //有@conference.softfun的群JID
+                        String groupjid = message.getProperty(Const.GROUP_JID)+"";
+                        String new_account = message.getProperty(Const.ACCOUNT)+"";
+                        GroupMemberBean groupMemberBean =   HttpUtil.okhttpPost_queryNewGroupMember(groupjid,AsmackUtils.filterAccountToUserName(new_account));
+                        AsmackUtils.updateGroupMemberMap(AsmackUtils.filterGroupJid(groupjid),groupMemberBean);
+                    }else
                     //消息类型是  群更改管理员==============================================================
                     if(msgflag.equals(Const.MSGFLAG_GROUP_CHANGEMASTER)){
-                        //System.out.println("====================  群更改管理员 消息  =====================");
+                        ////System.out.println("====================  群更改管理员 消息  =====================");
                         String groupname = message.getProperty(Const.GROUP_JID)+"";
                         String selectAccount = message.getProperty(Const.MSGFLAG_GROUP_NEW_MASTER)+"";
                         String oldMaster = message.getProperty(Const.ACCOUNT)+"";
@@ -1067,7 +1092,7 @@ public class IMService extends Service {
                     //消息类型是 群解散==============================================================
                     if(msgflag.equals(Const.MSGFLAG_GROUP_DISMISS)){
                         String groupname = message.getProperty(Const.GROUP_JID)+"";
-                        //System.out.println("====================  接收到群解散消息  =====================");
+                        ////System.out.println("====================  接收到群解散消息  =====================");
                         if(mGroupMemberMap.containsKey(groupname)){
                             mGroupMemberMap.remove(groupname);
                         }
@@ -1092,7 +1117,7 @@ public class IMService extends Service {
                         String leave_account = message.getProperty(Const.ACCOUNT)+"";
                         String leave_username = AsmackUtils.filterAccountToUserName(leave_account);
                         String groupname = message.getProperty(Const.GROUP_JID)+"";
-                        //System.out.println(leave_account);
+                        ////System.out.println(leave_account);
                         //System.out.println(groupname);
                         //System.out.println("====================  接收到 脱离群消息  =====================");
                         //如果离开群的人是我自己
@@ -1142,10 +1167,10 @@ public class IMService extends Service {
                         String kick_account = message.getProperty(Const.ACCOUNT)+"";
                         String kicked_username = message.getProperty(Const.MSGFLAG_GROUP_KICKED_USERNAME)+"";
                         String groupname = message.getProperty(Const.GROUP_JID)+"";
-                        //System.out.println(kick_account);
-                        //System.out.println(kicked_username);
-                        //System.out.println(groupname);
-                        //System.out.println("====================  接收到群踢消息  =====================");
+                        ////System.out.println(kick_account);
+                        ////System.out.println(kicked_username);
+                        ////System.out.println(groupname);
+                        ////System.out.println("====================  接收到群踢消息  =====================");
                         if(mGroupMemberMap.containsKey(groupname)){
                             boolean b = false;
                             List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
@@ -1155,13 +1180,13 @@ public class IMService extends Service {
                                     //删除远程表
                                     //如果是我要删除TA ，那么我自己去删除数据库的数据
                                     if(kick_account.equals(IMService.mCurAccount)){
-                                        //System.out.println("====================  我要删除TA  =====================");
+                                        ////System.out.println("====================  我要删除TA  =====================");
                                         HttpUtil.okhttpPost_deleteGroupMember(groupname, kicked_username);
                                     }
                                     //删除本地表
                                     //如果我是被删除的人
                                     if((kicked_username+"@"+Const.APP_PACKAGENAME).equals(IMService.mCurAccount)){
-                                        //System.out.println("====================  我是被删除的人  =====================");
+                                        ////System.out.println("====================  我是被删除的人  =====================");
                                         //删除本地数据库的群组表，我不再参与此群
                                         getContentResolver().delete(
                                                 GroupProvider.URI_GROUP,
@@ -1215,78 +1240,78 @@ public class IMService extends Service {
     private class multiParticipantStatus implements ParticipantStatusListener {
         @Override
         public void adminGranted(String arg0) {
-            System.out.println("adminGranted:"+arg0);
+            //System.out.println("adminGranted:"+arg0);
         }
 
         @Override
         public void adminRevoked(String arg0) {
-            System.out.println("adminRevoked:"+arg0);
+            //System.out.println("adminRevoked:"+arg0);
         }
 
         @Override
         public void banned(String arg0, String arg1, String arg2) {
-            System.out.println("banned:"+arg0+" "+arg1+"  "+arg2);
+            //System.out.println("banned:"+arg0+" "+arg1+"  "+arg2);
         }
 
         @Override
         public void joined(String participant) {
-            System.out.println(StringUtils.parseResource(participant)+ " has joined the room.");
+            //System.out.println(StringUtils.parseResource(participant)+ " has joined the room.");
         }
 
         @Override
         public void kicked(String arg0, String arg1, String arg2) {
-            System.out.println("kicked:"+arg0+" "+arg1+" "+arg2);
+            //System.out.println("kicked:"+arg0+" "+arg1+" "+arg2);
         }
 
         @Override
         public void left(String participant) {
-            System.out.println(StringUtils.parseResource(participant)+ " has left the room.");
+            //System.out.println(StringUtils.parseResource(participant)+ " has left the room.");
 
         }
 
         @Override
         public void membershipGranted(String arg0) {
-            System.out.println("membershipGranted:"+arg0);
+            //System.out.println("membershipGranted:"+arg0);
         }
 
         @Override
         public void membershipRevoked(String arg0) {
-            System.out.println("membershipRevoked:"+arg0);
+            //System.out.println("membershipRevoked:"+arg0);
         }
 
         @Override
         public void moderatorGranted(String arg0) {
-            System.out.println("moderatorGranted:"+arg0);
+            //System.out.println("moderatorGranted:"+arg0);
         }
 
         @Override
         public void moderatorRevoked(String arg0) {
-            System.out.println("moderatorRevoked:"+arg0);
+            //System.out.println("moderatorRevoked:"+arg0);
         }
 
         @Override
         public void nicknameChanged(String participant, String newNickname) {
-            System.out.println(StringUtils.parseResource(participant)+ " 现在被称为： " + newNickname + ".");
+            //System.out.println(StringUtils.parseResource(participant)+ " 现在被称为： " + newNickname + ".");
         }
 
         @Override
         public void ownershipGranted(String arg0) {
-            System.out.println("ownershipGranted:"+arg0);
+            //System.out.println("ownershipGranted:"+arg0);
         }
 
         @Override
         public void ownershipRevoked(String arg0) {
-            System.out.println("ownershipRevoked:"+arg0);
+            //System.out.println("ownershipRevoked:"+arg0);
         }
 
         @Override
         public void voiceGranted(String arg0) {
-            System.out.println("voiceGranted:"+arg0);
+            //System.out.println("voiceGranted:"+arg0);
         }
 
         @Override
         public void voiceRevoked(String arg0) {
-            System.out.println("voiceRevoked:"+arg0);
+            //System.out.println("voiceRevoked:"+arg0);
         }
     }
 
@@ -1316,7 +1341,7 @@ public class IMService extends Service {
                 }
                 List<MatherListUtil.ListOPBean> list = MatherListUtil.compare(loaclList,xmppList);
                 for (MatherListUtil.ListOPBean listOPBean : list) {
-                    //System.out.println("loaclList需要："+listOPBean.getOp()+"  "+listOPBean.getStr());
+                    ////System.out.println("loaclList需要："+listOPBean.getOp()+"  "+listOPBean.getStr());
                     if(listOPBean.getOp().equals("-")){
                         //删除此条联系人
                         getContentResolver().delete(
@@ -1343,7 +1368,7 @@ public class IMService extends Service {
             Presence presence = presences.next();
             Presence.Type type = presence.getType();
             if (type.equals(Presence.Type.available)) {
-                status = presence.getStatus();
+                status = presence.getType().name();
             } else {
                 status = getResources().getString(R.string.offline);//"离线";
             }

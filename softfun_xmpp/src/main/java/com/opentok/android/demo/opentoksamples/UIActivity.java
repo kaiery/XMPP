@@ -126,9 +126,9 @@ public class UIActivity extends Activity implements Session.SessionListener,
         IMService.isVideo = true;
         mUserAccount = IMService.mCurAccount;
         mNickName = IMService.mCurNickName;
-        System.out.println("====================  mUserAccount  =====================:"+ mUserAccount);
+        //System.out.println("====================  mUserAccount  =====================:"+ mUserAccount);
         mTargetAccount = getIntent().getStringExtra("mTargetAccount");
-        System.out.println("====================  mTargetAccount  =====================:"+ mTargetAccount);
+        //System.out.println("====================  mTargetAccount  =====================:"+ mTargetAccount);
         mTargetNickName = getIntent().getStringExtra("mTargetNickName");
 
 
@@ -641,7 +641,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onConnected(Session session) {
         Log.i(LOGTAG, "会话连接成功");
-        System.out.println("====================  会话连接成功  =====================");
+        //System.out.println("====================  会话连接成功  =====================");
         //视频发布者
         if (mPublisher == null) {
             mPublisher = new Publisher(this, mUserAccount);
@@ -654,7 +654,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onDisconnected(Session session) {
         Log.i(LOGTAG, "会话已断开");
-        System.out.println("====================  会话已断开  =====================");
+        //System.out.println("====================  会话已断开  =====================");
         if (mPublisher != null) {
             mPublisherViewContainer.removeView(mPublisher.getRenderer().getView());
         }
@@ -686,7 +686,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
 //        }
         //不是自己发布的视频，是指定对方的视频
         if (!stream.getName().equals(mUserAccount) && stream.getName().equals(mTargetAccount)) {
-            System.out.println("发布者："+ mUserAccount +"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
+            //System.out.println("发布者："+ mUserAccount +"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
             mStreams.add(stream);
             if (mSubscriber == null) {
                 subscribeToStream(stream);
@@ -728,7 +728,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onStreamCreated(PublisherKit publisher, Stream stream) {
-        System.out.println("发布者："+ mUserAccount +"成功发布了自己的视频，名称是："+stream.getName());
+        //System.out.println("发布者："+ mUserAccount +"成功发布了自己的视频，名称是："+stream.getName());
 //        if (OpenTokConfig.SUBSCRIBE_TO_SELF) {
 //            mStreams.add(stream);
 //            if (mSubscriber == null) {
@@ -754,7 +754,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         if(mSubscriber != null){
             unsubscriberFromStream(stream);
         }
-        System.out.println("====================  我的视频被销毁了  =====================："+stream);
+        //System.out.println("====================  我的视频被销毁了  =====================："+stream);
     }
     /**
      * 发布视频出错
@@ -762,7 +762,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onError(Session session, OpentokError exception) {
-        System.out.println("====================  视频发布出错了  =====================:"+exception.getMessage());
+        //System.out.println("====================  视频发布出错了  =====================:"+exception.getMessage());
         Toast.makeText(this,exception.getMessage() +"--" +exception.getErrorCode()+" -- "+exception.getErrorDomain() , Toast.LENGTH_LONG).show();
     }
 
@@ -897,7 +897,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onError(PublisherKit publisher, OpentokError exception) {
         Log.i(LOGTAG, "Publisher exception: " + exception.getMessage());
-        System.out.println("====================  视频发布出错了：  =====================  "+ mUserAccount);
+        //System.out.println("====================  视频发布出错了：  =====================  "+ mUserAccount);
     }
 
     /**
@@ -951,7 +951,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onVideoDisabled(SubscriberKit subscriber, String reason) {
         Log.i(LOGTAG, "Video disabled:" + reason);
-        System.out.println("====================  onVideoDisabled  对方视频中断了=====================："+subscriber.getStream().getName()+"  理由："+reason);
+        //System.out.println("====================  onVideoDisabled  对方视频中断了=====================："+subscriber.getStream().getName()+"  理由："+reason);
         if (mSubscriber == subscriber) {
             setAudioOnlyView(true);
         }
@@ -972,7 +972,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onVideoEnabled(SubscriberKit subscriber, String reason) {
         Log.i(LOGTAG, "Video enabled:" + reason);
-        System.out.println("====================  onVideoEnabled  对方视频开启了=====================："+subscriber.getStream().getName()+"  理由："+reason);
+        //System.out.println("====================  onVideoEnabled  对方视频开启了=====================："+subscriber.getStream().getName()+"  理由："+reason);
         if (mSubscriber == subscriber) {
             setAudioOnlyView(false);
         }
@@ -992,7 +992,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onStreamHasAudioChanged(Session session, Stream stream, boolean audioEnabled) {
         Log.i(LOGTAG, "Stream audio changed");
-        System.out.println("====================  流媒体音频发生变化  =====================:"+stream.getName()+"  "+audioEnabled);
+        //System.out.println("====================  流媒体音频发生变化  =====================:"+stream.getName()+"  "+audioEnabled);
     }
 
     /**
@@ -1005,7 +1005,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public void onStreamHasVideoChanged(Session session, Stream stream,
                                         boolean videoEnabled) {
         Log.i(LOGTAG, "Stream video changed");
-        System.out.println("====================  流媒体视频发生变化  =====================:"+stream.getName()+"  "+videoEnabled);
+        //System.out.println("====================  流媒体视频发生变化  =====================:"+stream.getName()+"  "+videoEnabled);
     }
 
     /**
@@ -1019,7 +1019,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public void onStreamVideoDimensionsChanged(Session session, Stream stream,
                                                int width, int height) {
         Log.i(LOGTAG, "Stream video dimensions changed");
-        System.out.println("====================  流媒体视频尺寸发生变化  =====================:"+stream.getName()+"  "+width+"  "+height);
+        //System.out.println("====================  流媒体视频尺寸发生变化  =====================:"+stream.getName()+"  "+width+"  "+height);
     }
 
     /**
@@ -1080,7 +1080,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onVideoDisableWarning(SubscriberKit subscriber) {
         Log.i(LOGTAG, "视频可能很快就会被禁用由于网络质量下降。添加用户界面处理。");
-        System.out.println("====================  onVideoDisableWarning  视频可能很快就会被禁用由于网络质量下降=====================："+subscriber.getStream().getName());
+        //System.out.println("====================  onVideoDisableWarning  视频可能很快就会被禁用由于网络质量下降=====================："+subscriber.getStream().getName());
         mSubscriberQualityFragment.setCongestion(SubscriberQualityFragment.CongestionLevel.Mid);
         congestion = SubscriberQualityFragment.CongestionLevel.Mid;
         setSubQualityMargins();
@@ -1093,7 +1093,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onVideoDisableWarningLifted(SubscriberKit subscriber) {
         Log.i(LOGTAG, "视频可能不再被禁用流质量改善。添加用户界面处理。");
-        System.out.println("====================  onVideoDisableWarningLifted  视频可能不再被禁用流质量改善=====================："+subscriber.getStream().getName());
+        //System.out.println("====================  onVideoDisableWarningLifted  视频可能不再被禁用流质量改善=====================："+subscriber.getStream().getName());
         mSubscriberQualityFragment.setCongestion(SubscriberQualityFragment.CongestionLevel.Low);
         congestion = SubscriberQualityFragment.CongestionLevel.Low;
         mSubscriberQualityFragment.showSubscriberWidget(false);
@@ -1109,7 +1109,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public void onStreamVideoTypeChanged(Session session, Stream stream,
                                          StreamVideoType videoType) {
         Log.i(LOGTAG, "Stream video type changed");
-        System.out.println("====================  流媒体视频类型变化  =====================:"+stream.getName()+"  "+videoType);
+        //System.out.println("====================  流媒体视频类型变化  =====================:"+stream.getName()+"  "+videoType);
     }
 
 }

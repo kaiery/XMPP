@@ -514,6 +514,7 @@ public class MyFriendsListActivity extends AppCompatActivity implements View.OnC
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
                         public void run() {
+                            int i = 0;
                             for (Map.Entry<Integer, String> entry : selected.entrySet()) {
                                 //System.out.println("key= " + entry.getKey() + " and value= " + entry.getValue());
                                 String userjid = entry.getValue();
@@ -526,14 +527,19 @@ public class MyFriendsListActivity extends AppCompatActivity implements View.OnC
                                 }else{
                                     //在线的话，直接邀请，发送消息
                                     AsmackUtils.Invite(mMultiUserChat,mTargetRoomJid,userjid,msg);
+                                    i++;
                                 }
                             }
-                            ThreadUtils.runInUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                }
-                            });
+                            if(selected.size()==i){
+                                ThreadUtils.runInUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                    }
+                                });
+                            }
+                            //finish();
+
                         }
                     });
                 }

@@ -144,7 +144,7 @@ public class ContactsProvider extends ContentProvider {
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 updateCount = db.update(ContactsDbHelper.TABLE_CONTACT, values, selection, selectionArgs);
                 if (updateCount > 0) {
-                    //System.out.println("----------联系人更新成功--------");
+                    System.out.println("----------联系人更新成功--------");
                     //***通知 ContactContentObserver  数据改变了
                     getContext().getContentResolver().notifyChange(ContactsProvider.URI_CONTACT,null);//null 为所有的观察者都可以收到
                 }

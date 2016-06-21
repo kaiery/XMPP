@@ -21,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.softfun_xmpp.R;
 import com.softfun_xmpp.bean.GroupBean;
 import com.softfun_xmpp.connection.IMService;
+import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.network.HttpUtil;
 import com.softfun_xmpp.utils.AsmackUtils;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
@@ -41,6 +42,9 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
     private Button mBtAgree;
     private TextView mTvMsg;
 
+    /**
+     * 有@conference.softfun的群JID
+     */
     private String mRoomJid;
     private String mRoomName;
     private String mRoomAvatarurl;
@@ -107,7 +111,7 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
         mBtAgree.setEnabled(false);
         mBtReject.setEnabled(false);
 
-        new queryOracle_queryGroupInfoByRoomName_AsyncTask().execute(AsmackUtils.filterAccountToUserName(IMService.mCurAccount)  ,mRoomJid.substring(0,mRoomJid.lastIndexOf("@")));
+        new queryOracle_queryGroupInfoByRoomName_AsyncTask().execute(AsmackUtils.filterAccountToUserName(IMService.mCurAccount)  ,mRoomJid);
     }
 
     private void init() {
@@ -128,7 +132,7 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
     /**
      * 根据群名字，查找群的基本扩展信息
      */
-    private class queryOracle_queryGroupInfoByRoomName_AsyncTask extends AsyncTask<String,Void,GroupBean>{
+    private  class queryOracle_queryGroupInfoByRoomName_AsyncTask extends AsyncTask<String,Void,GroupBean>{
         @Override
         protected GroupBean doInBackground(String... params) {
             return HttpUtil.okhttpPost_queryGroupInfoByRoomName(params[0],params[1]);
@@ -179,8 +183,7 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
                 ThreadUtils.runInThread(new Runnable() {
                     @Override
                     public void run() {
-                        String roomName = mRoomJid.substring(0, mRoomJid.lastIndexOf("@"));
-                        //这个sql有问题
+                        String roomName = mRoomJid;
                         Integer code = HttpUtil.okhttpPost_insertGroup(roomName,
                                 AsmackUtils.filterAccountToUserName(IMService.mCurAccount),
                                 mGrouptype + "",
@@ -188,6 +191,8 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
                                 mGcity);
                         if (code == 1) {
                             mImService.InitMultiRoom();
+                            //发送群消息，让 本群内其他群成员，加入我的信息
+                            AsmackUtils.updateOtherGroupMemberToUpdateMyInfo(mRoomJid+ Const.ROOM_JID_SUFFIX);
                             //操作成功
                             ThreadUtils.runInUiThread(new Runnable() {
                                 @Override

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.dbhelper.SmsDbHelper;
 
 
@@ -156,6 +157,7 @@ public class SmsProvider extends ContentProvider {
             case GROUPSMS:
                 String groupSmsSql = "select * from (select * from "+SmsDbHelper.TABLE_SMS+" where " +
                         SmsDbHelper.SmsTable.TYPE+"=? and "+
+                        SmsDbHelper.SmsTable.FLAG+"<>'"+ Const.MSGFLAG_GROUP_INVITE+"'  and "+
                         SmsDbHelper.SmsTable.ROOM_JID+" =? " +
                         " order by "+SmsDbHelper.SmsTable.TIME+" desc limit ? offset ? ) " +
                         "order by "+SmsDbHelper.SmsTable.TIME+" asc";

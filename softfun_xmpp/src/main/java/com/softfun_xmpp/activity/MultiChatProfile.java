@@ -1,9 +1,12 @@
 package com.softfun_xmpp.activity;
 
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -128,6 +131,10 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
     private String mBackdrop;
     private String mAvatar;
     private Bundle mBundle;
+    /**
+     * 拿到的服务接口
+     */
+    private IMService mImService;
 
     private void assignViews() {
         coordlayoutActivity = (CoordinatorLayout) findViewById(R.id.coordlayout_activity);
@@ -155,7 +162,7 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
         if(rl!=null){
             rl.setVisibility(View.GONE);
         }
-
+        btn.setEnabled(false);
 
     }
 
@@ -179,6 +186,12 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
 
 
     private void init() {
+
+        //绑定服务
+        Intent service = new Intent(MultiChatProfile.this, IMService.class);
+        //绑定
+        bindService(service, mMyServiceConnection, BIND_AUTO_CREATE);
+
 
         btn.setOnClickListener(this);
         item1.setOnClickListener(this);
@@ -436,7 +449,7 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
                     }
                 }else{
                     //不是管理员，只能直接退出群，删除（oracle）群成员，发一个群消息，通知其他群成员，内存变量删除（mGroupMemberMap）我
-                    AsmackUtils.LeaveGroup(groupname);
+                    LeaveGroup(groupname);
                     ThreadUtils.runInUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -561,5 +574,86 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+    /**
+     * 离开群
+     * @param mTargetRoomJid
+     */
+    public  void LeaveGroup(final String mTargetRoomJid){
+        if(IMService.mMultiUserChatMap.containsKey(mTargetRoomJid+Const.ROOM_JID_SUFFIX)){
+            String groupname = mTargetRoomJid;
+
+            //我自己先删除oracle群成员关系
+            HttpUtil.okhttpPost_deleteGroupMember(groupname, AsmackUtils.filterAccountToUserName(IMService.mCurAccount));
+            //清空自己的内存变量
+            if(IMService.mGroupMemberMap.containsKey(groupname)){
+                IMService.mGroupMemberMap.remove(groupname);
+            }
+            if(IMService.mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                // TODO: 2016-06-20  拿到 服务，调用服务内的方法，移除监听
+                mImService.removeMultUserChatListener(groupname+Const.ROOM_JID_SUFFIX);
+                //System.out.println("====================  调用服务  ====================="+mImService);
+                IMService.mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+            }
+            //删除本地数据库的群组表，我不再参与此群
+            getContentResolver().delete(
+                    GroupProvider.URI_GROUP,
+                    GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
+                    new String[]{groupname+Const.ROOM_JID_SUFFIX, IMService.mCurAccount});
+            //删除本地群消息
+            getContentResolver().delete(
+                    SmsProvider.URI_GROUPSMS,
+                    SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
+                    new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
+            );
+
+            final MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(mTargetRoomJid+Const.ROOM_JID_SUFFIX);
+            //1、创建一个消息
+            //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
+            Message msg = new Message(mTargetRoomJid+Const.ROOM_JID_SUFFIX, org.jivesoftware.smack.packet.Message.Type.groupchat);
+            msg.setBody("");
+            msg.setProperty(Const.MSGFLAG, Const.MSGFLAG_GROUP_LEAVE);
+            msg.setProperty(Const.GROUP_JID, mTargetRoomJid);
+            msg.setProperty(Const.ACCOUNT, IMService.mCurAccount);
+            AsmackUtils.sendMultiChatMessage(multiUserChat,msg);
+        }
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //解绑服务
+        if (mMyServiceConnection != null) {
+            unbindService(mMyServiceConnection);
+        }
+    }
+
+    /**
+     * 绑定服务的连接对象
+     */
+    private MyServiceConnection mMyServiceConnection = new MyServiceConnection();
+
+    /**
+     * 绑定服务的连接对象类
+     */
+    class MyServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ////System.out.println("====================  onServiceConnected  =====================");
+            IMService.MyBinder binder = (IMService.MyBinder) service;
+            //拿到绑定的服务接口
+            mImService = binder.getService();
+            btn.setEnabled(true);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            ////System.out.println("====================  onServiceDisconnected  =====================");
+        }
     }
 }

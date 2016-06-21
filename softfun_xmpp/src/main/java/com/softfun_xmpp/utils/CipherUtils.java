@@ -89,7 +89,7 @@ public final class CipherUtils {
     public static String decrypt(String data, Key key) {
         String result = null;
         try {
-            Cipher cipher = Cipher.getInstance("DES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, key);
             result = new String(cipher.doFinal(StringUtils
                     .hexStringToByteArray(data)), "utf8");
@@ -110,7 +110,7 @@ public final class CipherUtils {
     public static String encrypt(String data, Key key){
         String s = null;
         try {
-            Cipher cipher = Cipher.getInstance("DES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, key);
             s = StringUtils.byteArrayToHexString(cipher.doFinal(data.getBytes("utf8")));
         } catch (Exception e) {

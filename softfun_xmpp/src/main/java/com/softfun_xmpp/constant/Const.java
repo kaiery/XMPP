@@ -104,6 +104,10 @@ public class Const {
      */
     public static final String MSGFLAG_GROUP_LEAVE = "msgflag_group_leave";
     /**
+     * 新成员加入群
+     */
+    public static final String MSGFLAG_GROUP_NEW_MEMBER = "msgflag_group_new_member";
+    /**
      * 群聊解散
      */
     public static final String MSGFLAG_GROUP_DISMISS = "msgflag_group_dismiss";

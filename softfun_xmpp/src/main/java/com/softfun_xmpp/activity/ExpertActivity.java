@@ -86,7 +86,7 @@ public class ExpertActivity extends AppCompatActivity implements View.OnClickLis
         });
 
 
-        queryData("");
+        queryData("2016061715224837265");//农技110的机构id
     }
 
     public void queryData(final String orgid){

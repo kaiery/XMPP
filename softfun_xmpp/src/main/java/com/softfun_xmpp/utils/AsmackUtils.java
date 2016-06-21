@@ -661,23 +661,6 @@ public class AsmackUtils {
     }
 
 
-    /**
-     * 离开群
-     * @param mTargetRoomJid
-     */
-    public static void LeaveGroup(final String mTargetRoomJid){
-        if(IMService.mMultiUserChatMap.containsKey(mTargetRoomJid+Const.ROOM_JID_SUFFIX)){
-            final MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(mTargetRoomJid+Const.ROOM_JID_SUFFIX);
-            //1、创建一个消息
-            //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
-            Message msg = new Message(mTargetRoomJid+Const.ROOM_JID_SUFFIX, org.jivesoftware.smack.packet.Message.Type.groupchat);
-            msg.setBody("");
-            msg.setProperty(Const.MSGFLAG, Const.MSGFLAG_GROUP_LEAVE);
-            msg.setProperty(Const.GROUP_JID, mTargetRoomJid);
-            msg.setProperty(Const.ACCOUNT, IMService.mCurAccount);
-            AsmackUtils.sendMultiChatMessage(multiUserChat,msg);
-        }
-    }
 
 
     /**
@@ -843,5 +826,22 @@ public class AsmackUtils {
                 }
             }
         });
+    }
+
+    /**
+     * 我加入群，本群内其他成员更新我这个新成员信息
+     */
+    public static void updateOtherGroupMemberToUpdateMyInfo(String mTargetRoomJid) {
+        if(IMService.mMultiUserChatMap.containsKey(mTargetRoomJid)){
+            final MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(mTargetRoomJid);
+            //1、创建一个消息
+            //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
+            Message msg = new Message(mTargetRoomJid, org.jivesoftware.smack.packet.Message.Type.groupchat);
+            msg.setBody("");
+            msg.setProperty(Const.MSGFLAG, Const.MSGFLAG_GROUP_NEW_MEMBER);
+            msg.setProperty(Const.GROUP_JID, mTargetRoomJid);
+            msg.setProperty(Const.ACCOUNT, IMService.mCurAccount);
+            AsmackUtils.sendMultiChatMessage(multiUserChat,msg);
+        }
     }
 }

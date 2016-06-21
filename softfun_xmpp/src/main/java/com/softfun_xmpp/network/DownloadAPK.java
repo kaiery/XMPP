@@ -87,7 +87,7 @@ public class DownloadAPK extends AsyncTask<String,Long,Boolean> {
             e.printStackTrace();
             //通知下载失败
             NotificationUtil.notification_download_failure();
-            System.out.println("网络访问异常");
+            //System.out.println("网络访问异常");
             return false;
         } finally {
             try {
@@ -115,7 +115,7 @@ public class DownloadAPK extends AsyncTask<String,Long,Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
-        //System.out.println("下载"+ (result ? "成功" : "失败" ));
+        ////System.out.println("下载"+ (result ? "成功" : "失败" ));
         if(result){
             NotificationUtil.notification_download_cancel();
             AppUtils.installApk(GlobalContext.getInstance(),file);

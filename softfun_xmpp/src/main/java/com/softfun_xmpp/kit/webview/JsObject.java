@@ -30,7 +30,7 @@ public class JsObject {
      */
     @JavascriptInterface
     public void sayhello(String str) {
-        System.out.println(str);
+        //System.out.println(str);
         Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
     }
 

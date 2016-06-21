@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        swh_nav_menu_receivemsg.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //            @Override
 //            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                System.out.println(isChecked);
+//                //System.out.println(isChecked);
 //            }
 //        });
 
@@ -312,14 +312,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 for (int i = 0; i < grantResults.length; i++) {
                     boolean Accepted = grantResults[i]==PackageManager.PERMISSION_GRANTED;
                     if(Accepted){
-                        System.out.println(permissions[i]+"授权");
+                        //System.out.println(permissions[i]+"授权");
                     }else{
-                        System.out.println(permissions[i]+"拒绝授权");
+                        //System.out.println(permissions[i]+"拒绝授权");
                         ToastUtils.showToastSafe_Long("请授权，否则系统无法正常工作。");
                         finish();
                     }
                 }
-                System.out.println("====================  授权完毕  =====================");
+                ////System.out.println("====================  授权完毕  =====================");
                 writeUserLoginLog();
                 break;
         }
@@ -356,12 +356,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // 这里执行搜索操作
-                //System.out.println("开始搜索");
+                //////System.out.println("开始搜索");
                 return true;
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-                //System.out.println("搜索内容改变了");
+                //////System.out.println("搜索内容改变了");
                 return false;
             }
         });
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch( item.getItemId() )
         {
             case R.id.action_add: {
-                //System.out.println("点击了添加好友菜单");
+                //////System.out.println("点击了添加好友菜单");
                 Intent intent = new Intent(MainActivity.this, AddFriends.class);
                 startActivity(intent);
                 break;
@@ -402,19 +402,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // 处理抽屉导航菜单的点击事件.
         int id = item.getItemId();
         if (id == R.id.nav_profile) {
-            //System.out.println("点击了我的资料菜单");
+            //////System.out.println("点击了我的资料菜单");
             Intent intent = new Intent(MainActivity.this, MyProfile.class);
             startActivity(intent);
         } else if (id == R.id.nav_blog) {
-            //System.out.println("点击了我的动态菜单");
+            //////System.out.println("点击了我的动态菜单");
         } else if (id == R.id.nav_fav) {
-            //System.out.println("点击了我的收藏菜单");
+            //////System.out.println("点击了我的收藏菜单");
         } else if (id == R.id.nav_setting) {
             Intent intent_setting = new Intent(this,SettingActivity.class);
             startActivity(intent_setting);
-            //System.out.println("点击了系统设置菜单");
+            //////System.out.println("点击了系统设置菜单");
         //} else if (id == R.id.nav_info) {
-            //System.out.println("点击了关于我们菜单");
+            //////System.out.println("点击了关于我们菜单");
         } else if (id == R.id.nav_exit){
             Intent intent = new Intent(MainActivity.this, DialogActivity.class);
             Bundle bundle = new Bundle();
@@ -468,7 +468,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     protected void onDestroy() {
-        //System.out.println("主界面销毁");
+        //////System.out.println("主界面销毁");
+        unregisterReceiver(dynamicReceiver);
         super.onDestroy();
     }
     @Override

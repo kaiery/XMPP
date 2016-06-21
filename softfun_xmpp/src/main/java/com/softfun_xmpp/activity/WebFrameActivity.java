@@ -94,6 +94,7 @@ public class WebFrameActivity extends AppCompatActivity {
             //获取url
             String url = mWv.getUrl();
             WebSettings settings = mWv.getSettings();
+            settings.setSavePassword(false);
             //开启javascript
             settings.setJavaScriptEnabled(true);
             //直接运行js脚本  java->js

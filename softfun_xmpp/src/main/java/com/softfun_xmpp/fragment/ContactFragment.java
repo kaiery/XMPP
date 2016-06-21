@@ -40,6 +40,8 @@ import com.softfun_xmpp.utils.ImageLoaderUtils;
 import com.softfun_xmpp.utils.ToastUtils;
 import com.softfun_xmpp.utils.VipResouce;
 
+import org.jivesoftware.smack.packet.Presence;
+
 /**
  * 联系人的Fragment
  * <p/>
@@ -201,40 +203,14 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoaderReset(Loader<Cursor> loader) {
         if(mAdapter!=null)
             mAdapter.swapCursor(null);
-        else
-            System.out.println("====================   联系人的  mAdapter is null");
+
+            //System.out.println("====================   联系人的  mAdapter is null");
     }
 
 
 
 
 
-//    //步骤1：通过后台线程AsyncTask来读取数据库，放入更换Cursor
-//    private class RefreshList extends AsyncTask<Void, Void ,Cursor> {
-//        //步骤1.1：在后台线程中从数据库读取，返回新的游标newCursor
-//        protected Cursor doInBackground(Void... params) {
-//            //System.out.println("newCursor的数量："+newCursor.getCount());
-//            String sqlWhere = " owner=? ";
-//            String[] sqlWhereArgs = new String[]{IMService.mCurAccount};
-//            String sqlOrder = ContactsDbHelper.ContactTable.PINYIN+" asc";
-//            Cursor newCursor = new ContactsDbHelper(getActivity()).querytable(sqlWhere,sqlWhereArgs,sqlOrder);
-//            return newCursor;
-//        }
-//        //步骤1.2：线程最后执行步骤，更换adapter的游标，并奖原游标关闭，释放资源
-//        protected void onPostExecute(Cursor newCursor) {
-//            Cursor oldCursor = mAdapter.swapCursor(newCursor);
-//            oldCursor.close();
-//            //**
-//            indexer = new AlphabetIndexer(newCursor, newCursor.getColumnIndex(ContactsDbHelper.ContactTable.PINYIN), alphabet);
-//            //**
-//            mAdapter.setIndexer(indexer);
-//            if(newCursor.getCount()>0){
-//                mNomsg.setVisibility(View.GONE);
-//            }else{
-//                mNomsg.setVisibility(View.VISIBLE);
-//            }
-//        }
-//    }
     /**
      * 设置或更新Adapter
      */
@@ -243,7 +219,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         if(IMService.mCurAccount==null){
             return;
         }
-        System.out.println("====================  manager.restartLoader  =====================");
+        //System.out.println("====================  manager.restartLoader  =====================");
         manager.restartLoader(0,null,this);
     }
 
@@ -339,7 +315,12 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
             if(status==null){
                 status = getResources().getString(R.string.offline);
+            }else if(status.equals(Presence.Type.available.name())){
+                status = getResources().getString(R.string.online);
+            }else {
+                status = getResources().getString(R.string.offline);
             }
+
             holder.tv_nickname.setText(nickname);
             holder.tv_status.setText(status);
             if(status.equals(getResources().getString(R.string.offline))){
@@ -511,7 +492,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
      * 注册内容观察者
      */
     public void registerContentObserver(){
-        //System.out.println("注册内容观察者");
+        ////System.out.println("注册内容观察者");
         //第2个参数为true：
         //content://" + AUTHORITIES + "/contact  的孩子 content://" + AUTHORITIES + "/contact/xxxx 也会被通知
         getActivity().getContentResolver().registerContentObserver(ContactsProvider.URI_CONTACT,true,observer);
@@ -521,7 +502,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
      * 销毁内容观察者
      */
     public void unRegisterContentObserver(){
-        //System.out.println("销毁内容观察者");
+        ////System.out.println("销毁内容观察者");
         getActivity().getContentResolver().unregisterContentObserver(observer);
     }
 
@@ -586,14 +567,14 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
     class MyServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            System.out.println("====================  sessionFragment onServiceConnected  =====================");
+            //System.out.println("====================  sessionFragment onServiceConnected  =====================");
             IMService.MyBinder binder = (IMService.MyBinder) service;
             //拿到绑定的服务接口
             mImService = binder.getService();
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            System.out.println("==================== sessionFragment onServiceDisconnected  =====================");
+            //System.out.println("==================== sessionFragment onServiceDisconnected  =====================");
         }
     }
 

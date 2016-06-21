@@ -198,7 +198,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
      * 设置或更新Adapter
      */
     private void setOrUpdateAdapter() {
-        System.out.println("====================  manager.restartLoader  SessionFragment =====================");
+        //System.out.println("====================  manager.restartLoader  SessionFragment =====================");
         manager.restartLoader(0,null,this);
     }
 
@@ -242,6 +242,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
             ViewHolder holder = (ViewHolder)view.getTag();
 
             String body = cursor.getString(cursor.getColumnIndex(SmsDbHelper.SmsTable.BODY));
+            if(body==null) body = "";
             String account = cursor.getString(cursor.getColumnIndex(SmsDbHelper.SmsTable.SESSION_ACCOUNT));
             String stamp = cursor.getString(cursor.getColumnIndex(SmsDbHelper.SmsTable.TIME));
             String unread =cursor.getString(cursor.getColumnIndex(SmsDbHelper.SmsTable.UNREAD_MSG_COUNT));
@@ -357,7 +358,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
                     final String room_face = AsmackUtils.getFieldByGroupJidFromGroupTable(account+Const.ROOM_JID_SUFFIX, GroupDbHelper.GroupTable.FACE);
                     String msgflag = mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.FLAG);;//mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FLAG));
                     if(msgflag.equals(Const.MSGFLAG_GROUP_INVITE)){
-                        //System.out.println("--------------------------------这是群聊邀请消息");
+                        ////System.out.println("--------------------------------这是群聊邀请消息");
                         ThreadUtils.runInThread(new Runnable() {
                             @Override
                             public void run() {
@@ -366,7 +367,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
                                     //如果我已经加入了此群
                                     //进入群聊聊天界面
                                     Intent intent = new Intent(getContext(), MultiChatActivity.class);
-                                    intent.putExtra(MultiChatActivity.F_ROOM_JID, room_jid);
+                                    intent.putExtra(MultiChatActivity.F_ROOM_JID, room_jid+Const.ROOM_JID_SUFFIX);
                                     intent.putExtra(MultiChatActivity.F_ROOM_NAME, room_name);
                                     startActivity(intent);
                                 }else{
@@ -408,7 +409,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
      * 注册内容观察者
      */
     public void registerContentObserver(){
-        //System.out.println("注册内容观察者");
+        ////System.out.println("注册内容观察者");
         //第2个参数为true：
         //content://" + AUTHORITIES + "/contact  的孩子 content://" + AUTHORITIES + "/contact/xxxx 也会被通知
         //观察私聊消息
@@ -422,7 +423,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
      * 销毁内容观察者
      */
     public void unRegisterContentObserver(){
-        //System.out.println("销毁内容观察者");
+        ////System.out.println("销毁内容观察者");
         getActivity().getContentResolver().unregisterContentObserver(observer);
     }
 
@@ -494,7 +495,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
     class MyServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            //System.out.println("====================  sessionFragment onServiceConnected  =====================");
+            ////System.out.println("====================  sessionFragment onServiceConnected  =====================");
             IMService.MyBinder binder = (IMService.MyBinder) service;
             //拿到绑定的服务接口
             mImService = binder.getService();
@@ -502,10 +503,10 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
 
             /*====================  获取离线消息  =====================*/
             if(IMService.mOfflineMsglist!=null){
-                //System.out.println("离线消息-=-=-=-=-=-=-=-="+IMService.mOfflineMsglist.size());
+                ////System.out.println("离线消息-=-=-=-=-=-=-=-="+IMService.mOfflineMsglist.size());
                 for (int i = 0; i < IMService.mOfflineMsglist.size(); i++) {
                     Message message = IMService.mOfflineMsglist.get(i);
-                    //System.out.println("--离线消息：--"+"收到离线消息, Received from 【" + message.getFrom() + "】 message: " + message.getBody());
+                    ////System.out.println("--离线消息：--"+"收到离线消息, Received from 【" + message.getFrom() + "】 message: " + message.getBody());
                     String session_account = AsmackUtils.filterAccount(message.getFrom());
                     mImService.saveMessage(session_account,message);
                 }
@@ -516,7 +517,7 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            //System.out.println("==================== sessionFragment onServiceDisconnected  =====================");
+            ////System.out.println("==================== sessionFragment onServiceDisconnected  =====================");
         }
     }
 }

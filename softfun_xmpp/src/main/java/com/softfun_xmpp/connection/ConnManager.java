@@ -94,7 +94,7 @@ public class ConnManager {
                 context.getResources().getInteger(R.integer.socket_port));
         //额外配置
         config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);//明文传输
-        config.setDebuggerEnabled(true);//开启调试模式
+        config.setDebuggerEnabled(false);//开启调试模式
         config.setSendPresence(false);//发送在线状态,不发送，可以接受离线消息，true则不能接收离线消息
         config.setReconnectionAllowed(true);//自动重连接
         config.setCompressionEnabled(false);//关闭压缩
@@ -106,35 +106,6 @@ public class ConnManager {
     }
 
 
-//    private myConnectionListener connectionListener;//= new myConnectionListener();
-//    private class myConnectionListener implements ConnectionListener {
-//        @Override
-//        public void connectionClosed() {
-//            System.out.println("====================  connectionClosed  =====================");
-//        }
-//
-//        @Override
-//        public void connectionClosedOnError(Exception e) {
-//            System.out.println("====================  connectionClosedOnError  =====================");
-//            IMService.isReConnection = true;
-//        }
-//
-//        @Override
-//        public void reconnectingIn(int seconds) {
-//            System.out.println("====================  reconnectingIn  =====================");
-//        }
-//
-//        @Override
-//        public void reconnectionSuccessful() {
-//            System.out.println("====================  reconnectionSuccessful  =====================");
-//            login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
-//        }
-//
-//        @Override
-//        public void reconnectionFailed(Exception e) {
-//            System.out.println("====================  reconnectionFailed  =====================");
-//        }
-//    }
 
     /**
      * 停止服务
@@ -153,17 +124,16 @@ public class ConnManager {
      * @return
      */
     public boolean login(String name, String password) {
-        System.out.println("====================  loginloginloginloginloginloginlogin  =====================");
+        //System.out.println("====================  loginloginloginloginloginloginlogin  =====================");
         try {
             if (!conn.isConnected()) {
                 conn.connect();
             }
-            System.out.println("鉴定：：：：" + conn.isAuthenticated());
+            //System.out.println("鉴定：：：：" + conn.isAuthenticated());
             if (conn.getUser() == null) {
                 String md5 = CipherUtils.md5(password);
                 conn.login(name, md5);
                 IMService.conn = conn;
-                //AccountManager accountManager = new AccountManager(conn);
                 IMService.mCurAccount = name + "@" + Const.APP_PACKAGENAME;
                 IMService.mCurNickName = AsmackUtils.getVcardInfo(conn, IMService.mCurAccount, Const.NICKNAME);//accountManager.getAccountAttribute("name");
                 IMService.mCurRoletype = AsmackUtils.getVcardInfo(conn, IMService.mCurAccount, Const.ROLETYPE);
@@ -196,7 +166,7 @@ public class ConnManager {
                 }
                 while (offlineMsglist.hasNext()) {
                     Message message = offlineMsglist.next();
-                    //System.out.println("离线消息："+message);
+                    ////System.out.println("离线消息："+message);
                     IMService.mOfflineMsglist.add(message);
                 }
                 omm.deleteMessages();//将服务器上的离线消息删除。
@@ -216,11 +186,11 @@ public class ConnManager {
             conn.addConnectionListener(new ConnectionListener() {
                 @Override
                 public void connectionClosed() {
-                    System.out.println("====================  connectionClosed  =====================");
+                    //System.out.println("====================  connectionClosed  =====================");
                 }
                 @Override
                 public void connectionClosedOnError(Exception e) {
-                    System.out.println("====================  connectionClosedOnError  =====================");
+                    //System.out.println("====================  connectionClosedOnError  =====================");
                     //IMService.isReConnection = true;
                     if (e instanceof XMPPException) {
                         XMPPException xe = (XMPPException) e;
@@ -228,7 +198,7 @@ public class ConnManager {
                         String errorCode = "";
                         if (error != null) {
                             errorCode = error.getCode();// larosn 0930
-                            System.out.println("====================  " + "IMXmppManager 连接断开，错误码:" + errorCode + "  =====================");
+                            //System.out.println("====================  " + "IMXmppManager 连接断开，错误码:" + errorCode + "  =====================");
                             if (errorCode.equalsIgnoreCase("conflict")) {// 被踢下线
                                 //发送广播
                                 Intent intent = new Intent();
@@ -242,16 +212,16 @@ public class ConnManager {
                 }
                 @Override
                 public void reconnectingIn(int seconds) {
-                    System.out.println("====================  reconnectingIn  =====================");
+                    //System.out.println("====================  reconnectingIn  =====================");
                 }
                 @Override
                 public void reconnectionSuccessful() {
-                    System.out.println("====================  reconnectionSuccessful  =====================");
+                    //System.out.println("====================  reconnectionSuccessful  =====================");
                     login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
                 }
                 @Override
                 public void reconnectionFailed(Exception e) {
-                    System.out.println("====================  reconnectionFailed  =====================");
+                    //System.out.println("====================  reconnectionFailed  =====================");
                 }
             });
 
@@ -270,6 +240,7 @@ public class ConnManager {
                 public void run() {
                     SpUtils.remove(Const.PASSWORD);
                     ToastUtils.showToastSafe("登录失败");
+                    IMService.mReLoginCount++;
                 }
             });
             e.printStackTrace();
@@ -299,11 +270,11 @@ public class ConnManager {
 //            code = 0;
 //        } catch (XMPPException e) {
 //            e.printStackTrace();
-//            System.out.println("-----:" + e.getXMPPError().toXML());
-//            System.out.println("----");
+//            //System.out.println("-----:" + e.getXMPPError().toXML());
+//            //System.out.println("----");
 //            code = e.getXMPPError().getCode();
 //            if (code == 409) {
-//                System.out.println("用户已被注册");
+//                //System.out.println("用户已被注册");
 //                return code;
 //            }
 //        }

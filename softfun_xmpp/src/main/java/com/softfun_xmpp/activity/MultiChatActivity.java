@@ -653,7 +653,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
      * 设置或更新adapter
      */
     private void setAdapterOrNotify() {
-        System.out.println("====================  manager.restartLoader  MultiChatActivity =====================");
+        //System.out.println("====================  manager.restartLoader  MultiChatActivity =====================");
         manager.restartLoader(0,null,this);
 
         //TODO 废弃
@@ -925,7 +925,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
                 //4、播放
                 anim.start();
                 //二、播放音频,(音频路径，完成后的回调)
-                //System.out.println("播放文件路径：" + recordurl);
+                ////System.out.println("播放文件路径：" + recordurl);
                 MediaManager.playSound(mDirection, recordurl, new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
@@ -1005,7 +1005,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
 //                //4、播放
 //                anim.start();
 //                //二、播放音频,(音频路径，完成后的回调)
-//                System.out.println("播放文件路径：" + recordurl);
+//                //System.out.println("播放文件路径：" + recordurl);
 //                MediaManager.playSound(mDirection, recordurl, new MediaPlayer.OnCompletionListener() {
 //                    @Override
 //                    public void onCompletion(MediaPlayer mp) {
@@ -1174,7 +1174,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
             @Override
             public void onUIProgress(long bytesWrite, long contentLength, boolean done) {
                 //ui层回调
-                //System.out.println((int) ((100 * bytesWrite) / contentLength));
+                ////System.out.println((int) ((100 * bytesWrite) / contentLength));
                 if (done) {
                 }
             }
@@ -1301,7 +1301,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
-                //System.out.println("====================  发送图片的消息  =====================");
+                ////System.out.println("====================  发送图片的消息  =====================");
                 //1、创建一个消息
                 Message msg = new Message(mTargetRoomJid, org.jivesoftware.smack.packet.Message.Type.groupchat);
                 //msg.setFrom(IMService.mCurAccount);
@@ -1437,7 +1437,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         @Override
         public void onUIProgress(long currentBytes, long contentLength, boolean done) {
             //ui层回调
-            //System.out.println((int) ((100 * currentBytes) / contentLength));
+            ////System.out.println((int) ((100 * currentBytes) / contentLength));
             if (done) {
             }
         }
@@ -1450,7 +1450,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         @Override
         public void onUIFinish(long currentBytes, long contentLength, boolean done) {
             super.onUIFinish(currentBytes, contentLength, done);
-            //System.out.println("====================  onUIFinish  =====================");
+            ////System.out.println("====================  onUIFinish  =====================");
         }
     }
 
@@ -1549,7 +1549,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
      * 注册内容观察者
      */
     public void registerContentObserver() {
-        //System.out.println("注册内容观察者");
+        ////System.out.println("注册内容观察者");
         //第2个参数为true：
         getContentResolver().registerContentObserver(SmsProvider.URI_GROUPSMS, true, observer);
 
@@ -1562,7 +1562,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
      * 销毁内容观察者
      */
     public void unRegisterContentObserver() {
-        //System.out.println("销毁内容观察者");
+        ////System.out.println("销毁内容观察者");
         getContentResolver().unregisterContentObserver(observer);
 
         getContentResolver().unregisterContentObserver(observer_group);
@@ -1611,7 +1611,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
     class MyServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            //System.out.println("====================  onServiceConnected  =====================");
+            ////System.out.println("====================  onServiceConnected  =====================");
             IMService.MyBinder binder = (IMService.MyBinder) service;
             //拿到绑定的服务接口
             mImService = binder.getService();
@@ -1621,7 +1621,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            //System.out.println("====================  onServiceDisconnected  =====================");
+            ////System.out.println("====================  onServiceDisconnected  =====================");
         }
     }
 

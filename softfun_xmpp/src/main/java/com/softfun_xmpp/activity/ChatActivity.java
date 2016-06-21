@@ -570,243 +570,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //TODO 废弃
-//    //步骤1：通过后台线程AsyncTask来读取数据库，放入更换Cursor
-//    private class RefreshList extends AsyncTask<Void, Void, Cursor> {
-//        //步骤1.1：在后台线程中从数据库读取，返回新的游标newCursor
-//        protected Cursor doInBackground(Void... params) {
-//            String[] sqlWhereArgs = new String[]{IMService.mCurAccount, mTargetAccount, mTargetAccount, IMService.mCurAccount, Message.Type.chat.name(), (mAdapter.getCount() + 1) + "", "0"};
-//            Cursor newCursor = new SmsDbHelper(ChatActivity.this).querytable(null, sqlWhereArgs, null);
-//            return newCursor;
-//        }
-//
-//        //步骤1.2：线程最后执行步骤，更换adapter的游标，并奖原游标关闭，释放资源
-//        protected void onPostExecute(Cursor newCursor) {
-//            Cursor oldCursor = mAdapter.swapCursor(newCursor);
-//            mLv.setSelection(newCursor.getCount() - 1);
-//            oldCursor.close();
-//            mCursor = newCursor;
-//        }
-//    }
-
-
-
-
 
     /**
      * 设置或更新adapter
      */
     private void setAdapterOrNotify() {
-        System.out.println("====================  manager.restartLoader  ChatActiviy =====================");
+        //System.out.println("====================  manager.restartLoader  ChatActiviy =====================");
         manager.restartLoader(0,null,this);
-
-//TODO 废弃
-//        if (mAdapter != null) {
-//            //更新
-//            new RefreshList().execute();
-//            return;
-//        }
-//        ThreadUtils.runInThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                String[] sqlWhereArgs = new String[]{IMService.mCurAccount, mTargetAccount, mTargetAccount, IMService.mCurAccount, Message.Type.chat.name(), "20", "0"};
-//                mCursor = getContentResolver().query(SmsProvider.URI_SMS, null, null, sqlWhereArgs, null);
-//                if (mCursor == null) {
-//                    return;
-//                }
-//                if (mCursor.getCount() <= 0) {
-//                    return;
-//                }
-//                ThreadUtils.runInUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mAdapter = new CursorAdapter(ChatActivity.this, mCursor) {
-//                            public static final int SEND = 0;
-//                            public static final int RECEIVE = 1;
-//
-//                            @Override
-//                            public int getItemViewType(int position) {
-//                                mCursor.moveToPosition(position);
-//                                String from_account = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FROM_ACCOUNT));
-//                                //如果当前的帐号 ！= 消息的创建者，否则。。。
-//                                if (IMService.mCurAccount.equals(from_account)) {
-//                                    //发送的
-//                                    return SEND;
-//                                } else {
-//                                    //接收的
-//                                    return RECEIVE;
-//                                }
-//                                //return super.getItemViewType(position); // position  =  0 、 1
-//                            }
-//
-//                            @Override
-//                            public int getViewTypeCount() {
-//                                return super.getViewTypeCount() + 1;//默认是一种视图类型，我们现在进行+1 = 2种
-//                            }
-//
-//                            @Override
-//                            public View getView(int position, View convertView, ViewGroup parent) {
-//                                final ViewHolder holder;
-//                                if (getItemViewType(position) == RECEIVE) {
-//                                    if (convertView == null) {
-//                                        convertView = View.inflate(ChatActivity.this, R.layout.item_layout_chat_in, null);
-//                                        holder = new ViewHolder();
-//                                        convertView.setTag(holder);
-//                                        //holder赋值
-//                                        holder.iv_avater = (ImageView) convertView.findViewById(R.id.iv_avater);
-//                                        holder.tv_stamp = (TextView) convertView.findViewById(R.id.tv_stamp);
-//                                        holder.tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
-//                                        holder.ll_item_chat_content = (LinearLayout) convertView.findViewById(R.id.ll_item_chat_content);
-//                                        holder.fl_item_chat = (FrameLayout) convertView.findViewById(R.id.fl_item_chat);
-//                                        holder.view_item_chat_record_anim = convertView.findViewById(R.id.view_item_chat_record_anim);
-//                                        holder.tv_item_chat_html = (TextView) convertView.findViewById(R.id.tv_item_chat_html);
-//                                        holder.tv_item_chat_record_time = (TextView) convertView.findViewById(R.id.tv_item_chat_record_time);
-//                                        //holder.iv_item_chat_img = (ImageView) convertView.findViewById(R.id.iv_item_chat_img);
-//                                        holder.iv_ex = (ImageChatBubbleEx) convertView.findViewById(R.id.iv_ex);
-//                                    } else {
-//                                        holder = (ViewHolder) convertView.getTag();
-//                                    }
-//                                } else {
-//                                    if (convertView == null) {
-//                                        convertView = View.inflate(ChatActivity.this, R.layout.item_layout_chat_out, null);
-//                                        holder = new ViewHolder();
-//                                        convertView.setTag(holder);
-//                                        //holder赋值
-//                                        holder.iv_avater = (ImageView) convertView.findViewById(R.id.iv_avater);
-//                                        holder.tv_stamp = (TextView) convertView.findViewById(R.id.tv_stamp);
-//                                        holder.tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
-//                                        holder.ll_item_chat_content = (LinearLayout) convertView.findViewById(R.id.ll_item_chat_content);
-//                                        holder.fl_item_chat = (FrameLayout) convertView.findViewById(R.id.fl_item_chat);
-//                                        holder.view_item_chat_record_anim = convertView.findViewById(R.id.view_item_chat_record_anim);
-//                                        holder.tv_item_chat_html = (TextView) convertView.findViewById(R.id.tv_item_chat_html);
-//                                        holder.tv_item_chat_record_time = (TextView) convertView.findViewById(R.id.tv_item_chat_record_time);
-//                                        //holder.iv_item_chat_img = (ImageView) convertView.findViewById(R.id.iv_item_chat_img);
-//                                        holder.iv_ex = (ImageChatBubbleEx) convertView.findViewById(R.id.iv_ex);
-//                                    } else {
-//                                        holder = (ViewHolder) convertView.getTag();
-//                                    }
-//                                }
-//
-//
-//                                //得到数据，展示
-//                                mCursor.moveToPosition(position);
-//                                int _id = mCursor.getInt(mCursor.getColumnIndex("_id"));
-//                                String flag = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FLAG));
-//                                String stamp = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.TIME));
-//                                String body = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.BODY));
-//                                String nickname;
-//                                String useravatar;
-//                                if (getItemViewType(position) == RECEIVE) {
-//                                    useravatar = mTargetAvatarUrl;
-//                                    nickname = mTargetNickName;
-//                                } else {
-//                                    useravatar = IMService.mCurAvatarUrl;
-//                                    nickname = IMService.mCurNickName;
-//                                }
-//                                if (useravatar == null) {
-//                                    holder.iv_avater.setImageDrawable(new CircleImageDrawable(BitmapUtil.ScaleBitmap(ChatActivity.this, R.drawable.useravatar, 64, 64)));
-//                                } else {
-//                                    ImageLoader.getInstance().displayImage(useravatar, holder.iv_avater, ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif_circular_border());
-//                                }
-//                                String formatStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.SIMPLIFIED_CHINESE).format(new Date(Long.parseLong(stamp)));
-//                                holder.tv_stamp.setText(formatStamp);
-//                                holder.tv_nickname.setText(nickname);
-//                                //获取气泡内文本内容的宽度
-//                                ViewGroup.LayoutParams linearParams = holder.tv_item_chat_html.getLayoutParams();
-//                                holder.view_item_chat_record_anim.setTag(_id + "record");
-//
-//                                if (flag == null) {
-//                                    flag = Const.MSGFLAG_TEXT;
-//                                }
-//                                if (flag.equals(Const.MSGFLAG_RECORD)) {
-//                                    //录音数据
-//                                    String recordlen = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDLEN));
-//                                    String recordtime = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDTIME));
-//                                    String recordurl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDURL));
-//                                    holder.tv_item_chat_html.setVisibility(View.GONE);
-//                                    holder.tv_item_chat_record_time.setVisibility(View.VISIBLE);
-//                                    holder.view_item_chat_record_anim.setVisibility(View.VISIBLE);
-//                                    holder.iv_ex.setVisibility(View.GONE);
-//                                    holder.fl_item_chat.setVisibility(View.VISIBLE);
-//                                    holder.tv_item_chat_record_time.setText(recordtime + "\"");
-//                                    //设置item气泡的宽度
-//                                    ViewGroup.LayoutParams lp = holder.fl_item_chat.getLayoutParams();
-//                                    lp.width = (int) (mMinItemWidth + (mMaxItemWidth / 60f * Float.parseFloat(recordtime)));
-//
-//                                    holder.view_item_chat_record_anim.setOnClickListener(new ItemRecordClickListener(convertView, position));
-//                                } else if (flag.equals(Const.MSGFLAG_TEXT)) {
-//                                    //带表情的文本
-//                                    holder.tv_item_chat_html.setVisibility(View.VISIBLE);
-//                                    holder.tv_item_chat_record_time.setVisibility(View.GONE);
-//                                    holder.view_item_chat_record_anim.setVisibility(View.GONE);
-//                                    //holder.iv_item_chat_img.setVisibility(View.GONE);
-//                                    holder.iv_ex.setVisibility(View.GONE);
-//                                    holder.fl_item_chat.setVisibility(View.VISIBLE);
-//                                    holder.tv_item_chat_html.setText(getFaceText(ChatActivity.this, body));
-//                                    //设置宽度
-//                                    ViewGroup.LayoutParams lp = holder.fl_item_chat.getLayoutParams();
-//                                    lp.width = linearParams.width;
-//                                } else
-//                                    //展示图片
-//                                    if (flag.equals(Const.MSGFLAG_IMG)) {
-//                                        holder.tv_item_chat_html.setVisibility(View.GONE);
-//                                        holder.tv_item_chat_record_time.setVisibility(View.GONE);
-//                                        holder.view_item_chat_record_anim.setVisibility(View.GONE);
-//                                        String imgurl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.IMGURL));
-//                                        String imgThumbUrl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.BODY));
-//
-//                                        holder.fl_item_chat.setVisibility(View.GONE);
-//                                        holder.iv_ex.setVisibility(View.VISIBLE);
-//                                        holder.iv_ex.setmView(holder.fl_item_chat);
-//                                        holder.iv_ex.setB(false);
-//                                        ImageLoader.getInstance().displayImage(imgThumbUrl,holder.iv_ex,ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif());
-//
-//                                        holder.iv_ex.setOnClickListener(new ItemImageClickListener(convertView, position));
-//                                    }
-//                                return super.getView(position, convertView, parent);
-//                            }
-//
-//                            @Override
-//                            public View newView(Context context, Cursor cursor, ViewGroup parent) {
-//                                return null;
-//                            }
-//
-//                            @Override
-//                            public void bindView(View view, Context context, Cursor cursor) {
-//
-//                            }
-//
-//                            class ViewHolder {
-//                                ImageView iv_avater;
-//                                TextView tv_stamp;
-//                                TextView tv_nickname;
-//                                LinearLayout ll_item_chat_content;
-//                                FrameLayout fl_item_chat;
-//                                View view_item_chat_record_anim;
-//                                TextView tv_item_chat_html;
-//                                TextView tv_item_chat_record_time;
-//                                //ImageView iv_item_chat_img;
-//                                ImageChatBubbleEx iv_ex;
-//                            }
-//                        };
-//                        mLv.setOnScrollListener(new AbsListView.OnScrollListener() {
-//                            @Override
-//                            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//
-//                            }
-//                        });
-//                        mLv.setAdapter(mAdapter);
-//                        mLv.setSelection(mAdapter.getCount() - 1);
-                        //mLv.setOnItemClickListener(new mItemClickLinstener());
-//                    }
-//                });
-//            }
-//        });
     }
 
 
@@ -892,7 +662,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 //4、播放
                 anim.start();
                 //二、播放音频,(音频路径，完成后的回调)
-                //System.out.println("播放文件路径：" + recordurl);
+                ////System.out.println("播放文件路径：" + recordurl);
                 MediaManager.playSound(mDirection, recordurl, new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
@@ -925,7 +695,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 //            String flag = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FLAG));
 //            String body = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.BODY));
 //            String recordurl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDURL));
-//            //System.out.println("_id:"+_id+"    body:"+body+"   recordurl:"+recordurl);
+//            ////System.out.println("_id:"+_id+"    body:"+body+"   recordurl:"+recordurl);
 //            //如果是图片
 //            if (flag.equals(Const.MSGFLAG_IMG)) {
 //                String imgurl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.IMGURL));
@@ -970,7 +740,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 //                //4、播放
 //                anim.start();
 //                //二、播放音频,(音频路径，完成后的回调)
-//                System.out.println("播放文件路径：" + recordurl);
+//                //System.out.println("播放文件路径：" + recordurl);
 //                MediaManager.playSound(mDirection, recordurl, new MediaPlayer.OnCompletionListener() {
 //                    @Override
 //                    public void onCompletion(MediaPlayer mp) {
@@ -1233,7 +1003,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 //                            }else{
 //                                //上传成功
 //                                //调用服务内的发送消息方法
-//                                System.out.println("====================  语音消息  ===================== "+msg.toXML());
+//                                //System.out.println("====================  语音消息  ===================== "+msg.toXML());
 //                                mImService.sendMessage(msg);
 //                            }
 //                        }
@@ -1312,7 +1082,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onResponse(Call call, Response response) throws IOException {
             if (response.code() == 200) {
-                //System.out.println("====================  语音消息  ===================== " + mMessage.toXML());
+                ////System.out.println("====================  语音消息  ===================== " + mMessage.toXML());
                 mImService.sendMessage(mMessage);
             }
         }
@@ -1334,7 +1104,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 msg.setBody(msgText);
                 msg.setType(Message.Type.chat);
                 msg.setProperty(Const.MSGFLAG, Const.MSGFLAG_TEXT);
-                //System.out.println("------------------------ " + msg.toXML());
+                ////System.out.println("------------------------ " + msg.toXML());
                 //调用服务内的发送消息方法
                 mImService.sendMessage(msg);
                 //清空输入框
@@ -1444,7 +1214,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-            //System.out.println("=====================================onResponse==== response:" + response.toString());
+            ////System.out.println("=====================================onResponse==== response:" + response.toString());
             if (response.code() == 200) {
                 response.body().close();
                 String webImageThumbUrl = getResources().getString(R.string.app_server) + Const.WEB_MSGIMG_PATH + IMService.mCurAccount + "/" + Const.WEB_FACE_THUMBS + mImageName;
@@ -1463,7 +1233,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             //ui层回调
             //System.out.println((int) ((100 * currentBytes) / contentLength));
             if (done) {
-                //System.out.println("====================  done  =====================");
+                ////System.out.println("====================  done  =====================");
 //                String webImageThumbUrl = getResources().getString(R.string.app_server) + Const.WEB_MSGIMG_PATH + IMService.mCurAccount +"/"+ Const.WEB_FACE_THUMBS +mImageName;;
 //                String webImageUrl = getResources().getString(R.string.app_server) + Const.WEB_MSGIMG_PATH + IMService.mCurAccount +"/" +mImageName;
 //                sendImage(webImageThumbUrl,webImageUrl);
@@ -1478,7 +1248,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onUIFinish(long currentBytes, long contentLength, boolean done) {
             super.onUIFinish(currentBytes, contentLength, done);
-            //System.out.println("====================  onUIFinish  =====================");
+            ////System.out.println("====================  onUIFinish  =====================");
         }
     }
 
@@ -1493,7 +1263,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
-                //System.out.println("====================  发送图片的消息  =====================");
+                ////System.out.println("====================  发送图片的消息  =====================");
                 //1、创建一个消息
                 Message msg = new Message();
                 msg.setFrom(IMService.mCurAccount);
@@ -1567,7 +1337,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * 注册内容观察者
      */
     public void registerContentObserver() {
-        //System.out.println("注册内容观察者");
+        ////System.out.println("注册内容观察者");
         //第2个参数为true：
         //content://" + AUTHORITIES + "/sms  的孩子 content://" + AUTHORITIES + "/sms/xxxx 也会被通知
         getContentResolver().registerContentObserver(SmsProvider.URI_SMS, true, observer);
@@ -1577,7 +1347,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * 销毁内容观察者
      */
     public void unRegisterContentObserver() {
-        //System.out.println("销毁内容观察者");
+        ////System.out.println("销毁内容观察者");
         getContentResolver().unregisterContentObserver(observer);
     }
 
@@ -1610,7 +1380,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     class MyServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            //System.out.println("====================  onServiceConnected  =====================");
+            ////System.out.println("====================  onServiceConnected  =====================");
             IMService.MyBinder binder = (IMService.MyBinder) service;
             //拿到绑定的服务接口
             mImService = binder.getService();
@@ -1621,7 +1391,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            //System.out.println("====================  onServiceDisconnected  =====================");
+            ////System.out.println("====================  onServiceDisconnected  =====================");
         }
     }
 

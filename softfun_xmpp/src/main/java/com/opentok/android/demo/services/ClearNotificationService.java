@@ -23,7 +23,7 @@ public class ClearNotificationService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        System.out.println("====================    =====================");
+        //System.out.println("====================    =====================");
         return mBinder;
     }
 
