@@ -13,6 +13,7 @@ import com.softfun_xmpp.R;
 import com.softfun_xmpp.application.GlobalContext;
 import com.softfun_xmpp.bean.GroupBean;
 import com.softfun_xmpp.bean.GroupMemberBean;
+import com.softfun_xmpp.bean.MUCParams;
 import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.dbhelper.ContactsDbHelper;
 import com.softfun_xmpp.dbhelper.GroupDbHelper;
@@ -47,7 +48,6 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smackx.muc.InvitationListener;
-import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.packet.DelayInformation;
@@ -59,6 +59,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class IMService extends Service {
     /**
@@ -131,23 +133,36 @@ public class IMService extends Service {
      * 服务初始化完成标记
      */
     public static boolean isCreate;
+
+
+
+
     /**
      * 我参与的群组数组
      */
     public static List<GroupBean> mMyGroupList;
+    /**
+     * 我参与的群聊对象Map
+     */
     public static Map<String, MultiUserChat> mMultiUserChatMap = new HashMap<>();
+
+    private Map<MultiUserChat, MUCParams> mucsList = new ConcurrentHashMap<MultiUserChat, MUCParams>();
+    private Map<String, MultiUserChat> mucsJIDs = new ConcurrentHashMap<String, MultiUserChat>();
+    public Set<MultiUserChat> listMUCs() {
+        return mucsList.keySet();
+    }
+    public MUCParams getMUCParams(MultiUserChat multiUserChat) {
+        return mucsList.get(multiUserChat);
+    }
+    public Collection<MUCParams> listMUCParams() {
+        return mucsList.values();
+    }
+
     /**
-     * 监听每一个群聊消息的实例
+     * 群聊邀请的监听
      */
-    private multiMsgListener mMultiMsgListener;
-    /**
-     * 监听每一个群聊的状态事件的实例
-     */
-    private multiParticipantStatus mMultiPartcipantStatus = new multiParticipantStatus();
-    /**
-     * 监听每一个群聊的邀请被拒绝事件的实例
-     */
-    private InvitationRejectionListener invitationRejectionListener;
+    private ReaderThread mXMPPReadWorker  = new ReaderThread();
+
 
 
 
@@ -194,7 +209,6 @@ public class IMService extends Service {
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
-                //System.out.println("====================  initService initService initService  =====================");
                 String name;
                 String password ;
                 /*========    从服务器同步花名册     =====*/
@@ -255,29 +269,11 @@ public class IMService extends Service {
                     }
                 }
                 /*====================  从服务器上同步群组信息  =====================*/
+
+
+                //群聊邀请的监听
+                MultiUserChat.addInvitationListener(conn, mXMPPReadWorker);
                 InitMultiRoom();
-                //群聊邀请的监听（在线）
-                MultiUserChat.addInvitationListener(conn, new InvitationListener() {
-                    @Override
-                    public void invitationReceived(Connection connection, String roomjid, String inviter, String reason, String password, Message message) {
-                        //System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
-                        String msg_to = message.getTo();
-                        if(!TextUtils.isEmpty(msg_to) && msg_to.equals(mCurAccount)){
-                            //System.out.println(roomjid);
-                            //System.out.println(inviter);
-                            //System.out.println(reason);
-                            //System.out.println(password);
-                            //System.out.println("type.name:"+message.getType().name());
-                            //System.out.println("msg.from:"+message.getFrom());
-                            //System.out.println("msg.to:"+message.getTo());
-                            message.setFrom(inviter); //群聊发起人
-                            message.setBody(reason); //群聊消息内容
-                            message.setType(Message.Type.groupchat); //聊天类型
-                            message.setProperty(Const.MSGFLAG,Const.MSGFLAG_GROUP_INVITE);//    群聊消息的类型：群邀请的类型
-                            saveGroupMessage(AsmackUtils.filterGroupJid(roomjid),message);
-                        }
-                    }
-                });
 
                 //手工获取（离线）的群邀请消息,获取后删除
                 HttpUtil.okhttpPost_queryOffGroupInvite(mCurAccount);
@@ -297,7 +293,22 @@ public class IMService extends Service {
 
 
 
-    /**
+    private class ReaderThread implements InvitationListener {
+        public void invitationReceived(Connection connection, String roomjid, String inviter, String reason, String password, Message message) {
+            System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
+            String msg_to = message.getTo();
+            if(!TextUtils.isEmpty(msg_to) && msg_to.equals(mCurAccount)){
+                message.setFrom(inviter); //群聊发起人
+                message.setBody(reason); //群聊消息内容
+                message.setType(Message.Type.groupchat); //聊天类型
+                message.setProperty(Const.MSGFLAG,Const.MSGFLAG_GROUP_INVITE);//    群聊消息的类型：群邀请的类型
+                saveGroupMessage(AsmackUtils.filterGroupJid(roomjid),message);
+            }
+        }
+    }
+
+
+        /**
      * 初始化群组（查询，进入、监听，更新本地数据库）
      */
     public void InitMultiRoom() {
@@ -315,22 +326,23 @@ public class IMService extends Service {
                 //加入每一个群
                 MultiUserChat multiUserChat = AsmackUtils.joinMultiUserChat(mCurNickName, groupBean.getChild(), "123456");
                 if(multiUserChat!=null){
-                    if(!mMultiUserChatMap.containsKey(groupBean.getChild())){
-                        //System.out.println("====================  初始化群组（查询，进入、监听，更新本地数据库）  =====================");
-                        mMultiUserChatMap.put(groupBean.getChildid(),multiUserChat);
+                    if(!mMultiUserChatMap.containsKey(groupBean.getChildid())){
+
+                        MUCParams mucParams = new MUCParams();
+                        multiMsgListener mMultiMsgListener = new multiMsgListener();
+                        multiParticipantStatus mMultiPartcipantStatus = new multiParticipantStatus();
                         //监听每一个群聊消息
-                        mMultiMsgListener = new multiMsgListener();
                         multiUserChat.addMessageListener(mMultiMsgListener);
+                        mucParams.setMessageListener(mMultiMsgListener);
                         //监听每一个群聊的状态事件
                         multiUserChat.addParticipantStatusListener(mMultiPartcipantStatus);
-                        //监听每一个群聊的邀请被拒绝事件
-                        invitationRejectionListener = new InvitationRejectionListener() {
-                            @Override
-                            public void invitationDeclined(String invitee, String reason) {
-                                //System.out.println("邀请被拒绝了：" + invitee + "  理由:" + reason);
-                            }
-                        };
-                        multiUserChat.addInvitationRejectionListener(invitationRejectionListener);
+                        mucParams.setParticipantStatusListener(mMultiPartcipantStatus);
+                        mucsList.put(multiUserChat, mucParams);
+                        mucsJIDs.put(multiUserChat.getRoom(), multiUserChat);
+                        System.out.println("====================  groupBean.getChildid()   ===================== " + groupBean.getChildid()+"  添加了监听");
+                        System.out.println("====================  multiUserChat.getRoom()  ===================== " + multiUserChat.getRoom()+"  添加了监听");
+                        mMultiUserChatMap.put(groupBean.getChildid(),multiUserChat);
+
                         //获取群成员
                         AsmackUtils.getGroupMember(AsmackUtils.filterGroupJid(groupBean.getChildid()));
                     }
@@ -342,14 +354,76 @@ public class IMService extends Service {
 
 
     /**
+     * 初始化新加入的群组
+     * @param mRoomJid  无@后缀
+     */
+    public void AddInitMultiRoom(String mRoomJid) {
+        //获取我的群
+        String username = IMService.mCurAccount.substring(0,IMService.mCurAccount.lastIndexOf("@"));
+        mMyGroupList = HttpUtil.okhttpPost_queryMyGroups(username);
+        if(mMyGroupList==null){
+            mMyGroupList = new ArrayList<>();
+        }
+        //对比 本机群组 与  服务器数据库中的最新群组
+        MatchGroupAndSqliteData();
+
+        GroupBean _GroupBean = null;
+        if(mMyGroupList!=null && mMyGroupList.size()>0){
+            for (GroupBean groupBean : mMyGroupList) {
+                if(groupBean!=null){
+                    if(groupBean.getChildid().equals(mRoomJid+Const.ROOM_JID_SUFFIX)){
+                        _GroupBean = groupBean;
+                        break;
+                    }
+                }
+            }
+
+            if(_GroupBean!=null){
+                //加入群
+                MultiUserChat multiUserChat = AsmackUtils.joinMultiUserChat(mCurNickName, _GroupBean.getChild(), "123456");
+                if(multiUserChat!=null){
+                    if(!mMultiUserChatMap.containsKey(_GroupBean.getChildid())){
+
+                        MUCParams mucParams = new MUCParams();
+                        multiMsgListener mMultiMsgListener = new multiMsgListener();
+                        multiParticipantStatus mMultiPartcipantStatus = new multiParticipantStatus();
+                        //监听每一个群聊消息
+                        multiUserChat.addMessageListener(mMultiMsgListener);
+                        mucParams.setMessageListener(mMultiMsgListener);
+                        //监听每一个群聊的状态事件
+                        multiUserChat.addParticipantStatusListener(mMultiPartcipantStatus);
+                        mucParams.setParticipantStatusListener(mMultiPartcipantStatus);
+                        mucsList.put(multiUserChat, mucParams);
+                        mucsJIDs.put(multiUserChat.getRoom(), multiUserChat);
+
+                        mMultiUserChatMap.put(_GroupBean.getChildid(),multiUserChat);
+                        //获取群成员
+                        AsmackUtils.getGroupMember(AsmackUtils.filterGroupJid(_GroupBean.getChildid()));
+                    }
+                }
+                insertOrUpdateGroup(_GroupBean);
+            }
+        }
+    }
+
+    /**
      * 移除群聊坚挺
      */
     public void removeMultUserChatListener(String groupjid) {
-        if(IMService.mMultiUserChatMap.containsKey(groupjid)){
-            MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(groupjid);
-            multiUserChat.removeMessageListener(mMultiMsgListener);
-            multiUserChat.removeParticipantStatusListener(mMultiPartcipantStatus);
-            multiUserChat.removeInvitationRejectionListener(invitationRejectionListener);
+        if(mMultiUserChatMap.containsKey(groupjid)){
+
+            for (MultiUserChat multiUserChat : listMUCs()) {
+                System.out.println("-------------------"+multiUserChat.getRoom());
+                if(multiUserChat.getRoom().equals(groupjid)){
+                    MUCParams mucParams = getMUCParams(multiUserChat);
+                    multiUserChat.removeMessageListener(mucParams.getMessageListener());
+                    multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
+                    multiUserChat.leave();
+                    mucsList.remove(multiUserChat);
+                    mucsJIDs.remove(multiUserChat.getRoom());
+                }
+            }
+            mMultiUserChatMap.remove(groupjid);
         }
     }
 
@@ -416,7 +490,11 @@ public class IMService extends Service {
         values.put(SmsDbHelper.SmsTable.TYPE, msg.getType().name());//聊天类型：群聊
         values.put(SmsDbHelper.SmsTable.TIME, System.currentTimeMillis());
         values.put(SmsDbHelper.SmsTable.SESSION_ACCOUNT, session_account);//聊天会话：群聊jid
-        values.put(SmsDbHelper.SmsTable.TAG, (fromAccount.equals(IMService.mCurAccount))?SmsDbHelper.ISREAD:SmsDbHelper.UNREAD);
+        String isRead = (fromAccount.equals(IMService.mCurAccount)) ? SmsDbHelper.ISREAD : SmsDbHelper.UNREAD;
+        if(IMService.chatObject.equals(session_account+Const.ROOM_JID_SUFFIX)){
+            isRead = SmsDbHelper.ISREAD;
+        }
+        values.put(SmsDbHelper.SmsTable.TAG, isRead);
         values.put(SmsDbHelper.SmsTable.OWNER, IMService.mCurAccount);//所属者
         values.put(SmsDbHelper.SmsTable.ROOM_JID, roomjid);//群聊jid
         values.put(SmsDbHelper.SmsTable.ROOM_NAME, roomname);//群聊名称
@@ -440,22 +518,23 @@ public class IMService extends Service {
         getContentResolver().insert(SmsProvider.URI_GROUPSMS, values);
     }
 
+
+    /***
+     * 全部清除
+     */
     public void clearxx() {
         //群聊每一个都移除
-        for (Map.Entry<String, MultiUserChat> entry : mMultiUserChatMap.entrySet()) {
-            if (entry.getValue() != null) {
-                if(mMultiMsgListener!=null){
-                    entry.getValue().removeMessageListener(mMultiMsgListener);
-                }
-                if(mMultiPartcipantStatus!=null){
-                    entry.getValue().removeParticipantStatusListener(mMultiPartcipantStatus);
-                }
-//                if(mMultiInvitationRejectionListener!=null){
-//                    entry.getValue().removeInvitationRejectionListener(mMultiInvitationRejectionListener);
-//                }
-            }
+        for (MultiUserChat multiUserChat : listMUCs()) {
+            MUCParams mucParams = getMUCParams(multiUserChat);
+            multiUserChat.removeMessageListener(mucParams.getMessageListener());
+            multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
+            multiUserChat.leave();
         }
+        mucsList.clear();
+        mucsJIDs.clear();
 
+        mMyGroupList.clear();
+        mMultiUserChatMap.clear();
 
         //花名册  移除  动作监听
         if (mRoster != null && mRosterListener != null) {
@@ -1093,6 +1172,22 @@ public class IMService extends Service {
                     if(msgflag.equals(Const.MSGFLAG_GROUP_DISMISS)){
                         String groupname = message.getProperty(Const.GROUP_JID)+"";
                         ////System.out.println("====================  接收到群解散消息  =====================");
+                        //移除监听
+                        if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                            for (MultiUserChat multiUserChat : listMUCs()) {
+                                System.out.println("-------------------"+multiUserChat.getRoom());
+                                if(multiUserChat.getRoom().equals(groupname+Const.ROOM_JID_SUFFIX)){
+                                    MUCParams mucParams = getMUCParams(multiUserChat);
+                                    multiUserChat.removeMessageListener(mucParams.getMessageListener());
+                                    multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
+                                    mucsList.remove(multiUserChat);
+                                    mucsJIDs.remove(multiUserChat.getRoom());
+                                }
+                            }
+                            mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+                        }
+
+
                         if(mGroupMemberMap.containsKey(groupname)){
                             mGroupMemberMap.remove(groupname);
                         }
@@ -1117,32 +1212,11 @@ public class IMService extends Service {
                         String leave_account = message.getProperty(Const.ACCOUNT)+"";
                         String leave_username = AsmackUtils.filterAccountToUserName(leave_account);
                         String groupname = message.getProperty(Const.GROUP_JID)+"";
-                        ////System.out.println(leave_account);
-                        //System.out.println(groupname);
                         //System.out.println("====================  接收到 脱离群消息  =====================");
                         //如果离开群的人是我自己
                         if(leave_account.equals(IMService.mCurAccount)){
-                            //我自己先删除oracle群成员关系
-                            HttpUtil.okhttpPost_deleteGroupMember(groupname, leave_username);
-                            //清空自己的内存变量
-                            if(mGroupMemberMap.containsKey(groupname)){
-                                mGroupMemberMap.remove(groupname);
-                            }
-                            if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
-                                mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
-                            }
-                            //删除本地数据库的群组表，我不再参与此群
-                            getContentResolver().delete(
-                                    GroupProvider.URI_GROUP,
-                                    GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
-                                    new String[]{groupname+Const.ROOM_JID_SUFFIX, IMService.mCurAccount});
-                            //删除本地群消息
-                            getContentResolver().delete(
-                                    SmsProvider.URI_GROUPSMS,
-                                    SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
-                                    new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
-                            );
-                        }else{
+                            //回调不做处理，已经在按钮端调用服务方法处理完毕
+                        }else if(!leave_account.equals(IMService.mCurAccount)){
                             //别人要离开群
                             if(mGroupMemberMap.containsKey(groupname)){
                                 boolean b = false;
@@ -1187,6 +1261,28 @@ public class IMService extends Service {
                                     //如果我是被删除的人
                                     if((kicked_username+"@"+Const.APP_PACKAGENAME).equals(IMService.mCurAccount)){
                                         ////System.out.println("====================  我是被删除的人  =====================");
+                                        //移除监听
+                                        if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                                            for (MultiUserChat multiUserChat : listMUCs()) {
+                                                System.out.println("-------------------"+multiUserChat.getRoom());
+                                                if(multiUserChat.getRoom().equals(groupname+Const.ROOM_JID_SUFFIX)){
+                                                    MUCParams mucParams = getMUCParams(multiUserChat);
+                                                    multiUserChat.removeMessageListener(mucParams.getMessageListener());
+                                                    multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
+                                                    mucsList.remove(multiUserChat);
+                                                    mucsJIDs.remove(multiUserChat.getRoom());
+                                                }
+                                            }
+                                            mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+                                        }
+
+
+                                        if(mGroupMemberMap.containsKey(groupname)){
+                                            mGroupMemberMap.remove(groupname);
+                                        }
+                                        if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                                            mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+                                        }
                                         //删除本地数据库的群组表，我不再参与此群
                                         getContentResolver().delete(
                                                 GroupProvider.URI_GROUP,

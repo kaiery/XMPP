@@ -25,6 +25,8 @@
     <uses-feature android:name="android.hardware.camera"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
 
+    <!--android:allowBackup="false"-->
+    <!--tools:replace="android:allowBackup"-->
     <application
         android:name=".application.GlobalContext"
         android:allowBackup="false"
@@ -37,8 +39,6 @@
 
 
         <activity android:name=".SplashActivity">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <!-- 要想在桌面不显示图标，只需注释掉APP入口Activity中的下面这句即可，或者把下面的LAUNCHER改成DEFAULT也行 -->
@@ -46,16 +46,18 @@
                 <!--<category android:name="android.intent.category.DEFAULT"/>-->
             </intent-filter>
 
-            <intent-filter >
+            <intent-filter>
                 <action android:name="com.softfun_xmpp.action"/>
-                <data android:scheme="softfun"
-                      android:host="com.softfun_xmpp"
-                      android:port="1702"
-                      android:pathPrefix="/xmpp"/>
+                <data
+                    android:host="com.softfun_xmpp"
+                    android:pathPrefix="/xmpp"
+                    android:port="1702"
+                    android:scheme="softfun"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-
         </activity>
+
+
         <!-- 登录 -->
         <activity android:name=".activity.LoginActivity"/>
         <!-- 主界面 -->
@@ -181,8 +183,9 @@
             android:name=".activity.MultiMemberActivity"
             android:theme="@style/MyMaterialTheme"/>
         <!--单选页面-->
-        <activity android:name=".activity.SelectOneMemberActivity"
-                  android:theme="@style/MyMaterialTheme"/>
+        <activity
+            android:name=".activity.SelectOneMemberActivity"
+            android:theme="@style/MyMaterialTheme"/>
         <!-- 专家评分 -->
         <activity
             android:name=".activity.EvaluateActivity"
@@ -285,11 +288,11 @@
         </activity>
 
         <!--<service-->
-            <!--android:name="com.opentok.android.demo.services.ClearNotificationService"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter android:label="@string/clearNotificationService">-->
-                <!--<action android:name="com.opentok.android.demo.services.ClearNotificationService"/>-->
-            <!--</intent-filter>-->
+        <!--android:name="com.opentok.android.demo.services.ClearNotificationService"-->
+        <!--android:exported="false">-->
+        <!--<intent-filter android:label="@string/clearNotificationService">-->
+        <!--<action android:name="com.opentok.android.demo.services.ClearNotificationService"/>-->
+        <!--</intent-filter>-->
         <!--</service>-->
 
 

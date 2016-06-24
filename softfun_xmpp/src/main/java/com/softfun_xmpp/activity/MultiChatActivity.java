@@ -232,6 +232,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         mTargetRoomJid = getIntent().getStringExtra(F_ROOM_JID);
         //设置 当前聊天对象
         IMService.chatObject = mTargetRoomJid;
+        System.out.println("====================  IMService.chatObject  ===================== "+IMService.chatObject);
     }
 
     private void initView() {
@@ -457,24 +458,6 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
 
 
 
-//TODO 废弃
-//    //步骤1：通过后台线程AsyncTask来读取数据库，放入更换Cursor
-//    private class RefreshList extends AsyncTask<Void, Void, Cursor> {
-//        //步骤1.1：在后台线程中从数据库读取，返回新的游标newCursor
-//        protected Cursor doInBackground(Void... params) {
-//            String[] sqlWhereArgs = new String[]{Message.Type.groupchat.name(), AsmackUtils.filterGroupJid(mTargetRoomJid), (mAdapter.getCount() + 1) + "", "0"};
-//            Cursor newCursor = new SmsDbHelper(MultiChatActivity.this).querytableForGroupChat(null, sqlWhereArgs, null);
-//            return newCursor;
-//        }
-//
-//        //步骤1.2：线程最后执行步骤，更换adapter的游标，并奖原游标关闭，释放资源
-//        protected void onPostExecute(Cursor newCursor) {
-//            Cursor oldCursor = mAdapter.swapCursor(newCursor);
-//            mLv.setSelection(newCursor.getCount() - 1);
-//            oldCursor.close();
-//            mCursor = newCursor;
-//        }
-//    }
 
 
 
@@ -560,7 +543,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
                 useravatar = IMService.mCurAvatarUrl;
                 nickname = IMService.mCurNickName;
             }
-            if (useravatar == null) {
+            if (useravatar == null || useravatar.equals("")) {
                 holder.iv_avater.setImageDrawable(new CircleImageDrawable(BitmapUtil.ScaleBitmap(MultiChatActivity.this, R.drawable.useravatar, 64, 64)));
             } else {
                 ImageLoader.getInstance().displayImage(useravatar, holder.iv_avater, ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif_circular_border());
@@ -656,190 +639,6 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         //System.out.println("====================  manager.restartLoader  MultiChatActivity =====================");
         manager.restartLoader(0,null,this);
 
-        //TODO 废弃
-//        if (mAdapter != null) {
-//            //更新
-//            new RefreshList().execute();
-//            return;
-//        }
-//        ThreadUtils.runInThread(new Runnable() {
-//            @Override
-//            public void run() {
-////                String[] sqlWhereArgs = new String[]{Message.Type.groupchat.name(), AsmackUtils.filterGroupJid(mTargetRoomJid), "20", "0"};
-////                mCursor = getContentResolver().query(SmsProvider.URI_GROUPSMS, null, null, sqlWhereArgs, null);
-////                if (mCursor == null) {
-////                    return;
-////                }
-////                if (mCursor.getCount() <= 0) {
-////                    return;
-////                }
-////                ThreadUtils.runInUiThread(new Runnable() {
-////                    @Override
-////                    public void run() {
-////                        mAdapter = new CursorAdapter(MultiChatActivity.this, mCursor) {
-////                            public static final int SEND = 0;
-////                            public static final int RECEIVE = 1;
-////
-////                            @Override
-////                            public int getItemViewType(int position) {
-////                                mCursor.moveToPosition(position);
-////                                String from_account = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FROM_ACCOUNT));
-////                                //如果当前的帐号 ！= 消息的创建者，否则。。。
-////                                if (IMService.mCurAccount.equals(from_account)) {
-////                                    //发送的
-////                                    return SEND;
-////                                } else {
-////                                    //接收的
-////                                    return RECEIVE;
-////                                }
-////                            }
-////
-////                            @Override
-////                            public int getViewTypeCount() {
-////                                return super.getViewTypeCount() + 1;//默认是一种视图类型，我们现在进行+1 = 2种
-////                            }
-////
-////                            @Override
-////                            public View getView(int position, View convertView, ViewGroup parent) {
-////                                ViewHolder holder;
-////                                if (getItemViewType(position) == RECEIVE) {
-////                                    if (convertView == null) {
-////                                        convertView = View.inflate(MultiChatActivity.this, R.layout.item_layout_chat_in, null);
-////                                        holder = new ViewHolder();
-////                                        convertView.setTag(holder);
-////
-////                                        holder.iv_avater = (ImageView) convertView.findViewById(R.id.iv_avater);
-////                                        holder.tv_stamp = (TextView) convertView.findViewById(R.id.tv_stamp);
-////                                        holder.tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
-////                                        holder.ll_item_chat_content = (LinearLayout) convertView.findViewById(R.id.ll_item_chat_content);
-////                                        holder.fl_item_chat = (FrameLayout) convertView.findViewById(R.id.fl_item_chat);
-////                                        holder.view_item_chat_record_anim = convertView.findViewById(R.id.view_item_chat_record_anim);
-////                                        holder.tv_item_chat_html = (TextView) convertView.findViewById(R.id.tv_item_chat_html);
-////                                        holder.tv_item_chat_record_time = (TextView) convertView.findViewById(R.id.tv_item_chat_record_time);
-////                                        holder.iv_ex = (ImageChatBubbleEx) convertView.findViewById(R.id.iv_ex);
-////                                    } else {
-////                                        holder = (ViewHolder) convertView.getTag();
-////                                    }
-////                                } else {
-////                                    if (convertView == null) {
-////                                        convertView = View.inflate(MultiChatActivity.this, R.layout.item_layout_chat_out, null);
-////                                        holder = new ViewHolder();
-////                                        convertView.setTag(holder);
-////
-////                                        holder.iv_avater = (ImageView) convertView.findViewById(R.id.iv_avater);
-////                                        holder.tv_stamp = (TextView) convertView.findViewById(R.id.tv_stamp);
-////                                        holder.tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
-////                                        holder.ll_item_chat_content = (LinearLayout) convertView.findViewById(R.id.ll_item_chat_content);
-////                                        holder.fl_item_chat = (FrameLayout) convertView.findViewById(R.id.fl_item_chat);
-////                                        holder.view_item_chat_record_anim = convertView.findViewById(R.id.view_item_chat_record_anim);
-////                                        holder.tv_item_chat_html = (TextView) convertView.findViewById(R.id.tv_item_chat_html);
-////                                        holder.tv_item_chat_record_time = (TextView) convertView.findViewById(R.id.tv_item_chat_record_time);
-////                                        holder.iv_ex = (ImageChatBubbleEx) convertView.findViewById(R.id.iv_ex);
-////                                    } else {
-////                                        holder = (ViewHolder) convertView.getTag();
-////                                    }
-////                                }
-////                                //得到数据，展示
-////                                mCursor.moveToPosition(position);
-////                                int _id = mCursor.getInt(mCursor.getColumnIndex("_id"));
-////                                String flag = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FLAG));
-////                                String stamp = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.TIME));
-////                                String body = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.BODY));
-////                                String account = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FROM_ACCOUNT));
-////                                String nickname;
-////                                String useravatar;
-////                                if (getItemViewType(position) == RECEIVE) {
-////                                    useravatar = AsmackUtils.getGroupMemberField(AsmackUtils.filterGroupJid(mTargetRoomJid),AsmackUtils.filterAccountToUserName(account), GroupDbHelper.GroupMemberTable.AVATARURL);
-////                                    nickname = AsmackUtils.getGroupMemberField(AsmackUtils.filterGroupJid(mTargetRoomJid),AsmackUtils.filterAccountToUserName(account), GroupDbHelper.GroupMemberTable.NICKNAME);
-////                                } else {
-////                                    useravatar = IMService.mCurAvatarUrl;
-////                                    nickname = IMService.mCurNickName;
-////                                }
-////                                if (useravatar == null) {
-////                                    holder.iv_avater.setImageDrawable(new CircleImageDrawable(BitmapUtil.ScaleBitmap(MultiChatActivity.this, R.drawable.useravatar, 64, 64)));
-////                                } else {
-////                                    ImageLoader.getInstance().displayImage(useravatar, holder.iv_avater, ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif_circular_border());
-////                                }
-////                                String formatStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.SIMPLIFIED_CHINESE).format(new Date(Long.parseLong(stamp)));
-////                                holder.tv_stamp.setText(formatStamp);
-////                                holder.tv_nickname.setText(nickname);
-////                                //获取气泡内文本内容的宽度
-////                                ViewGroup.LayoutParams linearParams = holder.tv_item_chat_html.getLayoutParams();
-////                                holder.view_item_chat_record_anim.setTag(_id + "record");
-////                                if (flag == null) {
-////                                    flag = Const.MSGFLAG_TEXT;
-////                                }
-////                                if (flag.equals(Const.MSGFLAG_RECORD)) {
-////                                    //录音数据
-////                                    String recordlen = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDLEN));
-////                                    String recordtime = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDTIME));
-////                                    String recordurl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.RECORDURL));
-////                                    holder.tv_item_chat_html.setVisibility(View.GONE);
-////                                    holder.tv_item_chat_record_time.setVisibility(View.VISIBLE);
-////                                    holder.view_item_chat_record_anim.setVisibility(View.VISIBLE);
-////                                    holder.iv_ex.setVisibility(View.GONE);
-////                                    holder.fl_item_chat.setVisibility(View.VISIBLE);
-////                                    holder.tv_item_chat_record_time.setText(recordtime + "\"");
-////                                    //设置item气泡的宽度
-////                                    ViewGroup.LayoutParams lp = holder.fl_item_chat.getLayoutParams();
-////                                    lp.width = (int) (mMinItemWidth + (mMaxItemWidth / 60f * Float.parseFloat(recordtime)));
-////
-////                                    holder.view_item_chat_record_anim.setOnClickListener(new ItemRecordClickListener(convertView, position));
-////                                } else if (flag.equals(Const.MSGFLAG_TEXT)) {
-////                                    //带表情的文本
-////                                    holder.tv_item_chat_html.setVisibility(View.VISIBLE);
-////                                    holder.tv_item_chat_record_time.setVisibility(View.GONE);
-////                                    holder.view_item_chat_record_anim.setVisibility(View.GONE);
-////                                    holder.iv_ex.setVisibility(View.GONE);
-////                                    holder.fl_item_chat.setVisibility(View.VISIBLE);
-////                                    holder.tv_item_chat_html.setText(getFaceText(MultiChatActivity.this, body));
-////                                    //设置宽度
-////                                    ViewGroup.LayoutParams lp = holder.fl_item_chat.getLayoutParams();
-////                                    lp.width = linearParams.width;
-////                                } else if (flag.equals(Const.MSGFLAG_IMG)) {
-////                                    holder.tv_item_chat_html.setVisibility(View.GONE);
-////                                    holder.tv_item_chat_record_time.setVisibility(View.GONE);
-////                                    holder.view_item_chat_record_anim.setVisibility(View.GONE);
-////                                    String imgurl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.IMGURL));
-////                                    String imgThumbUrl = mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.BODY));
-////
-////                                    holder.fl_item_chat.setVisibility(View.GONE);
-////                                    holder.iv_ex.setVisibility(View.VISIBLE);
-////                                    holder.iv_ex.setmView(holder.fl_item_chat);
-////                                    holder.iv_ex.setB(false);
-////                                    ImageLoader.getInstance().displayImage(imgThumbUrl, holder.iv_ex, ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif());
-////
-////                                    holder.iv_ex.setOnClickListener(new ItemImageClickListener(convertView, position));
-////                                }
-////                                return super.getView(position, convertView, parent);
-////                            }
-////
-////                            @Override
-////                            public View newView(Context context, Cursor cursor, ViewGroup parent) {
-////                                return null;
-////                            }
-////
-////                            @Override
-////                            public void bindView(View view, Context context, Cursor cursor) {
-////
-////                            }
-////
-////                            class ViewHolder {
-////                                ImageView iv_avater;
-////                                TextView tv_stamp;
-////                                TextView tv_nickname;
-////                                LinearLayout ll_item_chat_content;
-////                                FrameLayout fl_item_chat;
-////                                View view_item_chat_record_anim;
-////                                TextView tv_item_chat_html;
-////                                TextView tv_item_chat_record_time;
-////                                ImageChatBubbleEx iv_ex;
-////                            }
-////                        };
-////                    }
-////                });
-//            }
-//        });
     }
 
 

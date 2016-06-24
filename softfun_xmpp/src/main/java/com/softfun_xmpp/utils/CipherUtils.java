@@ -31,7 +31,7 @@ import javax.crypto.spec.DESKeySpec;
  *
  */
 public final class CipherUtils {
-
+    private static final String DES = "DES";
     /**
      * MD5加密
      * <br>http://stackoverflow.com/questions/1057041/difference-between-java-and-php5-md5-hash
@@ -70,7 +70,7 @@ public final class CipherUtils {
     public static Key getKey() {
         try {
             DESKeySpec des = new DESKeySpec(key);
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);
             return keyFactory.generateSecret(des);
         } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
@@ -89,7 +89,8 @@ public final class CipherUtils {
     public static String decrypt(String data, Key key) {
         String result = null;
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance(DES);
             cipher.init(Cipher.DECRYPT_MODE, key);
             result = new String(cipher.doFinal(StringUtils
                     .hexStringToByteArray(data)), "utf8");
@@ -110,7 +111,8 @@ public final class CipherUtils {
     public static String encrypt(String data, Key key){
         String s = null;
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            //            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance(DES);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             s = StringUtils.byteArrayToHexString(cipher.doFinal(data.getBytes("utf8")));
         } catch (Exception e) {

@@ -38,6 +38,7 @@ import com.softfun_xmpp.utils.ImageLoaderUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
 import com.softfun_xmpp.utils.VipResouce;
 
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.util.HashMap;
@@ -285,9 +286,16 @@ public class MyFriendsListActivity extends AppCompatActivity implements View.OnC
             final String account = mCursor.getString(mCursor.getColumnIndex(ContactsDbHelper.ContactTable.ACCOUNT));
             String nickname = mCursor.getString(mCursor.getColumnIndex(ContactsDbHelper.ContactTable.NICKNAME));
             String pinyinf = mCursor.getString(mCursor.getColumnIndex(ContactsDbHelper.ContactTable.PINYIN));
-            String status = mCursor.getString(mCursor.getColumnIndex(ContactsDbHelper.ContactTable.STATUS))+"";
+            String status = mCursor.getString(mCursor.getColumnIndex(ContactsDbHelper.ContactTable.STATUS));
             String avatarurl = mCursor.getString(mCursor.getColumnIndex(ContactsDbHelper.ContactTable.AVATARURL));
 
+            if(status==null || status.equals("")){
+                status = getResources().getString(R.string.offline);
+            }else if(status.equals(Presence.Type.available.name())){
+                status = getResources().getString(R.string.online);
+            }else {
+                status = getResources().getString(R.string.offline);
+            }
 
             holder.tv_nickname.setText(nickname);
             holder.tv_status.setText(status);
@@ -511,10 +519,10 @@ public class MyFriendsListActivity extends AppCompatActivity implements View.OnC
         {
             case R.id.btn:
                 if(selected!=null && selected.size()>0){
+                    btn.setEnabled(false);
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
                         public void run() {
-                            int i = 0;
                             for (Map.Entry<Integer, String> entry : selected.entrySet()) {
                                 //System.out.println("key= " + entry.getKey() + " and value= " + entry.getValue());
                                 String userjid = entry.getValue();
@@ -527,19 +535,14 @@ public class MyFriendsListActivity extends AppCompatActivity implements View.OnC
                                 }else{
                                     //在线的话，直接邀请，发送消息
                                     AsmackUtils.Invite(mMultiUserChat,mTargetRoomJid,userjid,msg);
-                                    i++;
                                 }
                             }
-                            if(selected.size()==i){
-                                ThreadUtils.runInUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        finish();
-                                    }
-                                });
-                            }
-                            //finish();
-
+                            ThreadUtils.runInUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            });
                         }
                     });
                 }

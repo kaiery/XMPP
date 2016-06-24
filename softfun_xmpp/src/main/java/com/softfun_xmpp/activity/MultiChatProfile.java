@@ -588,16 +588,42 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
 
             //我自己先删除oracle群成员关系
             HttpUtil.okhttpPost_deleteGroupMember(groupname, AsmackUtils.filterAccountToUserName(IMService.mCurAccount));
-            //清空自己的内存变量
+
+
+            MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(mTargetRoomJid+Const.ROOM_JID_SUFFIX);
+            //1、创建一个消息
+            //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
+            Message msg = new Message(mTargetRoomJid+Const.ROOM_JID_SUFFIX, org.jivesoftware.smack.packet.Message.Type.groupchat);
+            msg.setBody("");
+            msg.setProperty(Const.MSGFLAG, Const.MSGFLAG_GROUP_LEAVE);
+            msg.setProperty(Const.GROUP_JID, mTargetRoomJid);
+            msg.setProperty(Const.ACCOUNT, IMService.mCurAccount);
+            AsmackUtils.sendMultiChatMessage(multiUserChat,msg);
+
+            //清空自己的内存变量(删除群成员)
             if(IMService.mGroupMemberMap.containsKey(groupname)){
                 IMService.mGroupMemberMap.remove(groupname);
             }
-            if(IMService.mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
-                // TODO: 2016-06-20  拿到 服务，调用服务内的方法，移除监听
-                mImService.removeMultUserChatListener(groupname+Const.ROOM_JID_SUFFIX);
-                //System.out.println("====================  调用服务  ====================="+mImService);
-                IMService.mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+
+            System.out.println("====================    ====================="+IMService.mMultiUserChatMap);
+
+            //清空自己的内存变量(删除群监听)
+            //拿到 服务，调用服务内的方法，移除监听
+            mImService.removeMultUserChatListener(groupname+Const.ROOM_JID_SUFFIX);
+
+            //清空自己的内存变量(删除群数组)
+            int removePosition = -1;
+            for (int i = 0; i < IMService.mMyGroupList.size(); i++) {
+                if(IMService.mMyGroupList.get(i).getChildid().equals(groupname+Const.ROOM_JID_SUFFIX)){
+                    removePosition = i;
+                    break;
+                }
             }
+            if(removePosition!=-1){
+                IMService.mMyGroupList.remove(removePosition);
+            }
+
+
             //删除本地数据库的群组表，我不再参与此群
             getContentResolver().delete(
                     GroupProvider.URI_GROUP,
@@ -609,16 +635,6 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
                     SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
                     new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
             );
-
-            final MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(mTargetRoomJid+Const.ROOM_JID_SUFFIX);
-            //1、创建一个消息
-            //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
-            Message msg = new Message(mTargetRoomJid+Const.ROOM_JID_SUFFIX, org.jivesoftware.smack.packet.Message.Type.groupchat);
-            msg.setBody("");
-            msg.setProperty(Const.MSGFLAG, Const.MSGFLAG_GROUP_LEAVE);
-            msg.setProperty(Const.GROUP_JID, mTargetRoomJid);
-            msg.setProperty(Const.ACCOUNT, IMService.mCurAccount);
-            AsmackUtils.sendMultiChatMessage(multiUserChat,msg);
         }
     }
 

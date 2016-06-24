@@ -190,7 +190,7 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
                                 mGi,
                                 mGcity);
                         if (code == 1) {
-                            mImService.InitMultiRoom();
+                            mImService.AddInitMultiRoom(mRoomJid);
                             //发送群消息，让 本群内其他群成员，加入我的信息
                             AsmackUtils.updateOtherGroupMemberToUpdateMyInfo(mRoomJid+ Const.ROOM_JID_SUFFIX);
                             //操作成功

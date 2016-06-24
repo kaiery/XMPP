@@ -599,8 +599,12 @@ public class AsmackUtils {
      */
     public static MultiUserChat getMultiUserChat(String roomjid){
         if(!TextUtils.isEmpty(roomjid)){
-            MultiUserChat muc = new MultiUserChat(IMService.conn, roomjid);
-            return muc;
+            return new MultiUserChat(IMService.conn, roomjid);
+//            if(IMService.mMultiUserChatMap.containsKey(roomjid)){
+//                MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(roomjid);
+//                System.out.println(multiUserChat);
+//                return multiUserChat;
+//            }
         }
         return null;
     }
@@ -630,7 +634,11 @@ public class AsmackUtils {
         if(muc!=null && account!=null){
             if(IMService.mMultiUserChatMap.containsKey(groupjid)){
                 MultiUserChat multiUserChat = IMService.mMultiUserChatMap.get(groupjid);
-                multiUserChat.invite(account,reason);
+                if(multiUserChat!=null){
+                    multiUserChat.invite(account,reason);
+                }else{
+                    System.out.println("====================  multiUserChat 为空 =====================");
+                }
             }
         }
     }

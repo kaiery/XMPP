@@ -684,9 +684,10 @@ public class UIActivity extends Activity implements Session.SessionListener,
 //                subscribeToStream(stream);
 //            }
 //        }
+
+        //System.out.println("发布者："+ mUserAccount +"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
         //不是自己发布的视频，是指定对方的视频
         if (!stream.getName().equals(mUserAccount) && stream.getName().equals(mTargetAccount)) {
-            //System.out.println("发布者："+ mUserAccount +"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
             mStreams.add(stream);
             if (mSubscriber == null) {
                 subscribeToStream(stream);
