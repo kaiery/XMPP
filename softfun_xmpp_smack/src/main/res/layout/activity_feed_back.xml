@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        />
+
+    <ScrollView
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <!--每一行-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:text="问题或建议（最多500字）"
+                    android:textColor="@color/colorBlackText"
+                    android:textSize="@dimen/font_body"/>
+
+                <EditText
+                    android:id="@id/et_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/et_bord_background_corners_0"
+                    android:hint="欢迎提问题和建议，我们的进步离不开您的反馈"
+                    android:maxLength="500"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/font_body"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#FF909090"/>
+            <!--每一行END-->
+
+            <!--每一行-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:text="联系方式"
+                    android:textColor="@color/colorBlackText"
+                    android:textSize="@dimen/font_body"/>
+
+                <EditText
+                    android:id="@id/et_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/et_bord_background_corners_0"
+                    android:hint="Email、QQ、电话"
+                    android:maxLength="50"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/font_body"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#FF909090"/>
+            <!--每一行END-->
+            <Button
+                android:id="@id/btn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:background="@drawable/button_theme_background"
+                android:text="发送"
+                android:textColor="#ffffff"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

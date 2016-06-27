@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="mask1" type="id"/>
+    <item name="iv" type="id"/>
+    <item name="et_username" type="id"/>
+    <item name="et_nickname" type="id"/>
+    <item name="et_password" type="id"/>
+    <item name="et_password1" type="id"/>
+    <item name="et_phone" type="id"/>
+    <item name="et_checkma" type="id"/>
+    <item name="bt_checkma" type="id"/>
+    <item name="bt_login" type="id"/>
+    <item name="et_content" type="id"/>
+    <item name="et_contact" type="id"/>
+    <item name="tv_forgetpassword" type="id"/>
+    <item name="tv_signup" type="id"/>
+    <item name="bt_signup" type="id"/>
+    <item name="tv_ver" type="id"/>
+    <item name="tv_cache" type="id"/>
+
+
+    <item name="vp" type="id"/>
+    <item name="tab_bottom" type="id"/>
+    <item name="iv_tab_toolbar" type="id"/>
+    <item name="tv_tab_toolbar" type="id"/>
+
+
+    <item name="tv_cancel" type="id"/>
+    <item name="tv_ok" type="id"/>
+    <item name="wp1" type="id"/>
+    <item name="wp2" type="id"/>
+    <item name="wp3" type="id"/>
+    <item name="wp4" type="id"/>
+    <item name="wp5" type="id"/>
+    <item name="rb" type="id"/>
+    <item name="pb" type="id"/>
+    <item name="wv" type="id"/>
+    <item name="lv" type="id"/>
+    <item name="rv" type="id"/>
+    <item name="btn" type="id"/>
+    <item name="et" type="id"/>
+    <item name="tv" type="id"/>
+    <item name="cb" type="id"/>
+    <item name="hscroll" type="id"/>
+    <item name="vscroll" type="id"/>
+    <item name="item1" type="id"/>
+    <item name="item2" type="id"/>
+    <item name="item3" type="id"/>
+    <item name="item4" type="id"/>
+    <item name="item5" type="id"/>
+    <item name="item6" type="id"/>
+    <item name="item7" type="id"/>
+    <item name="item8" type="id"/>
+    <item name="item9" type="id"/>
+    <item name="item10" type="id"/>
+
+    <item name="ll_item_layout_sort_key" type="id"/>
+    <item name="tv_item_sort_key" type="id"/>
+    <item name="tv_nickname" type="id"/>
+    <item name="tv_showname" type="id"/>
+    <item name="et_password_old" type="id"/>
+    <item name="et_password_new" type="id"/>
+    <item name="et_password_again" type="id"/>
+    <item name="iv_vip" type="id"/>
+    <item name="tv_orgname" type="id"/>
+    <item name="tv_userid" type="id"/>
+    <item name="tv_score" type="id"/>
+    <item name="tv_userdesc" type="id"/>
+    <item name="tv_qq" type="id"/>
+    <item name="tv_email" type="id"/>
+    <item name="iv_avater" type="id"/>
+    <item name="tv_pinyinf" type="id"/>
+    <item name="tv_status" type="id"/>
+    <item name="tv_body" type="id"/>
+    <item name="tv_unreaded" type="id"/>
+    <item name="tv_address" type="id"/>
+    <item name="tv_workinglife" type="id"/>
+    <item name="tv_positional" type="id"/>
+    <item name="tv_specialty" type="id"/>
+    <item name="tv_company" type="id"/>
+    <item name="tv_userphone" type="id"/>
+
+
+
+
+    <item name="bt_sms" type="id"/>
+    <item name="bt_call" type="id"/>
+    <item name="bt_videochat" type="id"/>
+    <item name="bt_msgchat" type="id"/>
+    <item name="ll_group1" type="id"/>
+    <item name="ll_group2" type="id"/>
+
+
+    <item name="tv_stamp" type="id"/>
+    <item name="ll_item_chat_content" type="id"/>
+    <item name="fl_item_chat" type="id"/>
+    <item name="view_item_chat_record_anim" type="id"/>
+    <item name="tv_item_chat_html" type="id"/>
+    <item name="tv_item_chat_record_time" type="id"/>
+
+    <item name="toolbar" type="id"/>
+    <item name="appbar" type="id"/>
+    <item name="collapsing_toolbar" type="id"/>
+    <item name="backdrop" type="id"/>
+
+
+
+    <item name="tv_groupname" type="id"/>
+    <item name="tv_grouptype" type="id"/>
+    <item name="tv_grouptypedetail" type="id"/>
+    <item name="iv_grouprqcode" type="id"/>
+    <item name="tv_groupannounce" type="id"/>
+    <item name="tv_groupmynickname" type="id"/>
+
+    <item name="et_groupname" type="id"/>
+    <item name="et_grouptype" type="id"/>
+    <item name="et_grouptypedetail" type="id"/>
+    <item name="et_grouprqcode" type="id"/>
+    <item name="et_groupannounce" type="id"/>
+    <item name="et_groupmynickname" type="id"/>
+
+    <item name="swh1" type="id"/>
+    <item name="swh2" type="id"/>
+    <item name="swh3" type="id"/>
+    <item name="swh4" type="id"/>
+
+</resources>

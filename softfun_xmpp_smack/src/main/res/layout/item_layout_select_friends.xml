@@ -1,0 +1,89 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="?android:attr/selectableItemBackground"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@id/ll_item_layout_sort_key"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:background="@color/colorContentGroup">
+
+        <TextView
+            android:id="@id/tv_pinyinf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dip"
+            android:textColor="@color/colorSecondText"
+            android:textSize="14sp"
+            tools:text="F"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@id/item1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector"
+        android:orientation="horizontal"
+        android:padding="8dip">
+
+        <CheckBox
+            android:id="@id/cb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:visibility="visible"/>
+
+        <ImageView
+            android:id="@id/iv_avater"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/activity_horizontal_margin_half"
+            android:src="@mipmap/ic_launcher_thumb"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:id="@id/tv_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/colorBlackText"
+                android:textSize="@dimen/font_body"
+                tools:text="范张"/>
+
+            <ImageView
+                android:id="@+id/iv_vip"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin_half"
+                android:layout_toRightOf="@id/tv_nickname"
+                tools:src="@mipmap/vip1"
+                />
+
+            <TextView
+                android:id="@id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_nickname"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="4dip"
+                android:textColor="@color/colorSoftFunColor"
+                android:textSize="@dimen/tab_fontsize"
+                tools:text="在线"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
