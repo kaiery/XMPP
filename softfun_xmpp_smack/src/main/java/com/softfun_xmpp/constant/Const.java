@@ -65,6 +65,10 @@ public class Const {
     public static final String UPDATEDOWNLOADURL = "updatedownloadurl";
     public static final String UPDATEFILESIZE = "updatefilesize";
 
+    /**
+     * 聊天类型，私聊、群聊、好友申请、群申请
+     */
+    public static final String TYPE = "chat_type";
 
     /**
      * 消息类型：
@@ -227,6 +231,10 @@ public class Const {
     public static final String WEB_FILE_PATH =          "web/files/";
 
 
+    /**
+     * 聊天会话对象被删除的广播action
+     */
+    public static final String EXIT_CHAT_ACTION = "exit_chat_action";
 
     /**
      *重复登录的广播action
@@ -242,5 +250,11 @@ public class Const {
      * 自动登录常量标记
      */
     public static final String AUTOLOGIN = "autologin";
+
+
+    /**
+     * 通知的来源
+     */
+    public static final String NOTIFICATION_FROM = "notification_from";
 
 }

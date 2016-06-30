@@ -44,6 +44,7 @@ import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.fragment.MainFragment;
 import com.softfun_xmpp.network.DownloadAPK;
 import com.softfun_xmpp.network.HttpUtil;
+import com.softfun_xmpp.notification.NotificationUtilEx;
 import com.softfun_xmpp.utils.AppUtils;
 import com.softfun_xmpp.utils.AsmackUtils;
 import com.softfun_xmpp.utils.FileUtils;
@@ -52,6 +53,9 @@ import com.softfun_xmpp.utils.SpUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
 import com.softfun_xmpp.utils.ToastUtils;
 import com.softfun_xmpp.utils.VipResouce;
+
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -152,6 +156,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initData();
 
         initListener();
+    }
+
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     /**
@@ -524,4 +541,68 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void onServiceDisconnected(ComponentName name) {
         }
     }
+
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        System.out.println("====================  onNewIntent  =====================");
+        super.onNewIntent(intent);
+        String type = intent.getStringExtra(Const.TYPE);
+        String notification_from = intent.getStringExtra(Const.NOTIFICATION_FROM);
+        String nickName = intent.getStringExtra(Const.NICKNAME);
+        String avatarurl = intent.getStringExtra(Const.AVATARURL);
+        String room_jid = intent.getStringExtra(Const.GROUP_JID);
+        if(room_jid==null) room_jid = "";
+        String room_name = (room_jid.equals(""))?"":AsmackUtils.filterGroupName(room_jid)+"";
+
+        if(type==null || type.equals("") || type.equals("null")) return;
+
+        NotificationUtilEx.getInstance().deleteNotification(notification_from);
+
+        if(!type.equals("") && !notification_from.equals("")  && !nickName.equals("")  && !avatarurl.equals("") && type.equals(Message.Type.chat.name())){
+            //跳转到私聊
+            if(mImService.isMyFriends(notification_from)){
+                Intent intent_chat = new Intent(this,ChatActivity.class);
+                intent_chat.putExtra(ChatActivity.F_ACCOUNT,notification_from);
+                intent_chat.putExtra(ChatActivity.F_NICKNAME,nickName);
+                intent_chat.putExtra(ChatActivity.F_AVATARURL,avatarurl);
+                startActivity(intent_chat);
+                return;
+            }
+        }
+
+        if(!type.equals("") && !notification_from.equals("")  && !nickName.equals("")  && !avatarurl.equals("") && type.equals(Presence.Type.subscribe.name())){
+            //跳转到好友申请
+            if(mImService.isMyFriends(notification_from)){
+                Intent intent_chat = new Intent(this,ChatActivity.class);
+                intent_chat.putExtra(ChatActivity.F_ACCOUNT,notification_from);
+                intent_chat.putExtra(ChatActivity.F_NICKNAME,nickName);
+                intent_chat.putExtra(ChatActivity.F_AVATARURL,avatarurl);
+                startActivity(intent_chat);
+                return;
+            }else{
+                mImService.updateChatMessageToIsRead(notification_from);
+                Intent intent_invite = new Intent(this,AddFriendsAction.class);
+                intent_invite.putExtra(ChatActivity.F_ACCOUNT,notification_from);
+                intent_invite.putExtra(ChatActivity.F_NICKNAME,nickName);
+                intent_invite.putExtra(ChatActivity.F_AVATARURL,avatarurl);
+                startActivity(intent_invite);
+                return;
+            }
+        }
+
+        if(!type.equals("") && !notification_from.equals("")   &&!room_jid.equals("")  && type.equals(Message.Type.groupchat.name())){
+            //跳转到群聊
+            Intent intent_groupchat = new Intent(this, MultiChatActivity.class);
+            intent_groupchat.putExtra(MultiChatActivity.F_ROOM_JID,room_jid);
+            intent_groupchat.putExtra(MultiChatActivity.F_ROOM_NAME,room_name);
+            intent_groupchat.putExtra(MultiChatActivity.F_ROOM_AVATARURL,avatarurl);
+            startActivity(intent_groupchat);
+        }
+
+
+    }
+
+
 }

@@ -20,6 +20,7 @@ import com.softfun_xmpp.dbhelper.ContactsDbHelper;
 import com.softfun_xmpp.dbhelper.GroupDbHelper;
 import com.softfun_xmpp.dbhelper.SmsDbHelper;
 import com.softfun_xmpp.network.HttpUtil;
+import com.softfun_xmpp.notification.NotificationUtilEx;
 import com.softfun_xmpp.provider.ContactsProvider;
 import com.softfun_xmpp.provider.GroupProvider;
 import com.softfun_xmpp.provider.SmsProvider;
@@ -228,7 +229,7 @@ public class IMService extends Service {
 
                 //得到花名册对象
                 mRoster = Roster.getInstanceFor(conn);//conn.getRoster();
-
+                Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.manual);
                 //得到联系人
                 Collection<RosterEntry> entries = mRoster.getEntries();
 
@@ -310,7 +311,7 @@ public class IMService extends Service {
                 MultiUserChatManager.getInstanceFor(conn).addInvitationListener(new InvitationListener() {
                     @Override
                     public void invitationReceived(XMPPConnection conn, MultiUserChat room, String inviter, String reason, String password, Message message) {
-                        System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
+                        //System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
                         String msg_to = message.getTo();
                         if(!TextUtils.isEmpty(msg_to) && msg_to.equals(mCurAccount)){
                             message.setFrom(inviter); //群聊发起人
@@ -320,34 +321,17 @@ public class IMService extends Service {
                             JivePropertiesExtension jpe = new JivePropertiesExtension();
                             jpe.setProperty(Const.MSGFLAG,Const.MSGFLAG_GROUP_INVITE);//    群聊消息的类型：群邀请的类型
                             message.addExtension(jpe);
-
                             saveGroupMessage(AsmackUtils.filterGroupJid(room.getRoom()),message);
                         }
                     }
                 });
-                System.out.println("********************************************群邀请监听器");
+                //System.out.println("********************************************群邀请监听器");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-//    /**
-//     * 群邀请监听器
-//     */
-//    private class ReaderThread implements InvitationListener {
-//        public void invitationReceived(Connection connection, String roomjid, String inviter, String reason, String password, Message message) {
-//            System.out.println("====================  接收到一条聊天室的邀请  ===================== ");
-//            String msg_to = message.getTo();
-//            if(!TextUtils.isEmpty(msg_to) && msg_to.equals(mCurAccount)){
-//                message.setFrom(inviter); //群聊发起人
-//                message.setBody(reason); //群聊消息内容
-//                message.setType(Message.Type.groupchat); //聊天类型
-//                message.setProperty(Const.MSGFLAG,Const.MSGFLAG_GROUP_INVITE);//    群聊消息的类型：群邀请的类型
-//                saveGroupMessage(AsmackUtils.filterGroupJid(roomjid),message);
-//            }
-//        }
-//    }
 
 
 
@@ -382,8 +366,8 @@ public class IMService extends Service {
                         mucParams.setParticipantStatusListener(mMultiPartcipantStatus);
                         mucsList.put(multiUserChat, mucParams);
                         mucsJIDs.put(multiUserChat.getRoom(), multiUserChat);
-                        System.out.println("====================  groupBean.getChildid()   ===================== " + groupBean.getChildid()+"  添加了监听");
-                        System.out.println("====================  multiUserChat.getRoom()  ===================== " + multiUserChat.getRoom()+"  添加了监听");
+                        //System.out.println("====================  groupBean.getChildid()   ===================== " + groupBean.getChildid()+"  添加了监听");
+                        //System.out.println("====================  multiUserChat.getRoom()  ===================== " + multiUserChat.getRoom()+"  添加了监听");
                         mMultiUserChatMap.put(groupBean.getChildid(),multiUserChat);
 
                         //获取群成员
@@ -456,7 +440,7 @@ public class IMService extends Service {
         if(mMultiUserChatMap.containsKey(groupjid)){
 
             for (MultiUserChat multiUserChat : listMUCs()) {
-                System.out.println("-------------------"+multiUserChat.getRoom());
+                //System.out.println("-------------------"+multiUserChat.getRoom());
                 if(multiUserChat.getRoom().equals(groupjid)){
                     try {
                         MUCParams mucParams = getMUCParams(multiUserChat);
@@ -632,6 +616,7 @@ public class IMService extends Service {
                 //从花名册中得到一个联系人
                 RosterEntry entry = mRoster.getEntry(address);
                 //更新或插入
+                //System.out.println("====================  1  =====================");
                 insertOrUpdateEntry(entry);
             }
         }
@@ -643,6 +628,7 @@ public class IMService extends Service {
                 //从花名册中得到一个联系人
                 RosterEntry entry = mRoster.getEntry(address);
                 //更新或插入
+                //System.out.println("====================  2  =====================");
                 insertOrUpdateEntry(entry);
             }
         }
@@ -671,26 +657,25 @@ public class IMService extends Service {
 
 
     /**
-     * 消息监听器实例
+     * 私聊消息监听器实例
      */
     private MyMessageListener mMyMessageListener = new MyMessageListener();
 
     /**
-     * 消息监听器
+     * 私聊消息监听器
      */
     private class MyMessageListener implements ChatMessageListener {
         @Override
         public void processMessage(Chat chat, Message message) {
-            if (!message.getBody().equals("")) {
+            if ( (message.getBody()!=null || !message.getBody().equals(""))  && message.getType().name().equals(Message.Type.chat.name())  ) {
                 JivePropertiesExtension jpe = (JivePropertiesExtension) message.getExtension(JivePropertiesExtension.NAMESPACE);
+
                 //接收到消息，保存消息
                 String session_account = chat.getParticipant();
                 session_account = AsmackUtils.filterAccount(session_account);
-                if(IMService.chatObject.equals("") || !IMService.chatObject.equals(session_account)){
-                    //消息声音
-                    //GlobalSoundPool.getInstance().play(GlobalSoundPool.SYSTEM_NOTIFICATION);
-                }
-                System.out.println("####接收到的消息#######session_account:" + session_account + "   " + message.getFrom() + "      " + message.getTo());
+                String nickname = AsmackUtils.getFieldByAccountFromContactTable(session_account, ContactsDbHelper.ContactTable.NICKNAME);
+                String avatarurl = AsmackUtils.getFieldByAccountFromContactTable(session_account,ContactsDbHelper.ContactTable.AVATARURL);
+                //System.out.println("####接收到的消息#######session_account:" + session_account + "   " + message.getFrom() + "      " + message.getTo());
 
                 //如果接收到对方的视频状态为working
                 String TagertVideoState = jpe.getProperty(Const.VIDEO_STATE)+"";
@@ -721,14 +706,48 @@ public class IMService extends Service {
                         enterVideoActivity(message.getFrom());
                     }
                 }else if(jpe.getProperty(Const.MSGFLAG).equals(Const.MSGFLAG_IMG)){
-                    //System.out.println(message.toXML());
+                    showNotification(session_account,nickname,message.getBody(),message.getType().name(),nickname,avatarurl,"");
                     saveMessage(session_account, message);
                 } else {
+                    showNotification(session_account,nickname,message.getBody(),message.getType().name(),nickname,avatarurl,"");
                     saveMessage(session_account, message);
                 }
             }
         }
     }
+
+    /**
+     * 生成通知消息
+     * @param session_account
+     * @param title
+     * @param msg
+     * @param chattype
+     * @param nickname
+     * @param avatarurl
+     */
+    private void showNotification(String session_account,String title,String msg,String chattype,String nickname,String avatarurl,String group_jid) {
+        //私聊通知
+        if(chattype.equals(Message.Type.chat.name())  ){
+            if(IMService.chatObject.equals("") || !IMService.chatObject.equals(session_account)){
+                NotificationUtilEx.getInstance().notification_msg(session_account,title,msg,chattype,nickname,avatarurl,group_jid);
+            }
+        }else
+        //群聊通知
+        if(chattype.equals(Message.Type.groupchat.name())){
+            if(IMService.chatObject.equals("") || !IMService.chatObject.equals(session_account+Const.ROOM_JID_SUFFIX)){
+                NotificationUtilEx.getInstance().notification_msg(session_account,title,msg,chattype,nickname,avatarurl,group_jid);
+            }
+        }else
+        //好友申请
+        if(chattype.equals(Presence.Type.subscribe.name())){
+            if(IMService.chatObject.equals("") || !IMService.chatObject.equals(session_account)){
+                NotificationUtilEx.getInstance().notification_msg(session_account,title,msg,chattype,nickname,avatarurl,group_jid);
+            }
+        }
+
+    }
+
+
 
     /**
      * 主动拒绝视频
@@ -848,7 +867,7 @@ public class IMService extends Service {
         for (int i = 0; i < presences.size(); i++) {
             Presence presence = presences.get(i);
             Presence.Type type = presence.getType();
-            System.out.println("====================  在线状态  ====================="+nickname+"   "+ type);
+            //System.out.println("====================  在线状态  ====================="+nickname+"   "+ type);
             if (type.equals(Presence.Type.available)) {
                 status = presence.getType().name();
             } else {
@@ -1044,7 +1063,7 @@ public class IMService extends Service {
     private class MyPacketListener implements StanzaListener {
         @Override
         public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
-            System.out.println("===packet==="+ packet.toXML());
+            //System.out.println("===packet==="+ packet.toXML());
             if (packet instanceof Presence) {
                 //Log.i("Presence", packet.toXML());
                 Presence presence = (Presence) packet;
@@ -1053,27 +1072,26 @@ public class IMService extends Service {
                 ////System.out.println("from:" + from + "   to:" + to);
                 //Presence.Type有7中状态
                 if (presence.getType().equals(Presence.Type.subscribe)) {//好友申请
-                    ////System.out.println("====================  subscribe  =====================" + from + "   发出好友申请");
+                    //System.out.println("====================  subscribe  =====================" + from + "   发出好友申请");
                     savePresenceSubscribe(presence);
 
                 } else if (presence.getType().equals(Presence.Type.subscribed)) {//同意添加好友
-                    ////System.out.println("====================  subscribed  =====================" + from + "   同意添加好友");
+                    //System.out.println("====================  subscribed  =====================" + from + "   同意添加好友");
 
                 } else if (presence.getType().equals(Presence.Type.unsubscribe)) {
-                    ////System.out.println("====================  unsubscribe  =====================" + from + "   拒绝了好友关系");
+                    //System.out.println("====================  unsubscribe  =====================" + from + "   拒绝了好友关系");
 
                 } else if (presence.getType().equals(Presence.Type.unsubscribed)) {
-                    ////System.out.println("====================  unsubscribed  =====================" + from + "   删除了您");
+                    //System.out.println("====================  unsubscribed  =====================" + from + "   删除了您");
                     savePresenceSubscribe(presence);
 
                 } else if (presence.getType().equals(Presence.Type.unavailable)) { //好友下线   要更新好友列表，可以在这收到包后，发广播到指定页面   更新列表
-                    ////System.out.println("====================  unavailable  =====================" + from + "   下线");
+                    //System.out.println("====================  unavailable  =====================" + from + "   下线");
                 } else if (presence.getType().equals(Presence.Type.available)) {//好友上线
-                    ////System.out.println("====================  available  =====================");
-
+                    //System.out.println("====================  available  =====================");
                 } else {
                     //error
-                    ////System.out.println("====================  error  =====================");
+                    //System.out.println("====================  error  =====================");
                 }
             }
         }
@@ -1088,7 +1106,7 @@ public class IMService extends Service {
     private class MyPacketMessageListener implements StanzaListener {
         @Override
         public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
-            System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+            //System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&广播消息&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
             if (packet instanceof Message) {
                 Message message = (Message) packet;
                 String body = message.getBody();
@@ -1117,7 +1135,9 @@ public class IMService extends Service {
 
         //申请好友消息
         if (presence.getType().equals(Presence.Type.subscribe)) {
-            if (!isMyFriends(fromAccount)) {
+            boolean isfriend = isMyFriends(fromAccount);
+            //System.out.println(isfriend);
+            if (!isfriend) {
                 ContentValues values = new ContentValues();
                  /*====================  好友申请消息插入数据库  =====================*/
                 values.put(SmsDbHelper.SmsTable.FROM_ACCOUNT, fromAccount);
@@ -1131,15 +1151,25 @@ public class IMService extends Service {
                 values.put(SmsDbHelper.SmsTable.OWNER, IMService.mCurAccount);
                 getContentResolver().insert(SmsProvider.URI_SMS, values);
                 /*====================  好友申请消息插入数据库END  =====================*/
+
+                //发送通知消息
+                String user = AsmackUtils.filterAccount(fromAccount);
+                String nickname = AsmackUtils.getVcardInfo(IMService.conn, user, Const.NICKNAME);
+                String avatarurl = GlobalContext.getInstance().getResources().getString(R.string.app_server) + AsmackUtils.getVcardInfo(IMService.conn, user, Const.AVATARURL);
+                showNotification(fromAccount,"好友申请",nickname+"添加您为好友。",presence.getType().name(),nickname,avatarurl,"");
             }
-        }
+        }else
 
         //被对方删除,我现在就要被动删除他
         if (presence.getType().equals(Presence.Type.unsubscribed)) {
+            //System.out.println("====================  被"+fromAccount+"删除,"+toAccount+"现在就要被动删除他  =====================");
             RosterEntry entry = mRoster.getEntry(fromAccount);
             if (entry != null) {
                 try {
-                    mRoster.removeEntry(entry); //删除某个好友
+                    if(mRoster.contains(fromAccount)){
+                        //System.out.println(mRoster.getEntry(fromAccount).getType().name());
+                        mRoster.removeEntry(entry); //删除某个好友
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1148,6 +1178,12 @@ public class IMService extends Service {
             getContentResolver().delete(ContactsProvider.URI_CONTACT, ContactsDbHelper.ContactTable.ACCOUNT + "=?", new String[]{fromAccount});
             //删除消息表此人，如果有的话
             getContentResolver().delete(SmsProvider.URI_SMS, SmsDbHelper.SmsTable.SESSION_ACCOUNT + "=?", new String[]{fromAccount});
+
+            //发送广播，如果正在跟此好友进行聊天，则已经注册了此广播接受者
+            //需要退出与此好友聊天。
+            Intent intent = new Intent();
+            intent.setAction(Const.EXIT_CHAT_ACTION);
+            sendBroadcast(intent);
         }
     }
 
@@ -1167,7 +1203,9 @@ public class IMService extends Service {
                 RosterEntry entry = mRoster.getEntry(to);
                 if (entry != null) {
                     try {
-                        mRoster.removeEntry(entry); //删除某个好友
+                        if(mRoster.contains(to)){
+                            mRoster.removeEntry(entry); //删除某个好友
+                        }
                     } catch (XMPPException e) {
                         e.printStackTrace();
                     }
@@ -1220,226 +1258,240 @@ public class IMService extends Service {
 
     /**
      * 每一个聊天室 的消息监听
+     * 群聊消息监听
      */
     private class multiMsgListener implements MessageListener {
         @Override
         public void processMessage(Message packet) {
             Message message = packet;
-
             JivePropertiesExtension jpe = (JivePropertiesExtension) message.getExtension(JivePropertiesExtension.NAMESPACE);
+            if(jpe!=null){
+                //System.out.println(IMService.mCurAccount+"==================== 接收到聊天室的聊天消息   ===================== "+message.getBody());
 
-            System.out.println(IMService.mCurAccount+"==================== 接收到聊天室的聊天消息   ===================== "+message.getBody());
-            if(message.getType().equals(org.jivesoftware.smack.packet.Message.Type.groupchat)){
-                if(message.getBody()!=null){
-                    DelayInformation inf = (DelayInformation) message.getExtension("x", "jabber:x:delay");
-                    Date sentDate;
-                    if (inf != null) {
-                        sentDate = inf.getStamp();
-                    } else {
-                        sentDate = new Date();
-                    }
-                    // 接收来自聊天室的聊天信息
-                    String msgflag;
-                    if(jpe.getProperty(Const.MSGFLAG)!=null){
-                        msgflag = jpe.getProperty(Const.MSGFLAG)+"";
-                    }else{
-                        msgflag = "";
-                    }
-                    //消息类型是  有新成员加入本群
-                    if(msgflag.equals(Const.MSGFLAG_GROUP_NEW_MEMBER)){
-                        //System.out.println("====================  有新成员加入本群 消息  =====================");
-                        //有@conference.softfun的群JID
-                        String groupjid = jpe.getProperty(Const.GROUP_JID)+"";
-                        String new_account = jpe.getProperty(Const.ACCOUNT)+"";
-                        GroupMemberBean groupMemberBean =   HttpUtil.okhttpPost_queryNewGroupMember(groupjid,AsmackUtils.filterAccountToUserName(new_account));
-                        AsmackUtils.updateGroupMemberMap(AsmackUtils.filterGroupJid(groupjid),groupMemberBean);
-                    }else
-                        //消息类型是  群更改管理员==============================================================
-                        if(msgflag.equals(Const.MSGFLAG_GROUP_CHANGEMASTER)){
-                            ////System.out.println("====================  群更改管理员 消息  =====================");
-                            String groupname = jpe.getProperty(Const.GROUP_JID)+"";
-                            String selectAccount = jpe.getProperty(Const.MSGFLAG_GROUP_NEW_MASTER)+"";
-                            String oldMaster = jpe.getProperty(Const.ACCOUNT)+"";
-                            //更新master
-                            if(mGroupMemberMap.containsKey(groupname)){
-                                List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
-                                for (int i = 0; i < list.size(); i++) {
-                                    if(list.get(i).getAccount().equals(selectAccount)){
-                                        GroupMemberBean bean = list.get(i);
-                                        bean.setMaster("1");
-                                        list.set(i,bean);
-                                    }
-                                    if(list.get(i).getAccount().equals(oldMaster)){
-                                        GroupMemberBean bean = list.get(i);
-                                        bean.setMaster("0");
-                                        list.set(i,bean);
-                                    }
-                                }
-                            }
+                if(message.getType().equals(org.jivesoftware.smack.packet.Message.Type.groupchat)){
+                    if(message.getBody()!=null){
+                        DelayInformation inf = (DelayInformation) message.getExtension("x", "jabber:x:delay");
+                        Date sentDate;
+                        if (inf != null) {
+                            sentDate = inf.getStamp();
+                        } else {
+                            sentDate = new Date();
+                        }
+                        // 接收来自聊天室的聊天信息
+                        String msgflag;
+                        Object property = jpe.getProperty(Const.MSGFLAG);
+                        if(property !=null){
+                            msgflag = jpe.getProperty(Const.MSGFLAG)+"";
+                        }else{
+                            msgflag = "";
+                        }
+                        //消息类型是  有新成员加入本群
+                        if(msgflag.equals(Const.MSGFLAG_GROUP_NEW_MEMBER)){
+                            //System.out.println("====================  有新成员加入本群 消息  =====================");
+                            //有@conference.softfun的群JID
+                            String groupjid = jpe.getProperty(Const.GROUP_JID)+"";
+                            String new_account = jpe.getProperty(Const.ACCOUNT)+"";
+                            GroupMemberBean groupMemberBean =   HttpUtil.okhttpPost_queryNewGroupMember(groupjid,AsmackUtils.filterAccountToUserName(new_account));
+                            AsmackUtils.updateGroupMemberMap(AsmackUtils.filterGroupJid(groupjid),groupMemberBean);
                         }else
-                            //消息类型是 群解散==============================================================
-                            if(msgflag.equals(Const.MSGFLAG_GROUP_DISMISS)){
+                            //消息类型是  群更改管理员==============================================================
+                            if(msgflag.equals(Const.MSGFLAG_GROUP_CHANGEMASTER)){
+                                ////System.out.println("====================  群更改管理员 消息  =====================");
                                 String groupname = jpe.getProperty(Const.GROUP_JID)+"";
-                                ////System.out.println("====================  接收到群解散消息  =====================");
-                                //移除监听
-                                if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
-                                    for (MultiUserChat multiUserChat : listMUCs()) {
-                                        if(multiUserChat.getRoom().equals(groupname+Const.ROOM_JID_SUFFIX)){
-                                            MUCParams mucParams = getMUCParams(multiUserChat);
-                                            multiUserChat.removeMessageListener(mucParams.getMessageListener());
-                                            multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
-                                            mucsList.remove(multiUserChat);
-                                            mucsJIDs.remove(multiUserChat.getRoom());
-                                        }
-                                    }
-                                    mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
-                                }
-
-
+                                String selectAccount = jpe.getProperty(Const.MSGFLAG_GROUP_NEW_MASTER)+"";
+                                String oldMaster = jpe.getProperty(Const.ACCOUNT)+"";
+                                //更新master
                                 if(mGroupMemberMap.containsKey(groupname)){
-                                    mGroupMemberMap.remove(groupname);
+                                    List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
+                                    for (int i = 0; i < list.size(); i++) {
+                                        if(list.get(i).getAccount().equals(selectAccount)){
+                                            GroupMemberBean bean = list.get(i);
+                                            bean.setMaster("1");
+                                            list.set(i,bean);
+                                        }
+                                        if(list.get(i).getAccount().equals(oldMaster)){
+                                            GroupMemberBean bean = list.get(i);
+                                            bean.setMaster("0");
+                                            list.set(i,bean);
+                                        }
+                                    }
                                 }
-                                if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
-                                    mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
-                                }
-                                //删除本地数据库的群组表，我不再参与此群
-                                getContentResolver().delete(
-                                        GroupProvider.URI_GROUP,
-                                        GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
-                                        new String[]{groupname+Const.ROOM_JID_SUFFIX, IMService.mCurAccount}
-                                );
-                                //删除本地群消息
-                                getContentResolver().delete(
-                                        SmsProvider.URI_GROUPSMS,
-                                        SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
-                                        new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
-                                );
                             }else
-                                //消息类型是 离开、脱离群==============================================================
-                                if(msgflag.equals(Const.MSGFLAG_GROUP_LEAVE)){
-                                    String leave_account = jpe.getProperty(Const.ACCOUNT)+"";
-                                    String leave_username = AsmackUtils.filterAccountToUserName(leave_account);
+                                //消息类型是 群解散==============================================================
+                                if(msgflag.equals(Const.MSGFLAG_GROUP_DISMISS)){
                                     String groupname = jpe.getProperty(Const.GROUP_JID)+"";
-                                    //System.out.println("====================  接收到 脱离群消息  =====================");
-                                    //如果离开群的人是我自己
-                                    if(leave_account.equals(IMService.mCurAccount)){
-                                        //回调不做处理，已经在按钮端调用服务方法处理完毕
-                                    }else if(!leave_account.equals(IMService.mCurAccount)){
-                                        //别人要离开群
-                                        if(mGroupMemberMap.containsKey(groupname)){
-                                            boolean b = false;
-                                            List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
-                                            for (int i = 0; i < list.size(); i++) {
-                                                if(list.get(i).getAccount().equals(leave_username)){
-                                                    list.remove(i);
-                                                    b = true;
-                                                    break;
-                                                }
-                                            }
-                                            if(b){
-                                                mGroupMemberMap.remove(groupname);
-                                                mGroupMemberMap.put(groupname,list);
+                                    ////System.out.println("====================  接收到群解散消息  =====================");
+                                    //移除监听
+                                    if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                                        for (MultiUserChat multiUserChat : listMUCs()) {
+                                            if(multiUserChat.getRoom().equals(groupname+Const.ROOM_JID_SUFFIX)){
+                                                MUCParams mucParams = getMUCParams(multiUserChat);
+                                                multiUserChat.removeMessageListener(mucParams.getMessageListener());
+                                                multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
+                                                mucsList.remove(multiUserChat);
+                                                mucsJIDs.remove(multiUserChat.getRoom());
                                             }
                                         }
+                                        mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
                                     }
+
+
+                                    if(mGroupMemberMap.containsKey(groupname)){
+                                        mGroupMemberMap.remove(groupname);
+                                    }
+                                    if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                                        mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+                                    }
+                                    //删除本地数据库的群组表，我不再参与此群
+                                    getContentResolver().delete(
+                                            GroupProvider.URI_GROUP,
+                                            GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
+                                            new String[]{groupname+Const.ROOM_JID_SUFFIX, IMService.mCurAccount}
+                                    );
+                                    //删除本地群消息
+                                    getContentResolver().delete(
+                                            SmsProvider.URI_GROUPSMS,
+                                            SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
+                                            new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
+                                    );
                                 }else
-                                    //消息类型是 群踢人==============================================================
-                                    if(msgflag.equals(Const.MSGFLAG_GROUP_KICK)){
-                                        //踢人操作
-                                        String kick_account = jpe.getProperty(Const.ACCOUNT)+"";
-                                        String kicked_username = jpe.getProperty(Const.MSGFLAG_GROUP_KICKED_USERNAME)+"";
+                                    //消息类型是 离开、脱离群==============================================================
+                                    if(msgflag.equals(Const.MSGFLAG_GROUP_LEAVE)){
+                                        String leave_account = jpe.getProperty(Const.ACCOUNT)+"";
+                                        String leave_username = AsmackUtils.filterAccountToUserName(leave_account);
                                         String groupname = jpe.getProperty(Const.GROUP_JID)+"";
-                                        ////System.out.println(kick_account);
-                                        ////System.out.println(kicked_username);
-                                        ////System.out.println(groupname);
-                                        ////System.out.println("====================  接收到群踢消息  =====================");
-                                        if(mGroupMemberMap.containsKey(groupname)){
-                                            boolean b = false;
-                                            List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
-                                            for (int i = 0; i < list.size(); i++) {
-                                                if(list.get(i).getAccount().equals(kicked_username)){
-                                                    list.remove(i);
-                                                    //删除远程表
-                                                    //如果是我要删除TA ，那么我自己去删除数据库的数据
-                                                    if(kick_account.equals(IMService.mCurAccount)){
-                                                        ////System.out.println("====================  我要删除TA  =====================");
-                                                        HttpUtil.okhttpPost_deleteGroupMember(groupname, kicked_username);
+                                        //System.out.println("====================  接收到 脱离群消息  =====================");
+                                        //如果离开群的人是我自己
+                                        if(leave_account.equals(IMService.mCurAccount)){
+                                            //回调不做处理，已经在按钮端调用服务方法处理完毕
+                                        }else if(!leave_account.equals(IMService.mCurAccount)){
+                                            //别人要离开群
+                                            if(mGroupMemberMap.containsKey(groupname)){
+                                                boolean b = false;
+                                                List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
+                                                for (int i = 0; i < list.size(); i++) {
+                                                    if(list.get(i).getAccount().equals(leave_username)){
+                                                        list.remove(i);
+                                                        b = true;
+                                                        break;
                                                     }
-                                                    //删除本地表
-                                                    //如果我是被删除的人
-                                                    if((kicked_username+"@"+Const.APP_PACKAGENAME).equals(IMService.mCurAccount)){
-                                                        ////System.out.println("====================  我是被删除的人  =====================");
-                                                        //移除监听
-                                                        if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
-                                                            for (MultiUserChat multiUserChat : listMUCs()) {
-                                                                System.out.println("-------------------"+multiUserChat.getRoom());
-                                                                if(multiUserChat.getRoom().equals(groupname+Const.ROOM_JID_SUFFIX)){
-                                                                    MUCParams mucParams = getMUCParams(multiUserChat);
-                                                                    multiUserChat.removeMessageListener(mucParams.getMessageListener());
-                                                                    multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
-                                                                    mucsList.remove(multiUserChat);
-                                                                    mucsJIDs.remove(multiUserChat.getRoom());
-                                                                }
-                                                            }
-                                                            mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
-                                                        }
-
-
-                                                        if(mGroupMemberMap.containsKey(groupname)){
-                                                            mGroupMemberMap.remove(groupname);
-                                                        }
-                                                        if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
-                                                            mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
-                                                        }
-                                                        //删除本地数据库的群组表，我不再参与此群
-                                                        getContentResolver().delete(
-                                                                GroupProvider.URI_GROUP,
-                                                                GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
-                                                                new String[]{groupname+Const.ROOM_JID_SUFFIX, IMService.mCurAccount}
-                                                        );
-                                                        //删除本地群消息
-                                                        getContentResolver().delete(
-                                                                SmsProvider.URI_GROUPSMS,
-                                                                SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
-                                                                new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
-                                                        );
-                                                    }
-                                                    b = true;
-                                                    break;
+                                                }
+                                                if(b){
+                                                    mGroupMemberMap.remove(groupname);
+                                                    mGroupMemberMap.put(groupname,list);
                                                 }
                                             }
-                                            if(b){
-                                                mGroupMemberMap.remove(groupname);
-                                                mGroupMemberMap.put(groupname,list);
+                                        }
+                                    }else
+                                        //消息类型是 群踢人==============================================================
+                                        if(msgflag.equals(Const.MSGFLAG_GROUP_KICK)){
+                                            //踢人操作
+                                            String kick_account = jpe.getProperty(Const.ACCOUNT)+"";
+                                            String kicked_username = jpe.getProperty(Const.MSGFLAG_GROUP_KICKED_USERNAME)+"";
+                                            String groupname = jpe.getProperty(Const.GROUP_JID)+"";
+                                            ////System.out.println(kick_account);
+                                            ////System.out.println(kicked_username);
+                                            ////System.out.println(groupname);
+                                            ////System.out.println("====================  接收到群踢消息  =====================");
+                                            if(mGroupMemberMap.containsKey(groupname)){
+                                                boolean b = false;
+                                                List<GroupMemberBean> list = mGroupMemberMap.get(groupname);
+                                                for (int i = 0; i < list.size(); i++) {
+                                                    if(list.get(i).getAccount().equals(kicked_username)){
+                                                        list.remove(i);
+                                                        //删除远程表
+                                                        //如果是我要删除TA ，那么我自己去删除数据库的数据
+                                                        if(kick_account.equals(IMService.mCurAccount)){
+                                                            ////System.out.println("====================  我要删除TA  =====================");
+                                                            HttpUtil.okhttpPost_deleteGroupMember(groupname, kicked_username);
+                                                        }
+                                                        //删除本地表
+                                                        //如果我是被删除的人
+                                                        if((kicked_username+"@"+Const.APP_PACKAGENAME).equals(IMService.mCurAccount)){
+                                                            ////System.out.println("====================  我是被删除的人  =====================");
+                                                            //移除监听
+                                                            if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                                                                for (MultiUserChat multiUserChat : listMUCs()) {
+                                                                    //System.out.println("-------------------"+multiUserChat.getRoom());
+                                                                    if(multiUserChat.getRoom().equals(groupname+Const.ROOM_JID_SUFFIX)){
+                                                                        MUCParams mucParams = getMUCParams(multiUserChat);
+                                                                        multiUserChat.removeMessageListener(mucParams.getMessageListener());
+                                                                        multiUserChat.removeParticipantStatusListener(mucParams.getParticipantStatusListener());
+                                                                        mucsList.remove(multiUserChat);
+                                                                        mucsJIDs.remove(multiUserChat.getRoom());
+                                                                    }
+                                                                }
+                                                                mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+                                                            }
+
+
+                                                            if(mGroupMemberMap.containsKey(groupname)){
+                                                                mGroupMemberMap.remove(groupname);
+                                                            }
+                                                            if(mMultiUserChatMap.containsKey(groupname+Const.ROOM_JID_SUFFIX)){
+                                                                mMultiUserChatMap.remove(groupname+Const.ROOM_JID_SUFFIX);
+                                                            }
+                                                            //删除本地数据库的群组表，我不再参与此群
+                                                            getContentResolver().delete(
+                                                                    GroupProvider.URI_GROUP,
+                                                                    GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
+                                                                    new String[]{groupname+Const.ROOM_JID_SUFFIX, IMService.mCurAccount}
+                                                            );
+                                                            //删除本地群消息
+                                                            getContentResolver().delete(
+                                                                    SmsProvider.URI_GROUPSMS,
+                                                                    SmsDbHelper.SmsTable.TYPE +"=?  and  "+SmsDbHelper.SmsTable.ROOM_JID+" =?  and "+SmsDbHelper.SmsTable.OWNER+"  =? ",
+                                                                    new String[]{ Message.Type.groupchat.name(), groupname ,IMService.mCurAccount}
+                                                            );
+                                                        }
+                                                        b = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if(b){
+                                                    mGroupMemberMap.remove(groupname);
+                                                    mGroupMemberMap.put(groupname,list);
+                                                }
                                             }
+                                        }else{
+                                            //消息类型是  聊天==============================================================
+                                            //插入本地数据库
+                                            Message groupMessage = new Message();
+                                            groupMessage.setFrom(jpe.getProperty(Const.ACCOUNT)+"");
+                                            groupMessage.setTo("");
+                                            groupMessage.setBody(message.getBody());
+                                            groupMessage.setType(org.jivesoftware.smack.packet.Message.Type.groupchat);
+
+                                            JivePropertiesExtension jpe1 = new JivePropertiesExtension();
+                                            jpe1.setProperty(Const.MSGFLAG,msgflag);
+                                            if(msgflag.equals(Const.MSGFLAG_RECORD)){
+                                                jpe1.setProperty(Const.RECORDLEN,jpe.getProperty(Const.RECORDLEN));
+                                                jpe1.setProperty(Const.RECORDTIME,jpe.getProperty(Const.RECORDTIME));
+                                                jpe1.setProperty(Const.RECORDURL,jpe.getProperty(Const.RECORDURL));
+                                            }
+                                            if(msgflag.equals(Const.MSGFLAG_IMG)){
+                                                jpe1.setProperty(Const.REALIMAGEURL,jpe.getProperty(Const.REALIMAGEURL));
+                                            }
+                                            jpe1.setProperty(Const.GROUP_JID,jpe.getProperty(Const.GROUP_JID));
+
+                                            String session_account = jpe1.getProperty(Const.GROUP_JID) + "";
+
+                                            groupMessage.addExtension(jpe1);
+                                            saveGroupMessage(session_account,groupMessage );
+
+
+                                            String groupname = AsmackUtils.filterGroupName(jpe.getProperty(Const.GROUP_JID).toString());
+                                            String groupjid = jpe.getProperty(Const.GROUP_JID).toString() + Const.ROOM_JID_SUFFIX;
+                                            showNotification(session_account, //会话ID
+                                                    groupname,//标题
+                                                    groupMessage.getBody(),//消息内容
+                                                    groupMessage.getType().name(),//消息类型
+                                                    groupMessage.getFrom(),//消息来源
+                                                    "",//头像
+                                                    groupjid//群Jid
+                                            );
                                         }
-                                    }else{
-                                        //消息类型是  聊天==============================================================
-                                        //插入本地数据库
-                                        Message groupMessage = new Message();
-                                        groupMessage.setFrom(jpe.getProperty(Const.ACCOUNT)+"");
-                                        groupMessage.setTo("");
-                                        groupMessage.setBody(message.getBody());
-                                        groupMessage.setType(org.jivesoftware.smack.packet.Message.Type.groupchat);
-
-                                        JivePropertiesExtension jpe1 = new JivePropertiesExtension();
-                                        jpe1.setProperty(Const.MSGFLAG,msgflag);
-                                        if(msgflag.equals(Const.MSGFLAG_RECORD)){
-                                            jpe1.setProperty(Const.RECORDLEN,jpe.getProperty(Const.RECORDLEN));
-                                            jpe1.setProperty(Const.RECORDTIME,jpe.getProperty(Const.RECORDTIME));
-                                            jpe1.setProperty(Const.RECORDURL,jpe.getProperty(Const.RECORDURL));
-                                        }
-                                        if(msgflag.equals(Const.MSGFLAG_IMG)){
-                                            jpe1.setProperty(Const.REALIMAGEURL,jpe.getProperty(Const.REALIMAGEURL));
-                                        }
-                                        jpe1.setProperty(Const.GROUP_JID,jpe.getProperty(Const.GROUP_JID));
-
-                                        String session_account = jpe1.getProperty(Const.GROUP_JID) + "";
-
-                                        groupMessage.addExtension(jpe1);
-
-                                        saveGroupMessage(session_account,groupMessage);
-                                    }
+                    }
                 }
             }
         }

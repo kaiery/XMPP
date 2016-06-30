@@ -17,11 +17,13 @@ import com.softfun_xmpp.provider.ContactsProvider;
 import com.softfun_xmpp.provider.GroupProvider;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.jiveproperties.packet.JivePropertiesExtension;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
@@ -260,7 +262,6 @@ public class AsmackUtils {
      * @param mode
      */
     public static void setPresence(Presence.Mode mode) {
-
         try {
             //在线状态
             Presence presence = new Presence(Presence.Type.available);
@@ -293,7 +294,7 @@ public class AsmackUtils {
                 //签名
                 presence.setStatus("正在聊天");
             }
-            IMService.conn.sendPacket(presence);
+            IMService.conn.sendStanza(presence);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -454,13 +455,17 @@ public class AsmackUtils {
             MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(IMService.conn);
             MultiUserChat muc = manager.getMultiUserChat(roomsName + "@conference." + IMService.conn.getServiceName());
             //MultiUserChat muc = new MultiUserChat(IMService.conn, roomsName + "@conference." + IMService.conn.getServiceName());
+
+            // 聊天室服务将会决定要接受的历史记录数量
+            DiscussionHistory history = new DiscussionHistory();
+            history.setMaxChars(0);
             // 用户加入聊天室
-            muc.join(user, password);
-            System.out.println("会议室【" + roomsName + "】加入成功........");
+            muc.join(user, password,history, SmackConfiguration.getDefaultPacketReplyTimeout());
+            //System.out.println("会议室【" + roomsName + "】加入成功........");
             return muc;
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("会议室【" + roomsName + "】加入失败........");
+            //System.out.println("会议室【" + roomsName + "】加入失败........");
         }
         return null;
     }
@@ -516,11 +521,11 @@ public class AsmackUtils {
                     try {
                         multiUserChat.invite(account,reason);
                     } catch (SmackException.NotConnectedException e) {
-                        System.out.println("==================== 邀请群失败 =====================");
+                        //System.out.println("==================== 邀请群失败 =====================");
                         e.printStackTrace();
                     }
                 }else{
-                    System.out.println("====================  multiUserChat 为空 =====================");
+                    //System.out.println("====================  multiUserChat 为空 =====================");
                 }
             }
         }

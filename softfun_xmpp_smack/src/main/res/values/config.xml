@@ -11,6 +11,10 @@
     <integer name="socket_port">5222</integer>
     <!--======================================openfire==========================================-->
 
+    <string name="session_id">1_MX40NTQ0NDQzMn5-MTQ2NDg0Njg1Nzc4MX42MUtrWEc5L3RIM2hNV2k0alpJNzFKVzV-fg</string>
+    <string name="token">T1==cGFydG5lcl9pZD00NTQ0NDQzMiZzaWc9NDEyNDgwY2Q5YjM4MmEzNDhhZThlZWI4YmZkMGJkMmFjMTM5ZmM3ZjpzZXNzaW9uX2lkPTFfTVg0ME5UUTBORFF6TW41LU1UUTJORGcwTmpnMU56YzRNWDQyTVV0cldFYzVMM1JJTTJoTlYyazBhbHBKTnpGS1Z6Vi1mZyZjcmVhdGVfdGltZT0xNDY0ODQ2OTEwJm5vbmNlPTAuMTkxMTAyMDk4NDQwNzUxNDMmcm9sZT1wdWJsaXNoZXImZXhwaXJlX3RpbWU9MTQ2NzQzODg5MQ==</string>
+    <string name="api_key">45444432</string>
+
     <!--老系统地址-->
     <string name="app_server_n110">http://111.1.62.169:7001/nj110/</string>
     <!--使用帮助地址-->

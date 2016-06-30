@@ -1,8 +1,10 @@
 package com.softfun_xmpp.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -183,6 +185,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
+        //释放广播接收者
+        unregisterReceiver(dynamicReceiver);
+
         //卸载消息管理内容观察者
         unRegisterContentObserver();
         //解绑服务
@@ -711,7 +716,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    /**
+     * 广播接受者
+     * 退出与此好友聊天，此好友已被删除 的动态
+     */
+    private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Const.EXIT_CHAT_ACTION)){
+                finish();
+            }
+        }
+    };
+
     private void initListener() {
+        //注册广播接收者
+        // 退出与此好友聊天，此好友已被删除 的动态广播消息
+        IntentFilter filter_dynamic = new IntentFilter();
+        filter_dynamic.addAction(Const.EXIT_CHAT_ACTION);
+        registerReceiver(dynamicReceiver, filter_dynamic);
+
         mEtPrivateChatText.setOnClickListener(this);
         mIvPrivateChatFace.setOnClickListener(this);
         mIbPrivateChatKey.setOnClickListener(this);
@@ -1009,7 +1033,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 msg.setType(Message.Type.chat);
                 jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_TEXT);
                 msg.addExtension(jpe);
-                System.out.println("------------------------ " + msg.toXML());
+                //System.out.println("------------------------ " + msg.toXML());
                 //调用服务内的发送消息方法
                 mImService.sendMessage(msg);
                 //清空输入框
@@ -1138,7 +1162,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onUIProgress(long currentBytes, long contentLength, boolean done) {
             //ui层回调
-            System.out.println((int) ((100 * currentBytes) / contentLength));
+            //System.out.println((int) ((100 * currentBytes) / contentLength));
             if (done) {
             }
         }
@@ -1228,7 +1252,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         if (isShowFace) {
             closeFace();
-        } else {
+        }else if (mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
+            mLlPrivateChatExt.setVisibility(View.GONE);
+            mLlMoreExt.setVisibility(View.GONE);
+        }else {
             super.onBackPressed();
         }
     }

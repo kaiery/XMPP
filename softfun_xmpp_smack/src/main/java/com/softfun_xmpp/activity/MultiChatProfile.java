@@ -387,7 +387,23 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.btn:
                 //退出并删除群
-                exitOrDeleteGroup();
+                //工厂模式
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("提示");
+                builder.setMessage("确认需要退出并删除群吗？");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        exitOrDeleteGroup();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
                 break;
         }
     }
@@ -620,7 +636,7 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
                 IMService.mGroupMemberMap.remove(groupname);
             }
 
-            System.out.println("====================    ====================="+IMService.mMultiUserChatMap);
+            //System.out.println("====================    ====================="+IMService.mMultiUserChatMap);
 
             //清空自己的内存变量(删除群监听)
             //拿到 服务，调用服务内的方法，移除监听

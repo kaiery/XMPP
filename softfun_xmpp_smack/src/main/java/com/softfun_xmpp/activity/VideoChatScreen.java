@@ -87,7 +87,7 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
 
         //设置我正在视频聊天
         IMService.isVideo = true;
-        System.out.println("====================  IMService.isVideo = true  5=====================");
+        //System.out.println("====================  IMService.isVideo = true  5=====================");
 
     }
 
@@ -106,7 +106,7 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
     }
 
     private void exit() {
-        System.out.println("====================  IMService.isVideo = false  6=====================");
+        //System.out.println("====================  IMService.isVideo = false  6=====================");
         //设置我不再视频聊天
         IMService.isVideo = false;
         finish();
@@ -134,7 +134,7 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
 //        this.startActivity(intent);
 
         IMService.isVideo = true;
-        System.out.println("====================  IMService.isVideo = true  7=====================");
+        //System.out.println("====================  IMService.isVideo = true  7=====================");
         Intent intent = new Intent(this, UIActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("mTargetNickName",sourcename);

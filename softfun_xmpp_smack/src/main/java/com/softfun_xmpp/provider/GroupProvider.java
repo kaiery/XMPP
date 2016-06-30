@@ -75,7 +75,7 @@ public class GroupProvider extends ContentProvider {
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 long id = db.insert(GroupDbHelper.TABLE_GROUP,"",values);
                 if(id>0){
-                    System.out.println("群组插入成功");
+                    //System.out.println("群组插入成功");
                     //拼接最新的uri,重新赋值 ,比如拼接成：   content://softfun.softfun_xmpp.provider.ContactsProvider/contact/id
                     uri = ContentUris.withAppendedId(uri, id);
                     /*====================  通知 内容观察者，数据改变了  =====================*/
@@ -95,7 +95,7 @@ public class GroupProvider extends ContentProvider {
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 deleteCount = db.delete(GroupDbHelper.TABLE_GROUP, selection, selectionArgs);
                 if (deleteCount > 0) {
-                    System.out.println("----------群组删除成功--------");
+                    //System.out.println("----------群组删除成功--------");
                     //***通知 ContactContentObserver  数据改变了
                     getContext().getContentResolver().notifyChange(GroupProvider.URI_GROUP,null);//null 为所有的观察者都可以收到
                 }
@@ -114,7 +114,7 @@ public class GroupProvider extends ContentProvider {
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 updateCount = db.update(GroupDbHelper.TABLE_GROUP, values, selection, selectionArgs);
                 if (updateCount > 0) {
-                    System.out.println("----------群组更新成功--------");
+                    //System.out.println("----------群组更新成功--------");
                     //***通知 ContactContentObserver  数据改变了
                     getContext().getContentResolver().notifyChange(GroupProvider.URI_GROUP,null);//null 为所有的观察者都可以收到
                 }
@@ -132,7 +132,7 @@ public class GroupProvider extends ContentProvider {
             case GROUP:
                 SQLiteDatabase db = mHelper.getReadableDatabase();
                 cursor = db.query(GroupDbHelper.TABLE_GROUP, projection, selection, selectionArgs, null, null, sortOrder);
-                System.out.println("----------群组查询成功--------");
+                //System.out.println("----------群组查询成功--------");
                 //db.close();
                 break;
         }

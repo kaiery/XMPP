@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -23,7 +22,6 @@ import com.softfun_xmpp.connection.IMService;
 import com.softfun_xmpp.network.HttpUtil;
 import com.softfun_xmpp.utils.AsmackUtils;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
-import com.softfun_xmpp.utils.ThreadUtils;
 import com.softfun_xmpp.utils.VipResouce;
 
 import org.jivesoftware.smack.packet.Presence;
@@ -107,13 +105,7 @@ public class AddFriendsAction extends AppCompatActivity implements View.OnClickL
                     //同意添加好友
                     mImService.sendPresence(Presence.Type.subscribed,account);
                     mImService.sendPresence(Presence.Type.subscribe,account);
-                    ThreadUtils.runInThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            SystemClock.sleep(2000);
-                            AsmackUtils.setPresence(Presence.Mode.available);
-                        }
-                    });
+                    AsmackUtils.setPresence(Presence.Mode.available);
                     finish();
                 }
                 break;

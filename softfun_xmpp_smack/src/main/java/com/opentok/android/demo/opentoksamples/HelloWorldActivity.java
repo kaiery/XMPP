@@ -78,7 +78,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         username = getIntent().getStringExtra("username");
-        System.out.println("====================  username  =====================:"+username);
+        //System.out.println("====================  username  =====================:"+username);
         setContentView(R.layout.activity_simple_video);
 
         ActionBar actionBar = getSupportActionBar();
@@ -216,7 +216,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
             public void run() {
                 if (mSubscriber != null) {
                     attachSubscriberView(mSubscriber);
-                    System.out.println("====================  重新加载订阅视频到视图  =====================");
+                    //System.out.println("====================  重新加载订阅视频到视图  =====================");
                 }
             }
         }, 500);
@@ -230,14 +230,14 @@ public class HelloWorldActivity extends AppCompatActivity implements
             mSession = new Session(HelloWorldActivity.this, OpenTokConfig.API_KEY, OpenTokConfig.SESSION_ID);
             mSession.setSessionListener(this);
             mSession.connect(OpenTokConfig.TOKEN);
-            System.out.println("====================  session会话连接  =====================");
+            //System.out.println("====================  session会话连接  =====================");
         }
     }
 
     @Override
     public void onConnected(Session session) {
         Log.i(LOGTAG, "会话连接成功");
-        System.out.println("====================  会话连接成功  =====================");
+        //System.out.println("====================  会话连接成功  =====================");
         //视频发布者
         if (mPublisher == null) {
             mPublisher = new Publisher(HelloWorldActivity.this, username);
@@ -250,7 +250,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onDisconnected(Session session) {
         Log.i(LOGTAG, "会话已断开");
-        System.out.println("====================  会话已断开  =====================");
+        //System.out.println("====================  会话已断开  =====================");
         if (mPublisher != null) {
             mPublisherViewContainer.removeView(mPublisher.getView());
         }
@@ -276,7 +276,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
             //开始进行加载进度条展示
             mLoadingSub.setVisibility(View.VISIBLE);
         }
-        System.out.println("====================  订阅视频流  =====================："+stream.getName());
+        //System.out.println("====================  订阅视频流  =====================："+stream.getName());
     }
 
     /**
@@ -292,7 +292,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
                 subscribeToStream(mStreams.get(0));
             }
         }
-        System.out.println("====================  取消订阅视频流  =====================："+stream.getName());
+        //System.out.println("====================  取消订阅视频流  =====================："+stream.getName());
     }
 
     /**
@@ -306,7 +306,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
         mSubscriberViewContainer.addView(mSubscriber.getView(), layoutParams);
         //订阅者设置样式：填充显示
         subscriber.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE,  BaseVideoRenderer.STYLE_VIDEO_FILL);
-        System.out.println("====================  添加订阅者到视图  =====================");
+        //System.out.println("====================  添加订阅者到视图  =====================");
     }
 
     /**
@@ -321,7 +321,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
         layoutParams.bottomMargin = dpToPx(8);
         layoutParams.rightMargin = dpToPx(8);
         mPublisherViewContainer.addView(mPublisher.getView(), layoutParams);
-        System.out.println("====================  添加发布者到视图  =====================");
+        //System.out.println("====================  添加发布者到视图  =====================");
     }
 
     /**
@@ -332,7 +332,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onError(Session session, OpentokError exception) {
         Log.i(LOGTAG, "Session exception: " + exception.getMessage());
-        System.out.println("====================  onError  =====================");
+        ////System.out.println("====================  onError  =====================");
     }
 
     /**
@@ -350,7 +350,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
 //            }
 //        }
         if (!stream.getName().equals(username)) {
-            System.out.println("发布者："+username+"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
+            //System.out.println("发布者："+username+"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
             mStreams.add(stream);
             if (mSubscriber == null) {
                 subscribeToStream(stream);
@@ -373,7 +373,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
         if (mSubscriber != null) {
             unsubscribeFromStream(stream);
         }
-        System.out.println("====================  对方的视频掉线了  =====================："+stream.getName());
+        //System.out.println("====================  对方的视频掉线了  =====================："+stream.getName());
     }
 
     /**
@@ -383,7 +383,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
      */
     @Override
     public void onStreamCreated(PublisherKit publisher, Stream stream) {
-        System.out.println("发布者："+username+"成功发布了自己的视频，名称是："+stream.getName());
+        //System.out.println("发布者："+username+"成功发布了自己的视频，名称是："+stream.getName());
 //        if (OpenTokConfig.SUBSCRIBE_TO_SELF) {
 //            //订阅自己发布的视频
 //            mStreams.add(stream);
@@ -408,7 +408,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
         if(mSubscriber != null){
             unsubscribeFromStream(stream);
         }
-        System.out.println("====================  我的视频被销毁了  =====================："+stream);
+        //System.out.println("====================  我的视频被销毁了  =====================："+stream);
     }
 
     /**
@@ -419,7 +419,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onError(PublisherKit publisher, OpentokError exception) {
         Log.i(LOGTAG, "Publisher exception: " + exception.getMessage());
-        System.out.println("====================  视频发布出错了：  =====================  "+username);
+        //System.out.println("====================  视频发布出错了：  =====================  "+username);
     }
 
     /**
@@ -453,7 +453,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onVideoDisabled(SubscriberKit subscriber, String reason) {
         Log.i(LOGTAG,"Video disabled:" + reason);
-        System.out.println("====================  onVideoDisabled  对方视频中断了=====================："+subscriber.getStream().getName()+"  理由："+reason);
+        //System.out.println("====================  onVideoDisabled  对方视频中断了=====================："+subscriber.getStream().getName()+"  理由："+reason);
     }
 
     /**
@@ -464,7 +464,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onVideoEnabled(SubscriberKit subscriber, String reason) {
         Log.i(LOGTAG, "Video enabled:" + reason);
-        System.out.println("====================  onVideoEnabled  对方视频开启了=====================："+subscriber.getStream().getName()+"  理由："+reason);
+        //System.out.println("====================  onVideoEnabled  对方视频开启了=====================："+subscriber.getStream().getName()+"  理由："+reason);
     }
 
     /**
@@ -474,7 +474,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onVideoDisableWarning(SubscriberKit subscriber) {
         Log.i(LOGTAG, "视频可能很快就会被禁用由于网络质量下降。添加用户界面处理。");
-        System.out.println("====================  onVideoDisableWarning  视频可能很快就会被禁用由于网络质量下降=====================："+subscriber.getStream().getName());
+        //System.out.println("====================  onVideoDisableWarning  视频可能很快就会被禁用由于网络质量下降=====================："+subscriber.getStream().getName());
     }
 
     /**
@@ -484,7 +484,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
     @Override
     public void onVideoDisableWarningLifted(SubscriberKit subscriber) {
         Log.i(LOGTAG, "视频可能不再被禁用流质量改善。添加用户界面处理。");
-        System.out.println("====================  onVideoDisableWarningLifted  视频可能不再被禁用流质量改善=====================："+subscriber.getStream().getName());
+        //System.out.println("====================  onVideoDisableWarningLifted  视频可能不再被禁用流质量改善=====================："+subscriber.getStream().getName());
     }
 
 }

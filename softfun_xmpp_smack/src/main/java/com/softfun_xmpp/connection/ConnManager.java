@@ -20,6 +20,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
@@ -62,7 +63,7 @@ public class ConnManager {
                     .setPort(context.getResources().getInteger(R.integer.socket_port))
                     .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
                     .setCompressionEnabled(true)
-                    .setDebuggerEnabled(true)
+                    .setDebuggerEnabled(false)
                     .build();
 
             conn = new XMPPTCPConnection(config);
@@ -129,11 +130,6 @@ public class ConnManager {
                 if (IMService.mOfflineMsglist == null) {
                     IMService.mOfflineMsglist = new ArrayList<>();
                 }
-//                while (offlineMsglist.hasNext()) {
-//                    Message message = offlineMsglist.next();
-//                    ////System.out.println("离线消息："+message);
-//                    IMService.mOfflineMsglist.add(message);
-//                }
                 for (int i = 0; i < offlineMsglist.size(); i++) {
                     Message message = offlineMsglist.get(i);
                     IMService.mOfflineMsglist.add(message);
@@ -166,22 +162,20 @@ public class ConnManager {
                  */
                 @Override
                 public void connectionClosedOnError(Exception e) {
-                    if (e instanceof XMPPException) {
-                        XMPPException xe = (XMPPException) e;
-//                        final StreamError error = xe.getStreamError();
-//                        String errorCode;
-//                        if (error != null) {
-//                            errorCode = error.getCode();// larosn 0930
-//                            System.out.println("====================  " + "IMXmppManager 连接断开，错误码:" + errorCode + "  =====================");
-//                            if (errorCode.equalsIgnoreCase("conflict")) {// 被踢下线
-//                                //发送广播
-//                                Intent intent = new Intent();
-//                                intent.setAction(Const.RELOGIN_BROADCAST_ACTION);
-//                                intent.putExtra("msg", "您的帐号已在其他设备上登录。！");
-//                                context.sendBroadcast(intent);
-//                                return;
-//                            }
-//                        }
+                    //System.out.println("====================  e  ====================="+e);
+                    if (e instanceof XMPPException.StreamErrorException) {
+                        XMPPException.StreamErrorException xe = (XMPPException.StreamErrorException) e;
+                        final StreamError error = xe.getStreamError();
+                        if (error != null) {
+                            if (error.getCondition().name().equalsIgnoreCase("conflict")) {// 被踢下线
+                                //发送广播
+                                Intent intent = new Intent();
+                                intent.setAction(Const.RELOGIN_BROADCAST_ACTION);
+                                intent.putExtra("msg", "您的帐号已在其他设备上登录。！");
+                                context.sendBroadcast(intent);
+                                return;
+                            }
+                        }
                     }
                 }
                 @Override
@@ -195,41 +189,6 @@ public class ConnManager {
                 public void reconnectionFailed(Exception e) {
                 }
             });
-//            conn.addConnectionListener(new ConnectionListener() {
-//                @Override
-//                public void connectionClosed() {
-//                }
-//                @Override
-//                public void connectionClosedOnError(Exception e) {
-//                    if (e instanceof XMPPException) {
-//                        XMPPException xe = (XMPPException) e;
-//                        final StreamError error = xe.getStreamError();
-//                        String errorCode;
-//                        if (error != null) {
-//                            errorCode = error.getCode();// larosn 0930
-//                            //System.out.println("====================  " + "IMXmppManager 连接断开，错误码:" + errorCode + "  =====================");
-//                            if (errorCode.equalsIgnoreCase("conflict")) {// 被踢下线
-//                                //发送广播
-//                                Intent intent = new Intent();
-//                                intent.setAction(Const.RELOGIN_BROADCAST_ACTION);
-//                                intent.putExtra("msg", "您的帐号已在其他设备上登录。！");
-//                                context.sendBroadcast(intent);
-//                                return;
-//                            }
-//                        }
-//                    }
-//                }
-//                @Override
-//                public void reconnectingIn(int seconds) {
-//                }
-//                @Override
-//                public void reconnectionSuccessful() {
-//                    login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
-//                }
-//                @Override
-//                public void reconnectionFailed(Exception e) {
-//                }
-//            });
 
 
             //todo 启动服务，

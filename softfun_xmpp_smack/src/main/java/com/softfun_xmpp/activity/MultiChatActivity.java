@@ -1338,7 +1338,10 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
     public void onBackPressed() {
         if (isShowFace) {
             closeFace();
-        } else {
+        } else if (mLlChatExt.getVisibility() == View.VISIBLE) {
+            mLlChatExt.setVisibility(View.GONE);
+            mLlMoreExt.setVisibility(View.GONE);
+        }else {
             super.onBackPressed();
         }
     }

@@ -74,7 +74,7 @@ public class SmsProvider extends ContentProvider {
                 SQLiteDatabase db1 = mHelper.getWritableDatabase();
                 long id1 = db1.insert(SmsDbHelper.TABLE_SMS, "", values);
                 if (id1 > 0) {
-                    System.out.println("----------群聊消息插入成功--------");
+                    //System.out.println("----------群聊消息插入成功--------");
                     uri = ContentUris.withAppendedId(uri, id1);
                     getContext().getContentResolver().notifyChange(SmsProvider.URI_GROUPSMS, null);//null 为所有的观察者都可以收到
                 }
@@ -101,7 +101,7 @@ public class SmsProvider extends ContentProvider {
                 SQLiteDatabase db1 = mHelper.getWritableDatabase();
                 deleteCount = db1.delete(SmsDbHelper.TABLE_SMS, selection, selectionArgs);
                 if (deleteCount > 0) {
-                    System.out.println("----------群聊消息删除成功--------");
+                    //System.out.println("----------群聊消息删除成功--------");
                     getContext().getContentResolver().notifyChange(SmsProvider.URI_GROUPSMS, null);
                 }
                 break;
@@ -118,7 +118,7 @@ public class SmsProvider extends ContentProvider {
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 updateCount = db.update(SmsDbHelper.TABLE_SMS, values, selection, selectionArgs);
                 if (updateCount > 0) {
-                    System.out.println("----------消息更新成功--------");
+                    //System.out.println("----------消息更新成功--------");
                     //***通知 SmsContentObserver  数据改变了
                     getContext().getContentResolver().notifyChange(SmsProvider.URI_SMS, null);//null 为所有的观察者都可以收到
                 }
@@ -127,7 +127,7 @@ public class SmsProvider extends ContentProvider {
                 SQLiteDatabase db1 = mHelper.getWritableDatabase();
                 updateCount = db1.update(SmsDbHelper.TABLE_SMS, values, selection, selectionArgs);
                 if (updateCount > 0) {
-                    System.out.println("----------群聊消息更新成功--------");
+                    //System.out.println("----------群聊消息更新成功--------");
                     getContext().getContentResolver().notifyChange(SmsProvider.URI_GROUPSMS, null);//null 为所有的观察者都可以收到
                 }
                 break;
@@ -163,7 +163,7 @@ public class SmsProvider extends ContentProvider {
                         "order by "+SmsDbHelper.SmsTable.TIME+" asc";
                 //System.out.println("群聊消息记录的sql:"+groupSmsSql);
                 cursor = mHelper.getReadableDatabase().rawQuery(groupSmsSql,selectionArgs);
-                System.out.println("----------&&&群聊消息查询成功&&&--------");
+                //System.out.println("----------&&&群聊消息查询成功&&&--------");
                 break;
 
             //匹配到会话记录
@@ -177,6 +177,7 @@ public class SmsProvider extends ContentProvider {
                         " FROM ( SELECT * FROM "+SmsDbHelper.TABLE_SMS+" WHERE "+SmsDbHelper.SmsTable.OWNER+"=? ORDER BY "+SmsDbHelper.SmsTable.TIME+" ASC )" +
                         " GROUP BY "+SmsDbHelper.SmsTable.SESSION_ACCOUNT+"" +
                         ") t  order by  " +SmsDbHelper.SmsTable.TIME+" DESC";
+                //System.out.println("====================  session.sql  ===================== "+ sql.toString());
                 cursor = mHelper.getReadableDatabase().rawQuery(sql, selectionArgs);
                 break;
         }
