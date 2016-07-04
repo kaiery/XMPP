@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.app.NotificationCompat;
 import android.text.Html;
 
@@ -87,7 +88,7 @@ public class NotificationUtilEx {
                 int REQUESTID = (int) System.currentTimeMillis();
 
                 mBuilder.setLargeIcon(BitmapFactory.decodeResource(GlobalContext.getInstance().getResources(), R.mipmap.ic_launcher))
-                        .setSmallIcon(R.mipmap.ic_launcher_thumb)
+                        .setSmallIcon(R.drawable.ic_launcher_thumb)
                         .setTicker(value.getMsg())                                                                     //设置状态栏的显示的信息  jsonBean.getSourcename() + ":" + jsonBean.getHtmltext()
                         .setContentTitle(value.getTitle())           //设置下拉后通知标题
                         .setContentText(value.getMsg())                                                                  //设置下拉后通知文本
@@ -96,6 +97,7 @@ public class NotificationUtilEx {
                         .setDefaults(Notification.DEFAULT_ALL)                                                              //声音、震动、闪光
                         //.setOngoing(true)                                                                 //不能被用户x掉，会一直显示，如音乐播放等
                         .setPriority(Notification.PRIORITY_DEFAULT)                                         //优先级
+                        .setColor(Color.parseColor("#ff0000"))
                 ;
                 NotificationCompat.InboxStyle inboxStyle =   new NotificationCompat.InboxStyle();
                 // 设定一个标题的收件箱展开布局
@@ -127,7 +129,7 @@ public class NotificationUtilEx {
     /**
      * 清除已读通知消息
      */
-    public void deleteNotification(String from){
+    public void removeNotificationMapNode(String from){
         if(mMap!=null){
             if(mMap.containsKey(from)){
                 mMap.remove(from);
@@ -135,4 +137,12 @@ public class NotificationUtilEx {
         }
     }
 
+
+    /**
+     * 删除通知
+     * @param from
+     */
+    public  void deleteNotification(String from){
+        mNotificationManager.cancel(from.hashCode());
+    }
 }

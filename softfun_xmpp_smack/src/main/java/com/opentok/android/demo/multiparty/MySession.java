@@ -15,7 +15,7 @@ import com.opentok.android.Connection;
 import com.opentok.android.Publisher;
 import com.opentok.android.Session;
 import com.opentok.android.Stream;
-import com.opentok.android.demo.config.OpenTokConfig;
+import com.softfun_xmpp.connection.IMService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +97,7 @@ public class MySession extends Session {
 
 
     public MySession(Context context ,String userid,String showname) {
-        super(context, OpenTokConfig.API_KEY, OpenTokConfig.SESSION_ID);
+        super(context, IMService.api_key, IMService.session_id);
         this.mContext = context;
         this.userid = userid;
         this.showname = showname;
@@ -120,7 +120,7 @@ public class MySession extends Session {
     }
 
     public void connect() {
-        this.connect(OpenTokConfig.TOKEN);
+        this.connect(IMService.token);
     }
 
     public void sendChatMessage(String message) {

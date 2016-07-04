@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if(type==null || type.equals("") || type.equals("null")) return;
 
-        NotificationUtilEx.getInstance().deleteNotification(notification_from);
+        NotificationUtilEx.getInstance().removeNotificationMapNode(notification_from);
 
         if(!type.equals("") && !notification_from.equals("")  && !nickName.equals("")  && !avatarurl.equals("") && type.equals(Message.Type.chat.name())){
             //跳转到私聊

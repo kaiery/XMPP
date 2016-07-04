@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/frame"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -94,6 +95,7 @@
                     android:id="@+id/rl_private_chat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="bottom"
                     android:visibility="visible">
                     <!--文本输入-->
                     <EditText
@@ -115,16 +117,15 @@
                         android:textSize="@dimen/font_subheading"
                         android:visibility="visible"
                         tools:text="dfdsf地方"/>
-
                     <ImageView
                         android:id="@+id/iv_private_chat_face"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_alignBottom="@id/et_private_chat_text"
                         android:layout_alignRight="@id/et_private_chat_text"
                         android:layout_marginBottom="@dimen/activity_horizontal_margin_half"
                         android:layout_marginRight="4dp"
-                        android:src="@drawable/d_keai"
+                        android:src="@drawable/image_chat_smile"
                         android:visibility="visible"/>
                 </RelativeLayout>
             </LinearLayout>

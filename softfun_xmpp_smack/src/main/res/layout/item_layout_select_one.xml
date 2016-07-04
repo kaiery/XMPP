@@ -28,7 +28,7 @@
             android:layout_height="48dp"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="@dimen/activity_horizontal_margin_half"
-            android:src="@mipmap/ic_launcher_thumb"/>
+            android:src="@drawable/ic_launcher_thumb"/>
 
         <RelativeLayout
             android:layout_width="wrap_content"

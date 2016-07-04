@@ -77,48 +77,70 @@ public class GlobalSoundPool {
         String[] proj = { MediaStore.Images.Media.DATA };
         CursorLoader loader = new CursorLoader(GlobalContext.getInstance(), contentUri, proj, null, null, null);
         Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
+        if(cursor!=null){
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(column_index);
+            cursor.close();
+            return path;
+        }else{
+            if(contentUri.toString().contains("file://")){
+                return contentUri.toString().substring( contentUri.toString().indexOf("file://")+"file://".length()  );
+            }else{
+                return "";
+            }
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static void init(){
-        //获取系统通知声音的Uri
-        Uri uriSound = RingtoneManager.getActualDefaultRingtoneUri(GlobalContext.getInstance(), RingtoneManager.TYPE_NOTIFICATION );
-        //获取系统通知声音的真实地址
-        String soundPath = getRealPathFromURI(uriSound);
+        try {
+            //获取系统通知声音的Uri
+            Uri uriSound = RingtoneManager.getActualDefaultRingtoneUri(GlobalContext.getInstance(), RingtoneManager.TYPE_NOTIFICATION );
+            //获取系统通知声音的真实地址
+            String soundPath = getRealPathFromURI(uriSound);
+            //               /system/media/audio/notifications/Skyline.ogg
 
+            if((Build.VERSION.SDK_INT) >= Build.VERSION_CODES.LOLLIPOP){
+                AudioAttributes aa = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_GAME)
+                        .build();
+                mSoundPool = new SoundPool.Builder()
+                        .setAudioAttributes(aa)
+                        .setMaxStreams(10)
+                        .build();
+                id_bi = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_bi, 1);
+                id_rock = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_rock,1);
+                id_result = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_result,1);
+                id_press = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_press,1);
+                id_video = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_videocoming,1);
+                id_xiu = mSoundPool.load(GlobalContext.getInstance(),R.raw.v_xiu,1);
+                id_knock = mSoundPool.load(GlobalContext.getInstance(),R.raw.v_knock,1);
+                if(!soundPath.equals("")){
+                    id_notification = mSoundPool.load(soundPath, 1);
+                }else{
+                    id_notification = mSoundPool.load(GlobalContext.getInstance(),R.raw.v_msg,1);
+                }
+            }
+            else{
+                mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
 
-        if((Build.VERSION.SDK_INT) >= Build.VERSION_CODES.LOLLIPOP){
-            AudioAttributes aa = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .build();
-            mSoundPool = new SoundPool.Builder()
-                    .setAudioAttributes(aa)
-                    .setMaxStreams(10)
-                    .build();
-            id_bi = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_bi, 1);
-            id_rock = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_rock,1);
-            id_result = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_result,1);
-            id_press = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_press,1);
-            id_video = mSoundPool.load(GlobalContext.getInstance(), R.raw.v_videocoming,1);
-            id_xiu = mSoundPool.load(GlobalContext.getInstance(),R.raw.v_xiu,1);
-            id_knock = mSoundPool.load(GlobalContext.getInstance(),R.raw.v_knock,1);
-            id_notification = mSoundPool.load(soundPath, 1);
-        }
-        else{
-            mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-
-            id_bi=mSoundPool.load(GlobalContext.getInstance(),R.raw.v_bi,1);
-            id_rock=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_rock,1);
-            id_result=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_result,1);
-            id_press=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_press,1);
-            id_video=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_videocoming,1);
-            id_xiu=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_xiu,1);
-            id_knock=mSoundPool.load(GlobalContext.getInstance(),R.raw.v_knock,1);
-            id_notification = mSoundPool.load(soundPath, 1);
+                id_bi=mSoundPool.load(GlobalContext.getInstance(),R.raw.v_bi,1);
+                id_rock=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_rock,1);
+                id_result=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_result,1);
+                id_press=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_press,1);
+                id_video=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_videocoming,1);
+                id_xiu=mSoundPool.load(GlobalContext.getInstance(), R.raw.v_xiu,1);
+                id_knock=mSoundPool.load(GlobalContext.getInstance(),R.raw.v_knock,1);
+                if(!soundPath.equals("")){
+                    id_notification = mSoundPool.load(soundPath, 1);
+                }else{
+                    id_notification = mSoundPool.load(GlobalContext.getInstance(),R.raw.v_msg,1);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
     }
 

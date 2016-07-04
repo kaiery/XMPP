@@ -718,15 +718,14 @@ public class HttpUtil {
     }
 
     /**
-     * 发送短信
-     * @param userphone userphone
+     * 忘记密码 发送验证码短信
      */
-    public static String okhttpPost_sendsms_foundPwd(String userphone) {
+    public static String okhttpPost_sendsms_foundPwd(String username) {
         String yzm = null;
         try {
-            String url = context.getResources().getString(R.string.app_server_n110)+"sendsms_foundPwd.do";
+            String url = context.getResources().getString(R.string.app_server)+"forgetPassword_getYZM";
             RequestBody formBody = new FormBody.Builder()
-                    .add("userphone", userphone)
+                    .add("username", username)
                     .build();
             Request request = new Request.Builder()
                     .url(url)
@@ -1564,6 +1563,40 @@ public class HttpUtil {
             }
         }catch (Exception e){
             //System.out.println("网络访问异常:okhttpPost_writeUserLoginLog");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 查询视频聊天会话令牌
+     */
+    public static void okhttpPost_queryVideoSession() {
+        try {
+            String url = context.getResources().getString(R.string.app_server)+"queryVideoSession";
+            RequestBody formBody = new FormBody.Builder()
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
+            }
+
+            //开始解析json数据
+            JSONObject jsonObject = new JSONObject(response.body().string());
+            if(jsonObject.getBoolean("success")){
+                JSONObject map = jsonObject.getJSONObject("datamap");
+                JSONObject jsonUserBean = map.getJSONObject("VideoSessionBean");
+                if(jsonUserBean!=null){
+                    IMService.token = jsonUserBean.getString("token");
+                    IMService.session_id = jsonUserBean.getString("session_id");
+                    IMService.api_key = jsonUserBean.getString("api_key");
+                }
+            }
+        }catch (Exception e){
+            //System.out.println("网络访问异常:okhttpPost_queryVideoSession");
             e.printStackTrace();
         }
     }

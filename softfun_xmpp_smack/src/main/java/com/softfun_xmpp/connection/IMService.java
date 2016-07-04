@@ -97,6 +97,13 @@ public class IMService extends Service {
     public static String mCurWorkinglife;
     public static String mCurAddress;
 
+
+    //视频聊天会话令牌--------------------------------------------
+    public static String session_id;
+    public static String token;
+    public static String api_key;
+    //--------------------------------------------
+
     public static Map<String,List<GroupMemberBean>> mGroupMemberMap;
 
     /**
@@ -297,6 +304,9 @@ public class IMService extends Service {
                 }
                 /*====================  从服务器上同步群组信息end  =====================*/
                 isCreate = true;
+
+                HttpUtil.okhttpPost_queryVideoSession();
+
             }
         });
     }

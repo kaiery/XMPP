@@ -43,12 +43,13 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     //    图片选择加载器
     compile project(':multi-image-selector')
-    compile files('libs/opentok-android-sdk-2.7.0.jar')
     //裁剪
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
 
 
 
+    //compile files('libs/opentok-android-sdk-2.7.0.jar')
+    compile 'com.opentok.android:opentok-android-sdk:2.8.2+'
 
 
 

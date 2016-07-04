@@ -225,6 +225,20 @@ public class AsmackUtils {
     }
 
 
+    public static String encodeBase64(String data) {
+        byte[] bytes = null;
+        try {
+            bytes = data.getBytes("ISO-8859-1");//<-------Here
+        }
+        catch (UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
+        if(bytes!=null){
+            return new String(bytes);
+        }
+        return "";
+    }
+
     /**
      * 获取用户Vcard字段信息
      *

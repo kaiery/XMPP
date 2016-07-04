@@ -20,7 +20,7 @@ public class ForgetPasswordActivity extends AppCompatActivity implements View.On
 
     private EditText mEtUsername;
     private Toolbar mToolbar;
-    private EditText mEtPhone;
+//    private EditText mEtPhone;
     private Button mBtCheckma;
     private EditText mEtCheckma;
     private Button mBtn;
@@ -30,7 +30,7 @@ public class ForgetPasswordActivity extends AppCompatActivity implements View.On
 
     private void assignViews() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mEtPhone = (EditText) findViewById(R.id.et_phone);
+//        mEtPhone = (EditText) findViewById(R.id.et_phone);
         mBtCheckma = (Button) findViewById(R.id.bt_checkma);
         mEtCheckma = (EditText) findViewById(R.id.et_checkma);
         mBtn = (Button) findViewById(R.id.btn);
@@ -72,11 +72,12 @@ public class ForgetPasswordActivity extends AppCompatActivity implements View.On
                 if(StringUtils.isEmpty( mEtUsername.getText().toString().trim()   )){
                     mEtUsername.setError("请输入帐号信息");
                     return;
-                }else
-                if(StringUtils.isEmpty(mEtPhone.getText().toString().trim() )){
-                    mEtPhone.setError("请输入电话号码");
-                    return;
                 }
+//                else
+//                if(StringUtils.isEmpty(mEtPhone.getText().toString().trim() )){
+//                    mEtPhone.setError("请输入电话号码");
+//                    return;
+//                }
                 else if(StringUtils.isEmpty(mEtCheckma.getText().toString().trim() )){
                     mEtCheckma.setError("请输入验证码");
                     return;
@@ -86,13 +87,11 @@ public class ForgetPasswordActivity extends AppCompatActivity implements View.On
                     return;
                 }
                 final String username = mEtUsername.getText().toString().trim();
-                final String phone = mEtPhone.getText().toString().trim();
                 ThreadUtils.runInThread(new Runnable() {
                     @Override
                     public void run() {
                         int code = HttpUtil.okhttpPost_forgetPassword(username);
                         if(code==1){
-                            HttpUtil.okhttpPost_sendsmsForMsg(phone,"您的用户登录信息已经重置，登录名："+username+"，用户口令：888888 ,请牢记。");
                             finish();
                         }else{
                             ToastUtils.showToastSafe("密码重置失败。");
@@ -102,8 +101,8 @@ public class ForgetPasswordActivity extends AppCompatActivity implements View.On
                 break;
 
             case R.id.bt_checkma:
-                if(StringUtils.isEmpty( mEtPhone.getText().toString().trim()   )){
-                    mEtPhone.setError("请输入电话号码");
+                if(StringUtils.isEmpty( mEtUsername.getText().toString().trim()   )){
+                    mEtUsername.setError("请输入帐号信息");
                     return;
                 }else{
                     handler.postDelayed(runnable, 1000);
@@ -111,7 +110,8 @@ public class ForgetPasswordActivity extends AppCompatActivity implements View.On
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
                         public void run() {
-                            yzm = HttpUtil.okhttpPost_sendsms_foundPwd(mEtPhone.getText().toString().trim());
+                            final String username = mEtUsername.getText().toString().trim();
+                            yzm = HttpUtil.okhttpPost_sendsms_foundPwd(username);
                         }
                     });
                 }

@@ -177,6 +177,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
 
             private LoaderManager manager = null;
             private boolean isLoadHistoryMsg = false;
+    private boolean isShowMore;
 
 
     private void assignViews() {
@@ -857,6 +858,11 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         switch (v.getId()) {
             //录入框点击事件
             case R.id.et_chat_text: {
+                if (isShowMore&&mLlChatExt.getVisibility() == View.VISIBLE) {
+                    mLlChatExt.setVisibility(View.GONE);
+                    mLlMoreExt.setVisibility(View.GONE);
+                    isShowMore = false;
+                }
                 closeFaceAndShowKeyBoard();
                 break;
             }
@@ -901,9 +907,11 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
                 if (mLlChatExt.getVisibility() == View.VISIBLE) {
                     mLlChatExt.setVisibility(View.GONE);
                     mLlMoreExt.setVisibility(View.GONE);
+                    isShowMore = false;
                 } else if (mLlChatExt.getVisibility() == View.GONE) {
                     mLlChatExt.setVisibility(View.VISIBLE);
                     mLlMoreExt.setVisibility(View.VISIBLE);
+                    isShowMore = true;
                 }
                 break;
             }

@@ -27,9 +27,9 @@ import com.opentok.android.Session;
 import com.opentok.android.Stream;
 import com.opentok.android.Subscriber;
 import com.opentok.android.SubscriberKit;
-import com.opentok.android.demo.config.OpenTokConfig;
 import com.opentok.android.demo.services.ClearNotificationService;
 import com.softfun_xmpp.R;
+import com.softfun_xmpp.connection.IMService;
 
 import java.util.ArrayList;
 
@@ -227,9 +227,9 @@ public class HelloWorldActivity extends AppCompatActivity implements
      */
     private void sessionConnect() {
         if (mSession == null) {
-            mSession = new Session(HelloWorldActivity.this, OpenTokConfig.API_KEY, OpenTokConfig.SESSION_ID);
+            mSession = new Session(HelloWorldActivity.this, IMService.api_key, IMService.session_id);
             mSession.setSessionListener(this);
-            mSession.connect(OpenTokConfig.TOKEN);
+            mSession.connect(IMService.token);
             //System.out.println("====================  session会话连接  =====================");
         }
     }

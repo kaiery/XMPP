@@ -34,7 +34,7 @@
             android:layout_marginRight="4dp"
             android:background="@drawable/image_circular_border"
             android:padding="1dp"
-            android:src="@mipmap/ic_launcher_thumb"/>
+            android:src="@drawable/ic_launcher_thumb"/>
 
         <RelativeLayout
             android:layout_width="match_parent"

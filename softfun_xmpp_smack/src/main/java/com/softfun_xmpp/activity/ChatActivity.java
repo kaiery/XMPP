@@ -56,6 +56,7 @@ import com.softfun_xmpp.connection.IMService;
 import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.dbhelper.SmsDbHelper;
 import com.softfun_xmpp.network.HttpUtil;
+import com.softfun_xmpp.notification.NotificationUtilEx;
 import com.softfun_xmpp.provider.SmsProvider;
 import com.softfun_xmpp.recorder.AudioRecoderButton;
 import com.softfun_xmpp.recorder.MediaManager;
@@ -170,7 +171,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private LoaderManager manager = null;
     private boolean isLoadHistoryMsg = false;
-
+    private boolean isShowMore;
 
 
     @Override
@@ -211,6 +212,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mTargetAvatarUrl = getIntent().getStringExtra(ChatActivity.F_AVATARURL);
         //设置 当前聊天对象
         IMService.chatObject = mTargetAccount;
+
+
+        NotificationUtilEx.getInstance().deleteNotification(mTargetAccount);
     }
 
 
@@ -240,6 +244,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mLv.setHeadHintText_release("松开加载历史记录");
         mLv.setHeadHintText_refreshing("正在加载历史记录");
         mLv.setHeadHintText_refreshed("历史记录加载完成");
+
     }
 
     private void initData() {
@@ -396,6 +401,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if(mAdapter!=null)
             mAdapter.swapCursor(null);
     }
+
+
 
     private class MyCursorAdapter extends CursorAdapter {
         public static final int SEND = 0;
@@ -790,6 +797,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             //录入框点击事件
             case R.id.et_private_chat_text: {
+                if (isShowMore&&mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
+                    mLlPrivateChatExt.setVisibility(View.GONE);
+                    mLlMoreExt.setVisibility(View.GONE);
+                    isShowMore = false;
+                }
                 closeFaceAndShowKeyBoard();
                 break;
             }
@@ -834,9 +846,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
                     mLlPrivateChatExt.setVisibility(View.GONE);
                     mLlMoreExt.setVisibility(View.GONE);
+                    isShowMore = false;
                 } else if (mLlPrivateChatExt.getVisibility() == View.GONE) {
                     mLlPrivateChatExt.setVisibility(View.VISIBLE);
                     mLlMoreExt.setVisibility(View.VISIBLE);
+                    isShowMore = true;
                 }
                 break;
             }

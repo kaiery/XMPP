@@ -124,7 +124,7 @@
                         android:layout_alignRight="@id/et_chat_text"
                         android:layout_marginBottom="@dimen/activity_horizontal_margin_half"
                         android:layout_marginRight="4dp"
-                        android:src="@drawable/d_keai"
+                        android:src="@drawable/image_chat_smile"
                         android:visibility="visible"/>
                 </RelativeLayout>
             </LinearLayout>

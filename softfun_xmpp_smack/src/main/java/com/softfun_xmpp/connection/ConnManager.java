@@ -16,6 +16,7 @@ import com.softfun_xmpp.utils.ToastUtils;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -24,6 +25,9 @@ import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
+import org.jivesoftware.smackx.ping.PingFailedListener;
+import org.jivesoftware.smackx.ping.PingManager;
+import org.jivesoftware.smackx.ping.android.ServerPingWithAlarmManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,9 @@ import java.util.List;
  * 连接管理单例
  */
 public class ConnManager {
+
+
+    private MyConnectionListener myConnectionListener;
 
     //单例结构体--
     private ConnManager() {
@@ -64,9 +71,11 @@ public class ConnManager {
                     .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
                     .setCompressionEnabled(true)
                     .setDebuggerEnabled(false)
+                    .setSendPresence(false)
                     .build();
 
             conn = new XMPPTCPConnection(config);
+
             //conn.connect();
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +132,6 @@ public class ConnManager {
                 IMService.mCurWorkinglife = AsmackUtils.getVcardInfo(conn, IMService.mCurAccount, Const.WORKINGLIFE);
                 IMService.mCurAddress = AsmackUtils.getVcardInfo(conn, IMService.mCurAccount, Const.ADDRESS);
 
-
                 //接收离线消息
                 OfflineMessageManager omm = new OfflineMessageManager(conn);//创建一个离线消息对象
                 List<Message> offlineMsglist = omm.getMessages();//获取消息，结果为一个Message迭代器
@@ -134,10 +142,7 @@ public class ConnManager {
                     Message message = offlineMsglist.get(i);
                     IMService.mOfflineMsglist.add(message);
                 }
-
                 omm.deleteMessages();//将服务器上的离线消息删除。
-
-
             }
             AsmackUtils.setPresence(Presence.Mode.available);
 
@@ -145,50 +150,24 @@ public class ConnManager {
             SpUtils.put(Const.PASSWORD, password);
 
 
-            //自动链接
-            conn.addConnectionListener(new ConnectionListener() {
+            PingManager pingManager = PingManager.getInstanceFor(conn);
+            PingManager.setDefaultPingInterval(30);
+            pingManager.setPingInterval(30);
+            pingManager.registerPingFailedListener(new PingFailedListener() {
                 @Override
-                public void connected(XMPPConnection connection) {
-                }
-                @Override
-                public void authenticated(XMPPConnection connection, boolean resumed) {
-                }
-                @Override
-                public void connectionClosed() {
-                }
-                /**
-                 * 重复登录，T人代码 需要调试
-                 * @param e
-                 */
-                @Override
-                public void connectionClosedOnError(Exception e) {
-                    //System.out.println("====================  e  ====================="+e);
-                    if (e instanceof XMPPException.StreamErrorException) {
-                        XMPPException.StreamErrorException xe = (XMPPException.StreamErrorException) e;
-                        final StreamError error = xe.getStreamError();
-                        if (error != null) {
-                            if (error.getCondition().name().equalsIgnoreCase("conflict")) {// 被踢下线
-                                //发送广播
-                                Intent intent = new Intent();
-                                intent.setAction(Const.RELOGIN_BROADCAST_ACTION);
-                                intent.putExtra("msg", "您的帐号已在其他设备上登录。！");
-                                context.sendBroadcast(intent);
-                                return;
-                            }
-                        }
-                    }
-                }
-                @Override
-                public void reconnectionSuccessful() {
+                public void pingFailed() {
+                    System.out.println("====================  pingFailed  =====================");
                     login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
                 }
-                @Override
-                public void reconnectingIn(int seconds) {
-                }
-                @Override
-                public void reconnectionFailed(Exception e) {
-                }
             });
+            ServerPingWithAlarmManager.getInstanceFor(conn).isEnabled();
+            ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(conn);
+            reconnectionManager.enableAutomaticReconnection();
+            //自动链接
+            if(myConnectionListener==null){
+                myConnectionListener = new MyConnectionListener();
+                conn.addConnectionListener(myConnectionListener);
+            }
 
 
             //todo 启动服务，
@@ -199,6 +178,7 @@ public class ConnManager {
 
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             //登录失败
             ThreadUtils.runInUiThread(new Runnable() {
                 @Override
@@ -208,11 +188,64 @@ public class ConnManager {
                     IMService.mReLoginCount++;
                 }
             });
-            e.printStackTrace();
             initConnection();
             return false;
         }
     }
 
+    private class MyConnectionListener implements ConnectionListener{
+        @Override
+        public void connected(XMPPConnection connection) {
+            System.out.println("====================  connected  =====================");
+        }
+        @Override
+        public void authenticated(XMPPConnection connection, boolean resumed) {
+            System.out.println("====================  authenticated  =====================");
+        }
+        @Override
+        public void connectionClosed() {
+            System.out.println("====================  connectionClosed  =====================");
+            conn.removeConnectionListener(myConnectionListener);
+            myConnectionListener = null;
+        }
+        /**
+         * 重复登录，T人代码 需要调试
+         * @param e
+         */
+        @Override
+        public void connectionClosedOnError(Exception e) {
+            conn.removeConnectionListener(myConnectionListener);
+            myConnectionListener = null;
+            System.out.println("====================  connectionClosedOnError  ====================="+e);
+            if (e instanceof XMPPException.StreamErrorException) {
+                XMPPException.StreamErrorException xe = (XMPPException.StreamErrorException) e;
+                final StreamError error = xe.getStreamError();
+                if (error != null) {
+                    if (error.getCondition().name().equalsIgnoreCase("conflict")) {// 被踢下线
+                        //发送广播
+                        Intent intent = new Intent();
+                        intent.setAction(Const.RELOGIN_BROADCAST_ACTION);
+                        intent.putExtra("msg", "您的帐号已在其他设备上登录。！");
+                        context.sendBroadcast(intent);
+                        return;
+                    }
+                }
+            }
+        }
+        @Override
+        public void reconnectionSuccessful() {
+            System.out.println("====================  reconnectionSuccessful  =====================");
+            login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
+        }
+        @Override
+        public void reconnectingIn(int seconds) {
+            System.out.println("====================  "+seconds+"  =====================");
+            ToastUtils.showToastSafe("重新连接倒计时："+seconds);
+        }
+        @Override
+        public void reconnectionFailed(Exception e) {
+            System.out.println("====================  reconnectionFailed  =====================");
+        }
+    }
 
 }

@@ -31,7 +31,6 @@ import com.opentok.android.Stream;
 import com.opentok.android.Stream.StreamVideoType;
 import com.opentok.android.Subscriber;
 import com.opentok.android.SubscriberKit;
-import com.opentok.android.demo.config.OpenTokConfig;
 import com.opentok.android.demo.ui.AudioLevelView;
 import com.opentok.android.demo.ui.fragments.PublisherControlFragment;
 import com.opentok.android.demo.ui.fragments.PublisherStatusFragment;
@@ -122,8 +121,17 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public String mTargetNickName;
 
 
+    /**
+     * 延时退出的句柄
+     */
     private Handler handler = new Handler();
-    private static int mDelayTime = 30000; // 30秒
+    /**
+     * 延时退出时间
+     */
+    private static int mDelayTime = 3000000;
+    /**
+     * 视频激活状态
+     */
     private boolean mActivation;
 
     @Override
@@ -134,12 +142,9 @@ public class UIActivity extends Activity implements Session.SessionListener,
 
 
         IMService.isVideo = true;
-        //System.out.println("====================  IMService.isVideo = true  1=====================");
         mUserAccount = IMService.mCurAccount;
         mNickName = IMService.mCurNickName;
-        ////System.out.println("====================  mUserAccount  =====================:"+ mUserAccount);
         mTargetAccount = getIntent().getStringExtra("mTargetAccount");
-        ////System.out.println("====================  mTargetAccount  =====================:"+ mTargetAccount);
         mTargetNickName = getIntent().getStringExtra("mTargetNickName");
 
         initListener();
@@ -179,7 +184,9 @@ public class UIActivity extends Activity implements Session.SessionListener,
             if(intent.getAction().equals(Const.VIDEO_WORKING_BROADCAST_ACTION)){
                 final String msg = intent.getStringExtra("msg");
                 ToastUtils.showToastSafe(msg);//"对方正忙，无法进行视频聊天"
-                handler.removeCallbacks(runnable);
+                if(runnable!=null){
+                    handler.removeCallbacks(runnable);
+                }
                 close();
             }
         }
@@ -195,6 +202,9 @@ public class UIActivity extends Activity implements Session.SessionListener,
     };
 
 
+    /**
+     * 倒计时任务
+     */
     private void startTimeTask() {
         handler.postDelayed(runnable,mDelayTime);
     }
@@ -470,7 +480,6 @@ public class UIActivity extends Activity implements Session.SessionListener,
         if (mSession != null) {
             mSession.disconnect();
         }
-        //System.out.println("====================  IMService.isVideo = false  2=====================");
         IMService.isVideo = false;
         IMService.VIDEO_UI_CREATE = false;
         super.onDestroy();
@@ -512,12 +521,19 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     private void sessionConnect() {
         if (mSession == null) {
-            mSession = new Session(this, OpenTokConfig.API_KEY,
-                    OpenTokConfig.SESSION_ID);
+            mSession = new Session(this,
+                    //OpenTokConfig.API_KEY,
+                    IMService.api_key,
+                    //OpenTokConfig.SESSION_ID
+                    IMService.session_id
+            );
             mSession.setSessionListener(this);
             mSession.setArchiveListener(this);
             mSession.setStreamPropertiesListener(this);
-            mSession.connect(OpenTokConfig.TOKEN);
+            mSession.connect(
+                    //OpenTokConfig.TOKEN
+                    IMService.token
+            );
         }
     }
 
@@ -571,7 +587,6 @@ public class UIActivity extends Activity implements Session.SessionListener,
         if (mSession != null) {
             mSession.disconnect();
         }
-        //System.out.println("====================  IMService.isVideo = false  3=====================");
         //设置我不再视频聊天
         IMService.isVideo = false;
         finish();
@@ -698,6 +713,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onConnected(Session session) {
         //Log.i(LOGTAG, "会话连接成功");
+        ToastUtils.showToastSafe("会话连接成功");
         //System.out.println("====================  会话连接成功  =====================");
         //视频发布者
         if (mPublisher == null) {
@@ -711,6 +727,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onDisconnected(Session session) {
         //Log.i(LOGTAG, "会话已断开");
+        ToastUtils.showToastSafe("会话已断开");
         //System.out.println("====================  会话已断开  =====================");
         if (mPublisher != null) {
             mPublisherViewContainer.removeView(mPublisher.getRenderer().getView());
@@ -742,7 +759,9 @@ public class UIActivity extends Activity implements Session.SessionListener,
 //        }
 
         //System.out.println("发布者："+ mUserAccount +"接收到：====================  onStreamReceived:  =====================:"+stream.getName());
+        //System.out.println("====================  我需要接收  ===================== "+mTargetAccount);
         //不是自己发布的视频，是指定对方的视频
+        ToastUtils.showToastSafe("接收到视频流");
         if (!stream.getName().equals(mUserAccount) && stream.getName().equals(mTargetAccount)) {
             mStreams.add(stream);
             if (mSubscriber == null) {
@@ -759,6 +778,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onStreamDropped(Session session, Stream stream) {
+        ToastUtils.showToastSafe("视频掉线");
         //System.out.println("====================  视频掉线  =====================");
         mStreams.remove(stream);
 //        if (!OpenTokConfig.SUBSCRIBE_TO_SELF) {
@@ -788,6 +808,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onStreamCreated(PublisherKit publisher, Stream stream) {
+        ToastUtils.showToastSafe("成功发布了自己的视频");
         //System.out.println("发布者："+ mUserAccount +"成功发布了自己的视频，名称是："+stream.getName());
 //        if (OpenTokConfig.SUBSCRIBE_TO_SELF) {
 //            mStreams.add(stream);
@@ -814,6 +835,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         if(mSubscriber != null){
             unsubscriberFromStream(stream);
         }
+        ToastUtils.showToastSafe("我的视频被销毁");
         //System.out.println("====================  我的视频被销毁了  =====================："+stream);
     }
     /**
@@ -822,6 +844,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onError(Session session, OpentokError exception) {
+        ToastUtils.showToastSafe("视频发布出错了");
         //System.out.println("====================  视频发布出错了  =====================:"+exception.getMessage());
         Toast.makeText(this,"会话异常" , Toast.LENGTH_LONG).show();
 
@@ -960,7 +983,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public void onError(PublisherKit publisher, OpentokError exception) {
         //Log.i(LOGTAG, "Publisher exception: " + exception.getMessage());
         //System.out.println("====================  视频发布出错了：  =====================  "+ mUserAccount);
-        Toast.makeText(this,"视频发布出错" , Toast.LENGTH_LONG).show();
+        ToastUtils.showToastSafe("视频发布出错了1");
 
         close();
     }
@@ -972,6 +995,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onConnected(SubscriberKit subscriber) {
         //System.out.println("====================  订阅者连接成功  =====================");
+        ToastUtils.showToastSafe("订阅者连接成功");
         mLoadingSub.setVisibility(View.GONE);
         mSubscriberFragment.showSubscriberWidget(true);
         mSubscriberFragment.initSubscriberUI();
@@ -984,7 +1008,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onDisconnected(SubscriberKit subscriber) {
         //System.out.println("Subscriber disconnected.");
-        Toast.makeText(this,"对方停止了视频通话" , Toast.LENGTH_LONG).show();//订阅视频连接失败
+        ToastUtils.showToastSafe("对方停止了视频通话");
         close();
     }
 
@@ -1009,7 +1033,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onError(SubscriberKit subscriber, OpentokError exception) {
         //System.out.println("订阅者发生异常：" + exception.getMessage());
-        Toast.makeText(this,"订阅视频异常" , Toast.LENGTH_LONG).show();
+        ToastUtils.showToastSafe("订阅视频异常");
         close();
     }
 
@@ -1063,6 +1087,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public void onStreamHasAudioChanged(Session session, Stream stream, boolean audioEnabled) {
         //Log.i(LOGTAG, "Stream audio changed");
         //System.out.println("====================  流媒体音频发生变化  =====================:"+stream.getName()+"  "+audioEnabled);
+        ToastUtils.showToastSafe("流媒体音频发生变化");
     }
 
     /**
@@ -1076,6 +1101,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
                                         boolean videoEnabled) {
         //Log.i(LOGTAG, "Stream video changed");
         //System.out.println("====================  流媒体视频发生变化  =====================:"+stream.getName()+"  "+videoEnabled);
+        ToastUtils.showToastSafe("流媒体视频发生变化");
     }
 
     /**
@@ -1090,6 +1116,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
                                                int width, int height) {
         //Log.i(LOGTAG, "Stream video dimensions changed");
         //System.out.println("====================  流媒体视频尺寸发生变化  =====================:"+stream.getName()+"  "+width+"  "+height);
+        ToastUtils.showToastSafe("流媒体视频尺寸发生变化");
     }
 
     /**
@@ -1149,6 +1176,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onVideoDisableWarning(SubscriberKit subscriber) {
+        ToastUtils.showToastSafe("视频可能很快就会被禁用由于网络质量下降");
         //Log.i(LOGTAG, "视频可能很快就会被禁用由于网络质量下降。添加用户界面处理。");
         //System.out.println("====================  onVideoDisableWarning  视频可能很快就会被禁用由于网络质量下降=====================："+subscriber.getStream().getName());
         mSubscriberQualityFragment.setCongestion(SubscriberQualityFragment.CongestionLevel.Mid);
@@ -1162,6 +1190,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onVideoDisableWarningLifted(SubscriberKit subscriber) {
+        ToastUtils.showToastSafe("视频可能不再被禁用流质量改善");
         //Log.i(LOGTAG, "视频可能不再被禁用流质量改善。添加用户界面处理。");
         //System.out.println("====================  onVideoDisableWarningLifted  视频可能不再被禁用流质量改善=====================："+subscriber.getStream().getName());
         mSubscriberQualityFragment.setCongestion(SubscriberQualityFragment.CongestionLevel.Low);
@@ -1177,6 +1206,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
      */
     @Override
     public void onStreamVideoTypeChanged(Session session, Stream stream, StreamVideoType videoType) {
+        ToastUtils.showToastSafe("流媒体视频类型变化1");
         //Log.i(LOGTAG, "Stream video type changed");
         //System.out.println("====================  流媒体视频类型变化  =====================:"+stream.getName()+"  "+videoType);
     }
@@ -1189,6 +1219,9 @@ public class UIActivity extends Activity implements Session.SessionListener,
     private void close(){
         if (mSession != null) {
             mSession.disconnect();
+        }
+        if(runnable!=null){
+            handler.removeCallbacks(runnable);
         }
         //System.out.println("====================  IMService.isVideo = false  4=====================");
         //设置我不再视频聊天
