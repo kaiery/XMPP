@@ -87,6 +87,8 @@ public class BBSIndexActivity extends AppCompatActivity {
             //开启javascript
             settings.setJavaScriptEnabled(true);
 
+            settings.setSavePassword(false);
+
             //直接运行js脚本  java调用js
             //wv.loadUrl("javascript:alert('你好')");
 

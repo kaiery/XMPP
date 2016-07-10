@@ -161,6 +161,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                             finish();//关闭当前的界面  ★一定记得关闭界面,数据才会被返回
                         }else if(code == 409){
                             ToastUtils.showToastSafe("用户已被注册");
+                        }else if(code == 408){
+                            ToastUtils.showToastSafe("手机号已被注册");
                         }else{
                             ToastUtils.showToastSafe("注册失败");
                         }

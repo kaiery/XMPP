@@ -1,4 +1,4 @@
-package com.softfun_xmpp.gallery;
+package com.softfun_xmpp.components;
 
 import android.content.Context;
 import android.graphics.Matrix;

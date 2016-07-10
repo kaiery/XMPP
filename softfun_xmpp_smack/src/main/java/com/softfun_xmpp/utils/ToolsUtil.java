@@ -52,12 +52,12 @@ public class ToolsUtil {
      * 获取当前时间
      * @return
      */
-    public static String getCurrentStamp(Date date) {
-        SimpleDateFormat formDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.SIMPLIFIED_CHINESE);
+    public static String getCurrentStamp() {
+        SimpleDateFormat formDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String datestr = "";
         try {
-            datestr = formDate.format(date);
-        } catch (Exception e) {
+            datestr = formDate.format(new Date());
+        } catch (Exception ignored) {
         }
         return datestr;
     }

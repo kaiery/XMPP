@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.softfun_xmpp.R;
 import com.softfun_xmpp.application.GlobalContext;
 import com.softfun_xmpp.constant.Const;
+import com.softfun_xmpp.log.SoftFunLog;
 import com.softfun_xmpp.utils.AsmackUtils;
 import com.softfun_xmpp.utils.CipherUtils;
 import com.softfun_xmpp.utils.SpUtils;
@@ -17,6 +18,7 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -29,6 +31,7 @@ import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jivesoftware.smackx.ping.android.ServerPingWithAlarmManager;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,13 +78,23 @@ public class ConnManager {
                     .build();
 
             conn = new XMPPTCPConnection(config);
-
-            //conn.connect();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
+    /**
+     * 重置连接
+     */
+    private void resetConnection(){
+        if(conn!=null){
+            conn.removeConnectionListener(myConnectionListener);
+            myConnectionListener = null;
+            conn = null;
+        }
+        initConnection();
+    }
 
 
     /**
@@ -108,7 +121,20 @@ public class ConnManager {
             if (conn!=null && conn.isConnected()  && !conn.isAuthenticated() && conn.getUser() == null) {
                 String md5 = CipherUtils.md5(password);
                 conn.login(name, md5);
+
+                SoftFunLog.getInstance().writeLog("login sucess",null);
+
                 IMService.conn = conn;
+
+                //强制改变为下线状态
+                try {
+                    Presence presence = new Presence(Presence.Type.unavailable);
+                    IMService.conn.sendStanza(presence);
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                }
+
+
                 IMService.mCurAccount = name + "@" + Const.APP_PACKAGENAME;
                 IMService.mCurNickName = AsmackUtils.getVcardInfo(conn, IMService.mCurAccount, Const.NICKNAME);//accountManager.getAccountAttribute("name");
                 IMService.mCurRoletype = AsmackUtils.getVcardInfo(conn, IMService.mCurAccount, Const.ROLETYPE);
@@ -156,7 +182,9 @@ public class ConnManager {
             pingManager.registerPingFailedListener(new PingFailedListener() {
                 @Override
                 public void pingFailed() {
+                    SoftFunLog.getInstance().writeLog("pingFailed",null);
                     System.out.println("====================  pingFailed  =====================");
+                    resetConnection();
                     login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
                 }
             });
@@ -164,10 +192,12 @@ public class ConnManager {
             ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(conn);
             reconnectionManager.enableAutomaticReconnection();
             //自动链接
-            if(myConnectionListener==null){
-                myConnectionListener = new MyConnectionListener();
-                conn.addConnectionListener(myConnectionListener);
+            if(myConnectionListener!=null){
+                conn.removeConnectionListener(myConnectionListener);
+                myConnectionListener = null;
             }
+            myConnectionListener = new MyConnectionListener();
+            conn.addConnectionListener(myConnectionListener);
 
 
             //todo 启动服务，
@@ -196,17 +226,20 @@ public class ConnManager {
     private class MyConnectionListener implements ConnectionListener{
         @Override
         public void connected(XMPPConnection connection) {
+            SoftFunLog.getInstance().writeLog("connected",null);
             System.out.println("====================  connected  =====================");
         }
         @Override
         public void authenticated(XMPPConnection connection, boolean resumed) {
+            SoftFunLog.getInstance().writeLog("authenticated",null);
             System.out.println("====================  authenticated  =====================");
         }
         @Override
         public void connectionClosed() {
+            SoftFunLog.getInstance().writeLog("connectionClosed",null);
             System.out.println("====================  connectionClosed  =====================");
-            conn.removeConnectionListener(myConnectionListener);
-            myConnectionListener = null;
+            //conn.removeConnectionListener(myConnectionListener);
+            //myConnectionListener = null;
         }
         /**
          * 重复登录，T人代码 需要调试
@@ -214,14 +247,15 @@ public class ConnManager {
          */
         @Override
         public void connectionClosedOnError(Exception e) {
-            conn.removeConnectionListener(myConnectionListener);
-            myConnectionListener = null;
+            SoftFunLog.getInstance().writeLog("connectionClosedOnError",null);
             System.out.println("====================  connectionClosedOnError  ====================="+e);
             if (e instanceof XMPPException.StreamErrorException) {
                 XMPPException.StreamErrorException xe = (XMPPException.StreamErrorException) e;
                 final StreamError error = xe.getStreamError();
                 if (error != null) {
                     if (error.getCondition().name().equalsIgnoreCase("conflict")) {// 被踢下线
+                        conn.removeConnectionListener(myConnectionListener);
+                        myConnectionListener = null;
                         //发送广播
                         Intent intent = new Intent();
                         intent.setAction(Const.RELOGIN_BROADCAST_ACTION);
@@ -230,20 +264,42 @@ public class ConnManager {
                         return;
                     }
                 }
+            }else if(e instanceof SocketException){
+                SocketException exception = (SocketException) e;
+                SoftFunLog.getInstance().writeLog(exception.getMessage(),null);
+                if(exception.getMessage().contains("Connection timed out")){
+                    SoftFunLog.getInstance().writeLog("Connection timed out",null);
+
+//                    //强制改变为下线状态
+//                    try {
+//                        Presence presence = new Presence(Presence.Type.unavailable);
+//                        IMService.conn.sendStanza(presence);
+//                    } catch (SmackException.NotConnectedException e1) {
+//                        e1.printStackTrace();
+//                    }
+                    //停止服务
+                    Intent imservice = new Intent(context,IMService.class);
+                    context.stopService(imservice);
+                }
             }
         }
         @Override
         public void reconnectionSuccessful() {
+            SoftFunLog.getInstance().writeLog("reconnectionSuccessful",null);
             System.out.println("====================  reconnectionSuccessful  =====================");
+            IMService.isRelogin = true;
             login(SpUtils.get(Const.USERNAME, "").toString(), SpUtils.get(Const.PASSWORD, "").toString());
         }
         @Override
         public void reconnectingIn(int seconds) {
+            SoftFunLog.getInstance().writeLog("reconnectingIn "+seconds,null);
             System.out.println("====================  "+seconds+"  =====================");
             ToastUtils.showToastSafe("重新连接倒计时："+seconds);
         }
         @Override
         public void reconnectionFailed(Exception e) {
+//            GlobalSoundPool.getInstance().play(R.raw.v_result);
+            SoftFunLog.getInstance().writeLog("reconnectionFailed",null);
             System.out.println("====================  reconnectionFailed  =====================");
         }
     }

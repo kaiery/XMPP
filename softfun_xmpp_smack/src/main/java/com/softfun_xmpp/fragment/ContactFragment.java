@@ -215,11 +215,10 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
      * 设置或更新Adapter
      */
     private void setOrUpdateAdapter() {
-
         if(IMService.mCurAccount==null){
             return;
         }
-        //System.out.println("====================  manager.restartLoader  =====================");
+        //System.out.println("====================  manager.restartLoader  ====================="+IMService.mCurAccount);
         manager.restartLoader(0,null,this);
     }
 
@@ -528,6 +527,9 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
             if(IMService.isCreate){
+                setOrUpdateAdapter();
+            }else
+            if(IMService.isRelogin){
                 setOrUpdateAdapter();
             }
         }

@@ -85,6 +85,7 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
         //获取传递的用户登录信息
         Intent intent = this.getIntent();
         mRoomJid = intent.getStringExtra(MultiChatActivity.F_ROOM_JID);
+        mRoomJid = AsmackUtils.filterGroupJid(mRoomJid);
         mRoomName = intent.getStringExtra(MultiChatActivity.F_ROOM_NAME);
         mRoomAvatarurl = intent.getStringExtra(MultiChatActivity.F_ROOM_AVATARURL);
         mReason = intent.getStringExtra(MultiChatActivity.F_REASON);
@@ -111,7 +112,7 @@ public class AddGroupsAction extends AppCompatActivity implements View.OnClickLi
         mBtAgree.setEnabled(false);
         mBtReject.setEnabled(false);
 
-        new queryOracle_queryGroupInfoByRoomName_AsyncTask().execute(AsmackUtils.filterAccountToUserName(IMService.mCurAccount)  ,mRoomJid);
+        new queryOracle_queryGroupInfoByRoomName_AsyncTask().execute(AsmackUtils.filterAccountToUserName(IMService.mCurAccount)  ,AsmackUtils.filterGroupJid(mRoomJid));
     }
 
     private void init() {

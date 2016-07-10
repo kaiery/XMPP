@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.softfun_xmpp.R;
+import com.softfun_xmpp.components.ZoomImageView;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
 
 import java.security.MessageDigest;

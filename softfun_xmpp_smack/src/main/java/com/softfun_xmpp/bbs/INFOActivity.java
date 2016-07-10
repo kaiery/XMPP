@@ -47,7 +47,7 @@ public class INFOActivity extends AppCompatActivity {
     private void initWebView(String code) {
         try {
             //地址 http://111.1.62.169:7001/nj110/queryInfoList.do?type=03
-            String weburl = "http://111.1.62.169:7001/nj110/queryInfoList.do?type="+code;
+            String weburl = getResources().getString(R.string.app_server_n110)+"queryInfoList.do?type="+code;
             wv.loadUrl(weburl);
             //重写此方法表明点击网页里面的链接还是在当前的webview里跳转，不跳到浏览器那边
             wv.setWebViewClient(new WebViewClient() {
@@ -85,6 +85,7 @@ public class INFOActivity extends AppCompatActivity {
             //开启javascript
             settings.setJavaScriptEnabled(true);
 
+            settings.setSavePassword(false);
             //直接运行js脚本  java->js
             //wv.loadUrl("javascript:alert('你好')");
 

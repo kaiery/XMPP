@@ -150,6 +150,7 @@ public class IMService extends Service {
      */
     public static boolean isCreate;
 
+    public static boolean isRelogin;
 
 
 
@@ -297,7 +298,8 @@ public class IMService extends Service {
                     if(mOffGroupInviteList.size()>0){
                         for (Message message : mOffGroupInviteList) {
                             JivePropertiesExtension jpe = (JivePropertiesExtension) message.getExtension(JivePropertiesExtension.NAMESPACE);
-                            String roomjid = jpe.getProperty(Const.GROUP_JID).toString();//message.getProperty(Const.GROUP_JID).toString();
+                            String roomjid = jpe.getProperty(Const.GROUP_JID).toString();
+                            roomjid = AsmackUtils.filterGroupJid(roomjid);
                             saveGroupMessage(roomjid,message);
                         }
                     }
@@ -612,6 +614,8 @@ public class IMService extends Service {
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         }
+        isCreate = false;
+        isRelogin = false;
     }
 
 

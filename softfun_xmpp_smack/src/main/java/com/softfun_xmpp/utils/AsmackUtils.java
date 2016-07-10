@@ -91,7 +91,11 @@ public class AsmackUtils {
      */
     public static String filterGroupJid(String jid) {
         if(!TextUtils.isEmpty(jid)){
-            return jid.substring(0,jid.lastIndexOf("@"));
+            if(jid.lastIndexOf("@")>0){
+                return jid.substring(0,jid.lastIndexOf("@"));
+            }else{
+                return jid;
+            }
         }
         return "";
     }
@@ -208,6 +212,7 @@ public class AsmackUtils {
             vCard.setField(Const.WORKINGLIFE, IMService.mCurWorkinglife);
             vCard.setField(Const.ADDRESS, IMService.mCurAddress);
             vCard.save(conn);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

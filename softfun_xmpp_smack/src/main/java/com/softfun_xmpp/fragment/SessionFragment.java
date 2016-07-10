@@ -353,10 +353,10 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
                 }
                 //如果是群组消息
                 if(type.equals(Message.Type.groupchat.name())){
-                    final String room_jid = mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.ROOM_JID);;//mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.ROOM_JID));
-                    final String room_name = mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.ROOM_NAME);;//mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.ROOM_NAME));
+                    final String room_jid = AsmackUtils.filterGroupJid(mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.ROOM_JID));
+                    final String room_name = mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.ROOM_NAME);
                     final String room_face = AsmackUtils.getFieldByGroupJidFromGroupTable(account+Const.ROOM_JID_SUFFIX, GroupDbHelper.GroupTable.FACE);
-                    String msgflag = mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.FLAG);;//mCursor.getString(mCursor.getColumnIndex(SmsDbHelper.SmsTable.FLAG));
+                    String msgflag = mAdapter.getPositionValue(position,SmsDbHelper.SmsTable.FLAG);
                     if(msgflag.equals(Const.MSGFLAG_GROUP_INVITE)){
                         ////System.out.println("--------------------------------这是群聊邀请消息");
                         ThreadUtils.runInThread(new Runnable() {
@@ -378,8 +378,8 @@ public class SessionFragment extends Fragment implements LoaderManager.LoaderCal
                                     //进入群邀请回应界面
                                     Intent intent = new Intent(getActivity(),AddGroupsAction.class);
                                     intent.putExtra(MultiChatActivity.F_ROOM_JID,account);
-                                    intent.putExtra(MultiChatActivity.F_ROOM_NAME,nickName);
-                                    intent.putExtra(MultiChatActivity.F_ROOM_AVATARURL,avatar);
+                                    intent.putExtra(MultiChatActivity.F_ROOM_NAME,room_name);
+                                    intent.putExtra(MultiChatActivity.F_ROOM_AVATARURL,room_face);
                                     intent.putExtra(MultiChatActivity.F_REASON,msg);
                                     intent.putExtra(MultiChatActivity.F_FROM_ACCOUNT,from_account);
                                     startActivity(intent);
