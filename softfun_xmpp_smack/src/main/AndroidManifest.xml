@@ -27,8 +27,6 @@
     <uses-feature android:name="android.hardware.camera"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
 
-    <!--android:allowBackup="false"-->
-    <!--tools:replace="android:allowBackup"-->
     <application
         android:name=".application.GlobalContext"
         android:allowBackup="false"
@@ -38,7 +36,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-
 
         <activity android:name=".SplashActivity">
             <intent-filter>

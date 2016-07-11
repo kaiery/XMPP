@@ -66,6 +66,7 @@ import com.softfun_xmpp.utils.CircleImageDrawable;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
 import com.softfun_xmpp.utils.StringUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
+import com.softfun_xmpp.utils.ToastUtils;
 import com.tb.emoji.Emoji;
 import com.tb.emoji.EmojiUtil;
 import com.tb.emoji.FaceFragment;
@@ -925,45 +926,49 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * @param recordtime
      */
     private void sentMsg(final String msgText, final String flag, final String recordurl, final long recordlen, final double recordtime) {
-        ThreadUtils.runInThread(new Runnable() {
-            @Override
-            public void run() {
-                //1、创建一个消息
-                final Message msg = new Message();
-                JivePropertiesExtension jpe = new JivePropertiesExtension();
-                msg.setFrom(IMService.mCurAccount);
-                msg.setTo(mTargetAccount);
-                msg.setBody(msgText);
-                msg.setType(Message.Type.chat);
-                jpe.setProperty(Const.MSGFLAG, flag);
-                //如果是录音消息
-                if (flag.equals(Const.MSGFLAG_RECORD)) {
-                    String user = AsmackUtils.filterChineseToUrl(IMService.mCurAccount);
-                    String httpRecordurl = getResources().getString(R.string.app_server) + Const.WEB_AMR_PATH + user + "/" + recordurl.substring(recordurl.lastIndexOf("/") + 1);
-                    jpe.setProperty(Const.RECORDURL, httpRecordurl);
-                    jpe.setProperty(Const.RECORDLEN, recordlen);
-                    jpe.setProperty(Const.RECORDTIME, recordtime);
+        if(IMService.conn!=null && IMService.conn.isConnected()){
+            ThreadUtils.runInThread(new Runnable() {
+                @Override
+                public void run() {
+                    //1、创建一个消息
+                    final Message msg = new Message();
+                    JivePropertiesExtension jpe = new JivePropertiesExtension();
+                    msg.setFrom(IMService.mCurAccount);
+                    msg.setTo(mTargetAccount);
+                    msg.setBody(msgText);
+                    msg.setType(Message.Type.chat);
+                    jpe.setProperty(Const.MSGFLAG, flag);
+                    //如果是录音消息
+                    if (flag.equals(Const.MSGFLAG_RECORD)) {
+                        String user = AsmackUtils.filterChineseToUrl(IMService.mCurAccount);
+                        String httpRecordurl = getResources().getString(R.string.app_server) + Const.WEB_AMR_PATH + user + "/" + recordurl.substring(recordurl.lastIndexOf("/") + 1);
+                        jpe.setProperty(Const.RECORDURL, httpRecordurl);
+                        jpe.setProperty(Const.RECORDLEN, recordlen);
+                        jpe.setProperty(Const.RECORDTIME, recordtime);
 
-                    msg.addExtension(jpe);
-                    //上传录音
-                    uploadFile(recordurl, msg);
-
-                } else
-                    //如果是文本消息
-                    if (flag.equals(Const.MSGFLAG_TEXT)) {
                         msg.addExtension(jpe);
-                        //调用服务内的发送消息方法
-                        mImService.sendMessage(msg);
-                    }
-                //清空输入框
-                ThreadUtils.runInUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEtPrivateChatText.setText("");
-                    }
-                });
-            }
-        });
+                        //上传录音
+                        uploadFile(recordurl, msg);
+
+                    } else
+                        //如果是文本消息
+                        if (flag.equals(Const.MSGFLAG_TEXT)) {
+                            msg.addExtension(jpe);
+                            //调用服务内的发送消息方法
+                            mImService.sendMessage(msg);
+                        }
+                    //清空输入框
+                    ThreadUtils.runInUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEtPrivateChatText.setText("");
+                        }
+                    });
+                }
+            });
+        }else{
+            ToastUtils.showToastSafe("没有网络");
+        }
     }
 
     //    /**
@@ -1066,44 +1071,52 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * 选择图片
      */
     private void selectImage() {
-        Intent intent = new Intent(this, MultiImageSelectorActivity.class);
-        // 是否显示调用相机拍照
-        intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
-        // 最大图片选择数量
-        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 1);
-        // 设置模式 (支持 单选/MultiImageSelectorActivity.MODE_SINGLE 或者 多选/MultiImageSelectorActivity.MODE_MULTI)
-        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_SINGLE);
-        // 默认选择图片,回填选项(支持String ArrayList)
-        intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, mSelectPath);
-        startActivityForResult(intent, REQUEST_IMAGE);
+        if(IMService.conn!=null && IMService.conn.isConnected()){
+            Intent intent = new Intent(this, MultiImageSelectorActivity.class);
+            // 是否显示调用相机拍照
+            intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
+            // 最大图片选择数量
+            intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 1);
+            // 设置模式 (支持 单选/MultiImageSelectorActivity.MODE_SINGLE 或者 多选/MultiImageSelectorActivity.MODE_MULTI)
+            intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_SINGLE);
+            // 默认选择图片,回填选项(支持String ArrayList)
+            intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, mSelectPath);
+            startActivityForResult(intent, REQUEST_IMAGE);
+        }else{
+            ToastUtils.showToastSafe("没有网络");
+        }
     }
 
     /**
      * 视频申请
      */
     private void sentMsg() {
-        ThreadUtils.runInThread(new Runnable() {
-            @Override
-            public void run() {
-                //1、创建一个消息
-                Message msg = new Message();
-                JivePropertiesExtension jpe = new JivePropertiesExtension();
-                msg.setFrom(IMService.mCurAccount);
-                msg.setTo(mTargetAccount);
-                msg.setBody("视频申请");
-                msg.setType(Message.Type.chat);
-                jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_VIDEO);
-                msg.addExtension(jpe);
-                //调用服务内的发送消息方法
-                mImService.sendMessage(msg);
-            }
-        });
+        if(IMService.conn!=null && IMService.conn.isConnected()){
+            ThreadUtils.runInThread(new Runnable() {
+                @Override
+                public void run() {
+                    //1、创建一个消息
+                    Message msg = new Message();
+                    JivePropertiesExtension jpe = new JivePropertiesExtension();
+                    msg.setFrom(IMService.mCurAccount);
+                    msg.setTo(mTargetAccount);
+                    msg.setBody("视频申请");
+                    msg.setType(Message.Type.chat);
+                    jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_VIDEO);
+                    msg.addExtension(jpe);
+                    //调用服务内的发送消息方法
+                    mImService.sendMessage(msg);
+                }
+            });
 
-        Intent intent = new Intent(this, UIActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("mTargetNickName", mTargetNickName);
-        intent.putExtra("mTargetAccount", mTargetAccount.substring(0, mTargetAccount.lastIndexOf("@")) + "@" + Const.APP_PACKAGENAME);
-        startActivity(intent);
+            Intent intent = new Intent(this, UIActivity.class);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("mTargetNickName", mTargetNickName);
+            intent.putExtra("mTargetAccount", mTargetAccount.substring(0, mTargetAccount.lastIndexOf("@")) + "@" + Const.APP_PACKAGENAME);
+            startActivity(intent);
+        }else{
+            ToastUtils.showToastSafe("没有网络");
+        }
     }
 
 

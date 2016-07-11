@@ -55,6 +55,7 @@ import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.dbhelper.GroupDbHelper;
 import com.softfun_xmpp.dbhelper.SmsDbHelper;
 import com.softfun_xmpp.network.HttpUtil;
+import com.softfun_xmpp.notification.NotificationUtilEx;
 import com.softfun_xmpp.provider.GroupProvider;
 import com.softfun_xmpp.provider.SmsProvider;
 import com.softfun_xmpp.recorder.AudioRecoderButton;
@@ -65,6 +66,7 @@ import com.softfun_xmpp.utils.CircleImageDrawable;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
 import com.softfun_xmpp.utils.StringUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
+import com.softfun_xmpp.utils.ToastUtils;
 import com.tb.emoji.Emoji;
 import com.tb.emoji.EmojiUtil;
 import com.tb.emoji.FaceFragment;
@@ -235,6 +237,7 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
         //设置 当前聊天对象
         IMService.chatObject = mTargetRoomJid;
         //System.out.println("====================  IMService.chatObject  ===================== "+IMService.chatObject);
+        NotificationUtilEx.getInstance().deleteNotification(mTargetRoomJid);
     }
 
     private void initView() {
@@ -1035,41 +1038,45 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
      * @param recordtime
      */
     private void sentMsg(final String msgText, final String flag, final String recordurl, final long recordlen, final double recordtime) {
-        ThreadUtils.runInThread(new Runnable() {
-            @Override
-            public void run() {
-                //1、创建一个消息
-                Message msg = new Message(mTargetRoomJid, org.jivesoftware.smack.packet.Message.Type.groupchat);
-                JivePropertiesExtension jpe = new JivePropertiesExtension();
-                msg.setBody(msgText);
-                jpe.setProperty(Const.MSGFLAG, flag);
-                //如果是录音消息
-                if (flag.equals(Const.MSGFLAG_RECORD)) {
-                    String user = AsmackUtils.filterChineseToUrl(IMService.mCurAccount);
-                    String httpRecordurl = getResources().getString(R.string.app_server) + Const.WEB_AMR_PATH + user + "/" + recordurl.substring(recordurl.lastIndexOf("/") + 1);
-                    jpe.setProperty(Const.RECORDURL, httpRecordurl);
-                    jpe.setProperty(Const.RECORDLEN, recordlen);
-                    jpe.setProperty(Const.RECORDTIME, recordtime);
-                    jpe.setProperty(Const.GROUP_JID, AsmackUtils.filterGroupJid(mTargetRoomJid));
-                    jpe.setProperty(Const.ACCOUNT, IMService.mCurAccount);
-                    msg.addExtension(jpe);
-                    //上传录音
-                    uploadFile(recordurl, msg);
-                } else
-                    //如果是文本消息
-                    if (flag.equals(Const.MSGFLAG_TEXT)) {
-                        //调用服务内的发送消息方法
-                        mImService.sendGroupMessage(mMultiUserChat, msg);
-                    }
-                //清空输入框
-                ThreadUtils.runInUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEtChatText.setText("");
-                    }
-                });
-            }
-        });
+        if(IMService.conn!=null && IMService.conn.isConnected()){
+            ThreadUtils.runInThread(new Runnable() {
+                @Override
+                public void run() {
+                    //1、创建一个消息
+                    Message msg = new Message(mTargetRoomJid, org.jivesoftware.smack.packet.Message.Type.groupchat);
+                    JivePropertiesExtension jpe = new JivePropertiesExtension();
+                    msg.setBody(msgText);
+                    jpe.setProperty(Const.MSGFLAG, flag);
+                    //如果是录音消息
+                    if (flag.equals(Const.MSGFLAG_RECORD)) {
+                        String user = AsmackUtils.filterChineseToUrl(IMService.mCurAccount);
+                        String httpRecordurl = getResources().getString(R.string.app_server) + Const.WEB_AMR_PATH + user + "/" + recordurl.substring(recordurl.lastIndexOf("/") + 1);
+                        jpe.setProperty(Const.RECORDURL, httpRecordurl);
+                        jpe.setProperty(Const.RECORDLEN, recordlen);
+                        jpe.setProperty(Const.RECORDTIME, recordtime);
+                        jpe.setProperty(Const.GROUP_JID, AsmackUtils.filterGroupJid(mTargetRoomJid));
+                        jpe.setProperty(Const.ACCOUNT, IMService.mCurAccount);
+                        msg.addExtension(jpe);
+                        //上传录音
+                        uploadFile(recordurl, msg);
+                    } else
+                        //如果是文本消息
+                        if (flag.equals(Const.MSGFLAG_TEXT)) {
+                            //调用服务内的发送消息方法
+                            mImService.sendGroupMessage(mMultiUserChat, msg);
+                        }
+                    //清空输入框
+                    ThreadUtils.runInUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEtChatText.setText("");
+                        }
+                    });
+                }
+            });
+        }else {
+            ToastUtils.showToastSafe("没有网络");
+        }
     }
 
     /**
@@ -1078,29 +1085,33 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
      * @param msgText
      */
     private void sentMsg(final String msgText) {
-        ThreadUtils.runInThread(new Runnable() {
-            @Override
-            public void run() {
-                //1、创建一个消息
-                //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
-                Message msg = new Message(mTargetRoomJid, org.jivesoftware.smack.packet.Message.Type.groupchat);
-                JivePropertiesExtension jpe = new JivePropertiesExtension();
-                msg.setBody(msgText);
-                jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_TEXT);
-                jpe.setProperty(Const.GROUP_JID, AsmackUtils.filterGroupJid(mTargetRoomJid));
-                jpe.setProperty(Const.ACCOUNT, IMService.mCurAccount);
-                msg.addExtension(jpe);
-                //调用服务内的发送消息方法
-                mImService.sendGroupMessage(mMultiUserChat, msg);
-                //清空输入框
-                ThreadUtils.runInUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEtChatText.setText("");
-                    }
-                });
-            }
-        });
+        if(IMService.conn!=null && IMService.conn.isConnected()){
+            ThreadUtils.runInThread(new Runnable() {
+                @Override
+                public void run() {
+                    //1、创建一个消息
+                    //群聊消息的结构体，跟私聊不太一样，不能设置to，from，message会自动根据所在roomjid进行赋值
+                    Message msg = new Message(mTargetRoomJid, org.jivesoftware.smack.packet.Message.Type.groupchat);
+                    JivePropertiesExtension jpe = new JivePropertiesExtension();
+                    msg.setBody(msgText);
+                    jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_TEXT);
+                    jpe.setProperty(Const.GROUP_JID, AsmackUtils.filterGroupJid(mTargetRoomJid));
+                    jpe.setProperty(Const.ACCOUNT, IMService.mCurAccount);
+                    msg.addExtension(jpe);
+                    //调用服务内的发送消息方法
+                    mImService.sendGroupMessage(mMultiUserChat, msg);
+                    //清空输入框
+                    ThreadUtils.runInUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEtChatText.setText("");
+                        }
+                    });
+                }
+            });
+        }else{
+            ToastUtils.showToastSafe("没有网络");
+        }
     }
 
     /**
@@ -1141,16 +1152,20 @@ public class MultiChatActivity extends AppCompatActivity implements RefreshListV
      * 选择图片
      */
     private void selectImage() {
-        Intent intent = new Intent(this, MultiImageSelectorActivity.class);
-        // 是否显示调用相机拍照
-        intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
-        // 最大图片选择数量
-        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 1);
-        // 设置模式 (支持 单选/MultiImageSelectorActivity.MODE_SINGLE 或者 多选/MultiImageSelectorActivity.MODE_MULTI)
-        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_SINGLE);
-        // 默认选择图片,回填选项(支持String ArrayList)
-        intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, mSelectPath);
-        startActivityForResult(intent, REQUEST_IMAGE);
+        if(IMService.conn!=null && IMService.conn.isConnected()){
+            Intent intent = new Intent(this, MultiImageSelectorActivity.class);
+            // 是否显示调用相机拍照
+            intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
+            // 最大图片选择数量
+            intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 1);
+            // 设置模式 (支持 单选/MultiImageSelectorActivity.MODE_SINGLE 或者 多选/MultiImageSelectorActivity.MODE_MULTI)
+            intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_SINGLE);
+            // 默认选择图片,回填选项(支持String ArrayList)
+            intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, mSelectPath);
+            startActivityForResult(intent, REQUEST_IMAGE);
+        }else{
+            ToastUtils.showToastSafe("没有网络");
+        }
     }
 
 

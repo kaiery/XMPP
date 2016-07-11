@@ -940,27 +940,31 @@ public class IMService extends Service {
      */
     public void sendMessage(final Message msg) {
         try {
-            JivePropertiesExtension jpe = (JivePropertiesExtension) msg.getExtension(JivePropertiesExtension.NAMESPACE);
-            //2、创建聊天对象 (目标对象jid，消息监听者)
-            String toAccount = msg.getTo();
-            if (mChatMap.containsKey(toAccount)) {
-                mCurChat = mChatMap.get(toAccount);
-            } else {
-                mCurChat = mChatManager.createChat(toAccount, mMyMessageListener);
-                mChatMap.put(toAccount, mCurChat);
+            if(conn!=null && conn.isConnected()){
+                JivePropertiesExtension jpe = (JivePropertiesExtension) msg.getExtension(JivePropertiesExtension.NAMESPACE);
+                //2、创建聊天对象 (目标对象jid，消息监听者)
+                String toAccount = msg.getTo();
+                if (mChatMap.containsKey(toAccount)) {
+                    mCurChat = mChatMap.get(toAccount);
+                } else {
+                    mCurChat = mChatManager.createChat(toAccount, mMyMessageListener);
+                    mChatMap.put(toAccount, mCurChat);
+                }
+
+                String property = jpe.getProperty(Const.MSGFLAG)==null?"":jpe.getProperty(Const.MSGFLAG)+"";
+                if (property.equals(Const.MSGFLAG_VIDEO)) {
+
+                }else if(property.equals("")){
+
+                } else {
+                    //保存消息到数据库
+                    saveMessage(toAccount, msg);
+                }
+                //发送消息
+                mCurChat.sendMessage(msg);
+            }else{
+                ToastUtils.showToastSafe("没有网络");
             }
-
-            String property = jpe.getProperty(Const.MSGFLAG)==null?"":jpe.getProperty(Const.MSGFLAG)+"";
-            if (property.equals(Const.MSGFLAG_VIDEO)) {
-
-            }else if(property.equals("")){
-
-            } else {
-                //保存消息到数据库
-                saveMessage(toAccount, msg);
-            }
-            //发送消息
-            mCurChat.sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
         }
