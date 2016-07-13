@@ -58,11 +58,14 @@
 
 
         <!-- 登录 -->
-        <activity android:name=".activity.LoginActivity"/>
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="false"/>
         <!-- 主界面 -->
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
@@ -72,24 +75,36 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
+
+
         <!-- 联系人内容提供者 -->
         <provider
             android:name=".provider.ContactsProvider"
-            android:authorities="com.softfun_xmpp.provider.ContactsProvider"/>
+            android:authorities="com.softfun_xmpp.provider.ContactsProvider"
+            android:exported="false"/>
         <!-- 聊天内容提供者 -->
         <provider
             android:name=".provider.SmsProvider"
-            android:authorities="com.softfun_xmpp.provider.SmsProvider"/>
+            android:authorities="com.softfun_xmpp.provider.SmsProvider"
+            android:exported="false"/>
         <!-- 群组内容提供者 -->
         <provider
             android:name=".provider.GroupProvider"
-            android:authorities="com.softfun_xmpp.provider.GroupProvider"/>
+            android:authorities="com.softfun_xmpp.provider.GroupProvider"
+            android:exported="false"/>
+
+
+
         <!-- 连接服务 -->
-        <service android:name=".connection.IMService"/>
+        <service
+            android:name=".connection.IMService"
+            android:exported="false"/>
         <!-- 私聊 -->
         <activity
             android:name=".activity.ChatActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/MyMaterialTheme">
         </activity>
@@ -97,108 +112,134 @@
         <activity
             android:name=".activity.MultiChatActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/MyMaterialTheme"/>
 
         <!-- 选择我的好友 -->
         <activity
             android:name=".activity.MyFriendsListActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
 
         <!-- 注册 -->
         <activity
             android:name=".activity.SignupActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme">
         </activity>
         <!-- 找回密码 -->
         <activity
             android:name=".activity.ForgetPasswordActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme">
         </activity>
         <!-- 对话框 -->
         <activity
             android:name=".activity.DialogActivity"
+            android:exported="false"
             android:theme="@style/DialogTheme"/>
         <!-- 添加群组 -->
         <activity
             android:name=".activity.SelectGroupTypeActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 创建群组添加信息 -->
         <activity
             android:name=".activity.InputGroupInfoActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 添加好友 -->
         <activity
             android:name=".activity.AddFriends"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
         <!-- 好友资料 -->
         <activity
             android:name=".activity.FriendsProfile"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"/>
         <!-- 通用web浏览 -->
         <activity
             android:name=".activity.WebFrameActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 个人中心 -->
         <activity
             android:name=".activity.MyProfile"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"/>
         <!-- 群资料 -->
         <activity
             android:name=".activity.MultiChatProfile"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <!-- 编辑个人信息 -->
         <activity
             android:name=".activity.EditItemActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 编辑群信息 -->
         <activity
             android:name=".activity.EditMultiItemActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 修改密码 -->
         <activity
             android:name=".activity.EditPasswordActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 系统设置 -->
         <activity
             android:name=".activity.SettingActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 意见反馈 -->
         <activity
             android:name=".activity.FeedBackActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 关于我们 -->
         <activity
             android:name=".activity.AboutUsActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 搜索结果 -->
         <activity
             android:name=".activity.SearchResultForUsers"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 群成员 -->
         <activity
             android:name=".activity.MultiMemberActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!--单选页面-->
         <activity
             android:name=".activity.SelectOneMemberActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 专家评分 -->
         <activity
             android:name=".activity.EvaluateActivity"
+            android:exported="false"
             android:theme="@style/DialogTheme"/>
         <!-- 确定是否添加此好友 -->
         <activity
             android:name=".activity.AddFriendsAction"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 确定是否加入此群 -->
         <activity
             android:name=".activity.AddGroupsAction"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 图片浏览 -->
-        <activity android:name=".gallery.Gallery">
+        <activity
+            android:name=".gallery.Gallery"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.fanzhang.softfun.gallery.openGallery"/>
 
@@ -206,47 +247,60 @@
             </intent-filter>
         </activity>
         <!-- 用于浏览web的图片，使用了开源的、可自由手势控制图片 -->
-        <activity android:name=".components.ImageViewPage"/>
+        <activity
+            android:name=".components.ImageViewPage"
+            android:exported="false"/>
         <!-- 开源组件,图片拾取组件 -->
         <activity
             android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            android:exported="false"/>
         <!-- 农技110-论坛 -->
         <activity
             android:name=".bbs.BBSIndexActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 农技110-发表新帖 -->
         <activity
             android:name=".bbs.BBSNewActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 农技110农资商讯 -->
         <activity
             android:name=".bbs.INFOActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 专家所属机构列表 -->
         <activity
             android:name=".activity.ExpertActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 专家人员列表 -->
         <activity
             android:name=".activity.ExpertListActivity"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
         <!-- 专家资料 -->
         <activity
             android:name=".activity.ExpertProfileActivity"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"/>
         <!-- 搜索专家 -->
         <activity
             android:name=".activity.ExpertSearchActiviy"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
         <!-- 搜索专家结果 -->
         <activity
             android:name=".activity.SearchResultForExpert"
+            android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
 
         <!-- 申请视频 -->
-        <activity android:name=".activity.VideoChatScreen">
+        <activity
+            android:name=".activity.VideoChatScreen"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.softfun_xmpp.activity.VideoChatScreen"/>
 
@@ -255,12 +309,15 @@
         </activity>
 
         <!-- 图片裁剪 -->
-        <activity android:name="com.soundcloud.android.crop.CropImageActivity"/>
+        <activity
+            android:name="com.soundcloud.android.crop.CropImageActivity"
+            android:exported="false"/>
 
         <!-- opentok -->
         <activity
             android:name="com.opentok.android.demo.opentoksamples.MultipartyActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.opentok.android.demo.opentoksamples.OpenTokSubclassing"/>
 
@@ -269,7 +326,8 @@
         </activity>
         <activity
             android:name="com.opentok.android.demo.opentoksamples.UIActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.opentok.android.demo.opentoksamples.OpenTokHelloWorldUI"/>
 
@@ -278,14 +336,14 @@
         </activity>
         <activity
             android:name="com.opentok.android.demo.opentoksamples.HelloWorldActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.opentok.android.demo.opentoksamples.OpenTokHelloWorld"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
         <!--<service-->
         <!--android:name="com.opentok.android.demo.services.ClearNotificationService"-->
         <!--android:exported="false">-->

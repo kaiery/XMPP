@@ -95,7 +95,7 @@ public class ExpertActivity extends AppCompatActivity implements View.OnClickLis
             public void run() {
                 ResultBean resultBean = HttpUtil.okhttpPost_queryNj110OrgFlat(orgid);
                 List<OrgBean> list = (List<OrgBean>) resultBean.getDatalist();
-                if(list.size()>0){
+                if(list!=null && list.size()>0){
                     flag++;
                     if(datalist==null){
                         datalist = new ArrayList<>();
@@ -169,9 +169,10 @@ public class ExpertActivity extends AppCompatActivity implements View.OnClickLis
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
+                if(ExpertOrgid==null) ExpertOrgid = "";
                 ResultBean resultBean = HttpUtil.okhttpPost_queryNj110ParentOrgFlat(ExpertOrgid);
                 List<OrgBean> list = (List<OrgBean>) resultBean.getDatalist();
-                if(list.size()>0){
+                if(list!=null && list.size()>0){
                     if(datalist==null){
                         datalist = new ArrayList<>();
                     }

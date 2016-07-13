@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class CustomAudioDevice extends BaseAudioDevice {
 
-    private final static String LOG_TAG = "opentok-defaultaudiodevice";
+    private final static String LOG_TAG = "defaultaudiodevice";
 
     private final static int SAMPLING_RATE = 44100;
     private final static int NUM_CHANNELS_CAPTURING = 1;

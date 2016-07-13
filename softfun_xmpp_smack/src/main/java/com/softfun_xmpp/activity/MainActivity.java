@@ -415,15 +415,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent1);
                 break;
             }
-            case R.id.action_share: {
-                Intent intent=new Intent(Intent.ACTION_SEND);
-                intent.setType("image/*");
-                intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-                intent.putExtra(Intent.EXTRA_TEXT, "分享测试");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(Intent.createChooser(intent, getTitle()));
-                break;
-            }
+//            case R.id.action_share: {
+//                Intent intent=new Intent(Intent.ACTION_SEND);
+//                intent.setType("image/*");
+//                intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+//                intent.putExtra(Intent.EXTRA_TEXT, "分享测试");
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(Intent.createChooser(intent, getTitle()));
+//                break;
+//            }
         }
         return super.onOptionsItemSelected(item);
     }

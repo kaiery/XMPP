@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">移动农技110</string>
+    <string name="app_package_flag">com.softfun_xmpp</string>
     <string name="app_copyright">\@浙江融创 版权所有</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

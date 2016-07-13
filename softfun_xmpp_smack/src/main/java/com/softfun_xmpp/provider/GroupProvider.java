@@ -18,7 +18,7 @@ public class GroupProvider extends ContentProvider {
     //得到本类的完整路径
     //主机地址的常量
     //跟清单文件中暴露的android:authorities="com.softfun_xmpp.provider.GroupProvider"  一致
-    public static final String AUTHORITIES = GroupProvider.class.getCanonicalName();
+    public static final String AUTHORITIES = "com.softfun_xmpp.provider.GroupProvider";//GroupProvider.class.getCanonicalName();
 
 
     //地址匹配对象

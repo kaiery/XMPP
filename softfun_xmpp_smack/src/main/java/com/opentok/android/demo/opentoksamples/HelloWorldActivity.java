@@ -39,7 +39,7 @@ public class HelloWorldActivity extends AppCompatActivity implements
         Session.SessionListener, Publisher.PublisherListener,
         Subscriber.VideoListener {
 
-    private static final String LOGTAG = "demo-hello-world";
+    private static final String LOGTAG = "hello-world";
     private Session mSession;
     /**
      * 发布者

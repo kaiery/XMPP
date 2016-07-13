@@ -17,7 +17,7 @@ public class SmsProvider extends ContentProvider {
 
     //得到本类的完整路径
     //主机地址的常量
-    public static final String AUTHORITIES = SmsProvider.class.getCanonicalName();
+    public static final String AUTHORITIES = "com.softfun_xmpp.provider.SmsProvider";//SmsProvider.class.getCanonicalName();
 
     //地址匹配对象
     static UriMatcher mUriMatcher;

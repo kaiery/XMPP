@@ -107,7 +107,8 @@ public class NotificationUtilEx {
                 mBuilder.setStyle(inboxStyle);
 
                 Intent intent = new Intent();
-                intent.setAction("com.softfun_xmpp.activity.MainActivity");
+                String app_package_flag = GlobalContext.getInstance().getResources().getString(R.string.app_package_flag);
+                intent.setAction(app_package_flag+".activity.MainActivity");
                 intent.addCategory("android.intent.category.DEFAULT");
                 intent.putExtra(Const.TYPE,value.getChattype());
                 intent.putExtra(Const.NOTIFICATION_FROM,value.getFrom());

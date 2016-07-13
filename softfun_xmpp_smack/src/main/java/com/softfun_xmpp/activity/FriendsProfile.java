@@ -200,7 +200,8 @@ public class FriendsProfile extends AppCompatActivity implements View.OnClickLis
                     mImService.sendPresence(Presence.Type.unsubscribe,mAccount);
                     mImService.sendPresence(Presence.Type.unsubscribed,mAccount);
                     Intent intent = new Intent();
-                    intent.setAction("com.softfun_xmpp.activity.MainActivity");
+                    String app_package_flag = getResources().getString(R.string.app_package_flag);
+                    intent.setAction(app_package_flag+".activity.MainActivity");
                     intent.addCategory("android.intent.category.DEFAULT");
                     startActivity(intent);
                     finish();

@@ -503,7 +503,14 @@ public class IMService extends Service {
                         getContentResolver().delete(
                                 GroupProvider.URI_GROUP,
                                 GroupDbHelper.GroupTable.JID + "=? and " + GroupDbHelper.GroupTable.OWNER + "=?",
-                                new String[]{listOPBean.getStr(), IMService.mCurAccount});
+                                new String[]{listOPBean.getStr(), IMService.mCurAccount}
+                        );
+                        //删除此套群组的聊天信息
+                        getContentResolver().delete(
+                                SmsProvider.URI_GROUPSMS,
+                                SmsDbHelper.SmsTable.SESSION_ACCOUNT + "=?  and  " + SmsDbHelper.SmsTable.OWNER+ " =? ",
+                                new String[]{AsmackUtils.filterGroupJid(listOPBean.getStr()) ,IMService.mCurAccount}
+                        );
                     }
                 }
                 cursor.close();
