@@ -85,6 +85,9 @@ public class ExpertListActivity extends AppCompatActivity {
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
+                if(mOrgid==null){
+                    return;
+                }
                 ResultBean resultBean = HttpUtil.okhttpPost_queryNj110ZJList(mOrgid);
                 List<UserBean> list = (List<UserBean>) resultBean.getDatalist();
                 if(list.size()>0){

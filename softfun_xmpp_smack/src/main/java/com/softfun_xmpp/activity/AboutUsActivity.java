@@ -40,7 +40,7 @@ public class AboutUsActivity extends AppCompatActivity implements View.OnClickLi
         //添加返回按钮
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String rqcode_url = getResources().getString(R.string.app_server)+"update/RQ_code.png";
+        String rqcode_url = getResources().getString(R.string.app_server)+"update/"+getResources().getString(R.string.app_package_flag)+"_RQ_code.png"; //com.softfun_hjjg_RQ_code.png
         ImageLoader.getInstance().displayImage(rqcode_url,iv_rqcode, ImageLoaderUtils.getOptions_NoCacheInMem_CacheInDisk_Exif_EXACTLY());
 
 

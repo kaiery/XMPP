@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
-                final UpdateBean updateBean = HttpUtil.okhttpGet_UpdateInfo("shell");
+                final UpdateBean updateBean = HttpUtil.okhttpGet_UpdateInfo("com.softfun_shell");
                 if(updateBean!=null){
                     //获取应用程序的版本号
                     int verCode = AppUtils.getVerCode(MainActivity.this);

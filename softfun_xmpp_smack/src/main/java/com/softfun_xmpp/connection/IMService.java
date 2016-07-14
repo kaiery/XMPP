@@ -756,6 +756,8 @@ public class IMService extends Service {
         //群聊通知
         if(chattype.equals(Message.Type.groupchat.name())){
             if(IMService.chatObject.equals("") || !IMService.chatObject.equals(session_account+Const.ROOM_JID_SUFFIX)){
+                if(!group_jid.contains(Const.ROOM_JID_SUFFIX)) group_jid = group_jid+Const.ROOM_JID_SUFFIX;//++
+                if(!session_account.contains(Const.ROOM_JID_SUFFIX)) session_account = session_account+Const.ROOM_JID_SUFFIX;//++
                 NotificationUtilEx.getInstance().notification_msg(session_account,title,msg,chattype,nickname,avatarurl,group_jid);
             }
         }else
@@ -799,7 +801,8 @@ public class IMService extends Service {
             intent1.putExtra("sourceid", form);
             intent1.putExtra("sourcename", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.NICKNAME));
             intent1.putExtra("sourceface", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.AVATARURL));
-            intent1.setAction("com.softfun_xmpp.activity.VideoChatScreen");
+            String app_package_flag = getResources().getString(R.string.app_package_flag);
+            intent1.setAction(app_package_flag+".activity.VideoChatScreen");
             intent1.addCategory("android.intent.category.DEFAULT");
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent1);
@@ -1325,6 +1328,7 @@ public class IMService extends Service {
                                 String groupname = jpe.getProperty(Const.GROUP_JID)+"";
                                 String selectAccount = jpe.getProperty(Const.MSGFLAG_GROUP_NEW_MASTER)+"";
                                 String oldMaster = jpe.getProperty(Const.ACCOUNT)+"";
+                                oldMaster = AsmackUtils.filterAccountToUserName(oldMaster);
                                 //更新master
                                 if(mGroupMemberMap.containsKey(groupname)){
                                     List<GroupMemberBean> list = mGroupMemberMap.get(groupname);

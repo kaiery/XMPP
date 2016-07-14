@@ -308,33 +308,33 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
 //                }
                 break;
             case R.id.item2:
-                if(IMService.mCurAccount.equals(mGroupBean.getMaster())){
-                    //工厂模式
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("请选择");
-                    final String[] items = {"编辑类型","编辑详细"};
-                    builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //Toast.makeText(getApplicationContext(), "您点击了"+items[which], 0).show();
-                            String groupFieldType ;
-                            if(which==0){
-                                groupFieldType = Const.GROUP_FIELD_TYPE;
-                            }else{
-                                groupFieldType = Const.GROUP_FIELD_TYPE_DETAIL;
-                            }
-                            Intent item2 = new Intent(MultiChatProfile.this, EditMultiItemActivity.class);
-                            item2.putExtras(mBundle);
-                            item2.putExtra(EditMultiItemActivity.ITEM_NAME, "群类型");
-                            item2.putExtra(EditMultiItemActivity.ITEM_FIELD, groupFieldType);
-                            item2.putExtra(EditMultiItemActivity.MAX_LENGTH, 0);
-                            startActivityForResult(item2, EditMultiItemActivity.REQUESTCODE);
-                            //关闭对话框
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.show();
-                }
+//                if(IMService.mCurAccount.equals(mGroupBean.getMaster())){
+//                    //工厂模式
+//                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                    builder.setTitle("请选择");
+//                    final String[] items = {"编辑类型","编辑详细"};
+//                    builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            //Toast.makeText(getApplicationContext(), "您点击了"+items[which], 0).show();
+//                            String groupFieldType ;
+//                            if(which==0){
+//                                groupFieldType = Const.GROUP_FIELD_TYPE;
+//                            }else{
+//                                groupFieldType = Const.GROUP_FIELD_TYPE_DETAIL;
+//                            }
+//                            Intent item2 = new Intent(MultiChatProfile.this, EditMultiItemActivity.class);
+//                            item2.putExtras(mBundle);
+//                            item2.putExtra(EditMultiItemActivity.ITEM_NAME, "群类型");
+//                            item2.putExtra(EditMultiItemActivity.ITEM_FIELD, groupFieldType);
+//                            item2.putExtra(EditMultiItemActivity.MAX_LENGTH, 0);
+//                            startActivityForResult(item2, EditMultiItemActivity.REQUESTCODE);
+//                            //关闭对话框
+//                            dialog.dismiss();
+//                        }
+//                    });
+//                    builder.show();
+//                }
                 break;
             case R.id.item3:
                 //二维码
@@ -574,28 +574,38 @@ public class MultiChatProfile extends AppCompatActivity implements View.OnClickL
         if (data != null) {
             //修改内容完毕后，进行更新界面
             if(resultCode==EditMultiItemActivity.RESULT_SUCCEED){
-                String mItemField = data.getStringExtra(EditMultiItemActivity.ITEM_FIELD);
-                String mItemValue = data.getStringExtra(EditMultiItemActivity.ITEM_VALUE);
-                //群名称
-                if (mItemField.equals(Const.GROUP_FIELD_NAME)) {
-                    tvGroupname.setText(mItemValue);
-                }
-                //群公告
-                if (mItemField.equals(Const.GROUP_FIELD_ANNOUNCE)) {
-                    tvGroupannounce.setText(mItemValue);
-                }
-                //我的群名字
-                if (mItemField.equals(Const.GROUP_FIELD_MYNICKNAME)) {
-                    tvGroupmynickname.setText(mItemValue);
-                }
-                //详细类型
-                if (mItemField.equals(Const.GROUP_FIELD_TYPE_DETAIL)) {
-                    tvGrouptypedetail.setText(mItemValue);
-                }
-                //类型
-                if (mItemField.equals(Const.GROUP_FIELD_TYPE)) {
-                    tvGrouptype.setText(mItemValue);
-                }
+                initData();
+//                String mItemField = data.getStringExtra(EditMultiItemActivity.ITEM_FIELD);
+//                String mItemValue = data.getStringExtra(EditMultiItemActivity.ITEM_VALUE);
+//                //群名称
+//                if (mItemField.equals(Const.GROUP_FIELD_NAME)) {
+//                    tvGroupname.setText(mItemValue);
+//                }
+//                //群公告
+//                if (mItemField.equals(Const.GROUP_FIELD_ANNOUNCE)) {
+//                    tvGroupannounce.setText(mItemValue);
+//                }
+//                //我的群名字
+//                if (mItemField.equals(Const.GROUP_FIELD_MYNICKNAME)) {
+//                    tvGroupmynickname.setText(mItemValue);
+//                }
+//                //详细类型
+//                if (mItemField.equals(Const.GROUP_FIELD_TYPE_DETAIL)) {
+//                    tvGrouptypedetail.setText(mItemValue);
+//                }
+//                //类型
+//                if (mItemField.equals(Const.GROUP_FIELD_TYPE)) {
+//                    tvGrouptype.setText(mItemValue);
+//                    if(mItemValue.equals("基础群")){
+//                        tvGrouptypedetail.setVisibility(View.GONE);
+//                    }else if(mItemValue.equals("兴趣群")){
+//                        tvGrouptypedetail.setVisibility(View.VISIBLE);
+//                    }else if(mItemValue.equals("同城群")){
+//                        tvGrouptypedetail.setVisibility(View.VISIBLE);
+//                    }else if(mItemValue.equals("私密群")){
+//                        tvGrouptypedetail.setVisibility(View.GONE);
+//                    }
+//                }
             }
             //修改内容失败
             if(resultCode==EditItemActivity.RESULT_FAILURE){

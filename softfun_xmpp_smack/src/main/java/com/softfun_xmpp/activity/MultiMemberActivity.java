@@ -168,22 +168,24 @@ public class MultiMemberActivity extends AppCompatActivity {
 
 
     private void initListener() {
-        mLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String account = mList.get(position).getAccount();
-                if(!(mMaster).equals(account)){
-                    if(selected.containsKey(position)){
-                        selected.remove(position);
-                    }else{
-                        selected.put(position,account);
+        if(mMaster.equals(myUsername)){
+            mLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String account = mList.get(position).getAccount();
+                    if(!(mMaster).equals(account)){
+                        if(selected.containsKey(position)){
+                            selected.remove(position);
+                        }else{
+                            selected.put(position,account);
+                        }
+                        isSelected = selected.size() > 0;
+                        invalidateOptionsMenu();
+                        mAdapter.notifyDataSetChanged();
                     }
-                    isSelected = selected.size() > 0;
-                    invalidateOptionsMenu();
-                    mAdapter.notifyDataSetChanged();
                 }
-            }
-        });
+            });
+        }
     }
 
 }

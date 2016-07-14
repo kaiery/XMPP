@@ -119,6 +119,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     private String mTargetAccount;
     public String mNickName;
     public String mTargetNickName;
+    private TextView tv_wait;
 
 
     /**
@@ -128,7 +129,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     /**
      * 延时退出时间
      */
-    private static int mDelayTime = 3000000;
+    private static int mDelayTime = 1000*60;
     /**
      * 视频激活状态
      */
@@ -274,7 +275,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         setContentView(R.layout.layout_ui_activity);
 
         mLoadingSub = (ProgressBar) findViewById(R.id.loadingSpinner);
-
+        tv_wait = (TextView) findViewById(R.id.tv_wait);
         mPublisherViewContainer = (RelativeLayout) findViewById(R.id.publisherView);
         mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriberView);
         mSubscriberAudioOnlyView = (RelativeLayout) findViewById(R.id.audioOnlyView);
@@ -619,6 +620,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         if (mSubscriber.getSubscribeToVideo()) {
             //开始进行加载进度条展示
             mLoadingSub.setVisibility(View.VISIBLE);
+            tv_wait.setVisibility(View.VISIBLE);
         }
     }
     /**
@@ -997,6 +999,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         //System.out.println("====================  订阅者连接成功  =====================");
         ToastUtils.showToastSafe("订阅者连接成功");
         mLoadingSub.setVisibility(View.GONE);
+        tv_wait.setVisibility(View.GONE);
         mSubscriberFragment.showSubscriberWidget(true);
         mSubscriberFragment.initSubscriberUI();
     }
@@ -1021,6 +1024,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         //System.out.println("First frame received");
         // 隐藏订阅者加载的进度条
         mLoadingSub.setVisibility(View.GONE);
+        tv_wait.setVisibility(View.GONE);
         // 添加订阅者到视图
         attachSubscriberView(mSubscriber);
     }

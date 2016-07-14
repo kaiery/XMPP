@@ -264,7 +264,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ThreadUtils.runInThread(new Runnable() {
             @Override
             public void run() {
-                final UpdateBean updateBean = HttpUtil.okhttpGet_UpdateInfo("xmpp");
+                String app_package_flag = getResources().getString(R.string.app_package_flag);
+                final UpdateBean updateBean = HttpUtil.okhttpGet_UpdateInfo(app_package_flag);
                 if(updateBean!=null){
                     //获取应用程序的版本号
                     int verCode = AppUtils.getVerCode(MainActivity.this);

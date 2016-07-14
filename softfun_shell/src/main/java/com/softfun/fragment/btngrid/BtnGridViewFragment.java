@@ -165,21 +165,22 @@ public class BtnGridViewFragment extends Fragment {
                             String username = SpUtils.get(Const.USERNAME, "") + "";
                             String password = SpUtils.get(Const.PASSWORD, "") + "";
                             String HashData = ToolsUtil.HashData(username,password);
-                            System.out.println("====================  HashData  ====================="+HashData);
+                            //System.out.println("====================  HashData  ====================="+HashData);
                             Intent intent = new Intent();
                             String action = mPackageName + ".action";
                             intent.setAction(action);
                             // 指定数据格式
                             String uri = "softfun://" + mPackageName + ":1702/" + mPackageNameSuffix+"/"+HashData ;
-                            System.out.println("====================  uri  ===================== "+uri);
+                            //System.out.println("====================  uri  ===================== "+uri);
                             intent.setData(Uri.parse(uri));
                             // 3.指定清单文件中声明的类别
                             intent.addCategory("android.intent.category.DEFAULT");
                             // 4.开启界面
                             startActivity(intent);
                         } catch (Exception e) {
+                            e.printStackTrace();
                             //提示用户下载
-                            promptUser(mPackageNameSuffix);
+                            promptUser(mPackageName);
                         }
                     }
                     break;

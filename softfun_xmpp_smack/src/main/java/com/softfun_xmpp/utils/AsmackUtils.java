@@ -68,7 +68,11 @@ public class AsmackUtils {
      * @return
      */
     public static String filterAccountToUserName(String account){
-        return account.substring(0,account.lastIndexOf("@"));
+        if(account.contains("@")){
+            return account.substring(0,account.lastIndexOf("@"));
+        }else{
+            return     account;
+        }
     }
 
     /**
