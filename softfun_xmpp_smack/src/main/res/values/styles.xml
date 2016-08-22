@@ -22,6 +22,19 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <!--使用  自定义actionbar  时，并且使用  自定义菜单 时-->
+    <style name="MyMaterialThemeWithMyActionBar" parent="MyMaterialTheme.Base.WithMyActionBar">
+    </style>
+    <style name="MyMaterialTheme.Base.WithMyActionBar" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <!--设置actionOverflowButton的样式-->
+        <item name="android:actionOverflowButtonStyle">@style/CustomOptionsMenuStyle</item>
+    </style>
+    <style name="CustomOptionsMenuStyle">
+        <!--将。。。替换成其他图标-->
+        <item name="android:src">@android:drawable/ic_menu_add</item>
+    </style>
 
     <!--类似好友资料页面一样的用这种样式-->
     <style name="AppTheme.NoActionBar">

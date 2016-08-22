@@ -230,6 +230,56 @@
                 </LinearLayout>
 
 
+
+                <LinearLayout
+                    android:id="@+id/bt_private_chat_callphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/button_square_background_corners_5"
+                        android:scaleType="center"
+                        android:src="@drawable/call_phone_btn"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="拨号"
+                        android:textSize="@dimen/font_caption"/>
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:id="@+id/bt_private_chat_callsms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/button_square_background_corners_5"
+                        android:scaleType="center"
+                        android:src="@drawable/call_sms"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="短信"
+                        android:textSize="@dimen/font_caption"/>
+                </LinearLayout>
+
+
             </LinearLayout>
             <!--表情item布局-->
             <FrameLayout

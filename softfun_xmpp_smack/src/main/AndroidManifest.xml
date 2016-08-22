@@ -2,6 +2,8 @@
 <manifest package="com.softfun_xmpp"
           xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -14,7 +16,6 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
@@ -270,6 +271,11 @@
             android:name=".bbs.INFOActivity"
             android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
+        <!--柑橘资讯-->
+        <activity
+            android:name=".bbs.INFOOrangesActivity"
+            android:exported="false"
+            android:theme="@style/MyMaterialThemeWithMyActionBar"/>
         <!-- 专家所属机构列表 -->
         <activity
             android:name=".activity.ExpertActivity"
@@ -300,14 +306,22 @@
         <!-- 申请视频 -->
         <activity
             android:name=".activity.VideoChatScreen"
-            android:exported="false">
+            android:launchMode="singleInstance"
+            android:exported="false"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
             <intent-filter>
                 <action android:name="com.softfun_xmpp.activity.VideoChatScreen"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
+        <!--唤醒普通窗口-->
+        <activity
+            android:name=".activity.JumpActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
+        </activity>
         <!-- 图片裁剪 -->
         <activity
             android:name="com.soundcloud.android.crop.CropImageActivity"

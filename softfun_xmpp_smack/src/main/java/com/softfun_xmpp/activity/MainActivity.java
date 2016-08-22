@@ -547,7 +547,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onNewIntent(Intent intent) {
-        System.out.println("====================  onNewIntent  =====================");
+        //System.out.println("====================  onNewIntent  =====================");
         super.onNewIntent(intent);
         String type = intent.getStringExtra(Const.TYPE);
         String notification_from = intent.getStringExtra(Const.NOTIFICATION_FROM);

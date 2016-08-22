@@ -121,6 +121,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLlMoreExt;
     private LinearLayout mBtPrivateChatVideo;
     private LinearLayout mBtPrivateChatImage;
+    private LinearLayout mBtPrivateChatcallphone;
+    private LinearLayout mBtPrivateChatcallsms;
     //表情变量
     private FrameLayout Container;
     private boolean isShowFace;//表情栏显示
@@ -173,6 +175,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private LoaderManager manager = null;
     private boolean isLoadHistoryMsg = false;
     private boolean isShowMore;
+    private String mUserphone;
 
 
     @Override
@@ -240,6 +243,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mLlMoreExt = (LinearLayout) findViewById(R.id.ll_more_ext);
         mBtPrivateChatVideo = (LinearLayout) findViewById(R.id.bt_private_chat_video);
         mBtPrivateChatImage = (LinearLayout) findViewById(R.id.bt_private_chat_image);
+
+        mBtPrivateChatcallphone = (LinearLayout) findViewById(R.id.bt_private_chat_callphone);
+        mBtPrivateChatcallsms = (LinearLayout) findViewById(R.id.bt_private_chat_callsms);
+
         mLv.setRefreshDataListener(this);
         mLv.setHeadHintText_pull("下拉加载历史记录");
         mLv.setHeadHintText_release("松开加载历史记录");
@@ -280,6 +287,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         manager = getSupportLoaderManager();
         manager.initLoader(0,null,this);
 
+
+        mUserphone = AsmackUtils.getVcardInfo(IMService.conn, mTargetAccount, Const.USERPHONE);
     }
 
     /**
@@ -521,8 +530,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 lp.width = (int) (mMinItemWidth + (mMaxItemWidth / 60f * Float.parseFloat(recordtime)));
 
                 holder.view_item_chat_record_anim.setOnClickListener(new ItemRecordClickListener(convertView, position));
-            } else if (flag.equals(Const.MSGFLAG_TEXT)) {
-                //带表情的文本
+            } else if (flag.equals(Const.MSGFLAG_TEXT) || flag.equals(Const.MSGFLAG_VIDEO)) {
+                //带表情的文本||视频申请
                 holder.tv_item_chat_html.setVisibility(View.VISIBLE);
                 holder.tv_item_chat_record_time.setVisibility(View.GONE);
                 holder.view_item_chat_record_anim.setVisibility(View.GONE);
@@ -751,6 +760,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mIbPrivateChatAdd.setOnClickListener(this);
         mBtPrivateChatVideo.setOnClickListener(this);
         mBtPrivateChatImage.setOnClickListener(this);
+        mBtPrivateChatcallphone.setOnClickListener(this);
+        mBtPrivateChatcallsms.setOnClickListener(this);
 
         mEtPrivateChatText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -864,6 +875,23 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_private_chat_image: {
                 //选择图片
                 selectImage();
+                break;
+            }
+            case R.id.bt_private_chat_callphone:{
+                //拨打电话
+                Intent  intent2=new Intent();
+                intent2.setAction("android.intent.action.CALL");
+                intent2.addCategory("android.intent.category.DEFAULT");
+                intent2.setData(Uri.parse("tel:"+mUserphone));
+                startActivity(intent2);
+                break;
+            }
+            case R.id.bt_private_chat_callsms:{
+                //发送短信
+                Intent sendIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+mUserphone));
+                sendIntent.putExtra("sms_body", "");
+                startActivity(sendIntent);
+                break;
             }
         }
     }

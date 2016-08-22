@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.softfun_xmpp.R;
 import com.softfun_xmpp.application.GlobalContext;
 import com.softfun_xmpp.application.SystemVars;
+import com.softfun_xmpp.bbs.bean.OrangeCodeBean;
 import com.softfun_xmpp.bean.FriendInfoBean;
 import com.softfun_xmpp.bean.GroupBean;
 import com.softfun_xmpp.bean.GroupMemberBean;
@@ -787,8 +788,9 @@ public class HttpUtil {
     public static int okhttpPost_forgetPassword(String username) {
         int code = 0;
         try {
-            String url = context.getResources().getString(R.string.app_server)+"forgetPassword";
+            String url = context.getResources().getString(R.string.app_server)+"forgetPassword"; //
             RequestBody formBody = new FormBody.Builder()
+                    .add("ip",context.getResources().getString(R.string.app_server))
                     .add("username", username)
                     .build();
             Request request = new Request.Builder()
@@ -1599,5 +1601,45 @@ public class HttpUtil {
             //System.out.println("网络访问异常:okhttpPost_queryVideoSession");
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * 获取柑橘分类
+     * @param code
+     */
+    public static List<OrangeCodeBean> okhttpPost_queryOrangeTypeList(String code) {
+        List<OrangeCodeBean> list = null;
+        try {
+            String url = context.getResources().getString(R.string.app_server_n110)+"queryOrangeTypeList.do";
+            RequestBody formBody = new FormBody.Builder()
+                    .add("code", code)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
+            }
+            //开始解析json数据，转为bean对象，插入到list
+            JSONArray datalist = new JSONArray(response.body().string());
+            if(datalist.length()>0){
+                list = new ArrayList<>();
+                for (int i = 0; i < datalist.length() ; i++) {
+                    JSONObject object = (JSONObject)datalist.get(i);
+                    OrangeCodeBean orangeCodeBean = new OrangeCodeBean();
+                    orangeCodeBean.setItemid(Integer.MAX_VALUE-i);
+                    orangeCodeBean.setKey(object.getString("key"));
+                    orangeCodeBean.setValue(object.getString("value"));
+                    list.add(orangeCodeBean);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return list;
+        }
+        return list;
     }
 }

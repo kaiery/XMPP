@@ -3,13 +3,16 @@ package com.opentok.android.demo.opentoksamples;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -134,13 +137,45 @@ public class UIActivity extends Activity implements Session.SessionListener,
      * 视频激活状态
      */
     private boolean mActivation;
+    /**
+     * 通过绑定服务得到的服务实例
+     */
+    private IMService mImService;
+
+
+
+    /**
+     * 绑定服务的连接对象
+     */
+    private MyServiceConnection mMyServiceConnection = new MyServiceConnection();
+
+    /**
+     * 绑定服务的连接对象类
+     */
+    class MyServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            IMService.MyBinder binder = (IMService.MyBinder) service;
+            //拿到绑定的服务接口
+            mImService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            ////System.out.println("====================  onServiceDisconnected  =====================");
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-
+        //绑定服务
+        Intent service = new Intent(this, IMService.class);
+        //绑定
+        bindService(service, mMyServiceConnection, BIND_AUTO_CREATE);
 
         IMService.isVideo = true;
         mUserAccount = IMService.mCurAccount;
@@ -173,7 +208,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         IntentFilter filter_dynamic = new IntentFilter();
         filter_dynamic.addAction(Const.VIDEO_WORKING_BROADCAST_ACTION);
         registerReceiver(dynamicReceiver, filter_dynamic);
-        IMService.VIDEO_UI_CREATE = true;
+        //IMService.VIDEO_UI_CREATE = true;
     }
 
     /**
@@ -196,7 +231,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     private Runnable runnable = new Runnable() {
         public void run() {
             if(!mActivation){
-                Toast.makeText(UIActivity.this,"对方无应答",Toast.LENGTH_SHORT).show();
+                ToastUtils.showToastSafe_Long("连接超时，可能对方不在线");
                 close();
             }
         }
@@ -477,12 +512,21 @@ public class UIActivity extends Activity implements Session.SessionListener,
 //            unbindService(mConnection);
 //            mIsBound = false;
 //        }
+        if(runnable!=null){
+            handler.removeCallbacks(runnable);
+        }
+        mImService.callbackRefuseVideoMsg(mTargetAccount,"视频通话结束");
+
+        //解绑服务
+        if (mMyServiceConnection != null) {
+            unbindService(mMyServiceConnection);
+        }
 
         if (mSession != null) {
             mSession.disconnect();
         }
         IMService.isVideo = false;
-        IMService.VIDEO_UI_CREATE = false;
+        //IMService.VIDEO_UI_CREATE = false;
         super.onDestroy();
         finish();
     }
@@ -729,7 +773,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     @Override
     public void onDisconnected(Session session) {
         //Log.i(LOGTAG, "会话已断开");
-        ToastUtils.showToastSafe("会话已断开");
+        //ToastUtils.showToastSafe("会话已断开");
         //System.out.println("====================  会话已断开  =====================");
         if (mPublisher != null) {
             mPublisherViewContainer.removeView(mPublisher.getRenderer().getView());
@@ -837,7 +881,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
         if(mSubscriber != null){
             unsubscriberFromStream(stream);
         }
-        ToastUtils.showToastSafe("我的视频被销毁");
+        //ToastUtils.showToastSafe("我的视频被销毁");
         //System.out.println("====================  我的视频被销毁了  =====================："+stream);
     }
     /**
@@ -985,7 +1029,7 @@ public class UIActivity extends Activity implements Session.SessionListener,
     public void onError(PublisherKit publisher, OpentokError exception) {
         //Log.i(LOGTAG, "Publisher exception: " + exception.getMessage());
         //System.out.println("====================  视频发布出错了：  =====================  "+ mUserAccount);
-        ToastUtils.showToastSafe("视频发布出错了1");
+        ToastUtils.showToastSafe("视频发布出错了.");
 
         close();
     }

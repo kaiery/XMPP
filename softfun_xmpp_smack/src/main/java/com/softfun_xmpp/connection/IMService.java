@@ -1,17 +1,21 @@
 package com.softfun_xmpp.connection;
 
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.SystemClock;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.softfun_xmpp.R;
+import com.softfun_xmpp.activity.JumpActivity;
 import com.softfun_xmpp.application.GlobalContext;
+import com.softfun_xmpp.application.ScreenListener;
 import com.softfun_xmpp.bean.GroupBean;
 import com.softfun_xmpp.bean.GroupMemberBean;
 import com.softfun_xmpp.bean.MUCParams;
@@ -130,10 +134,10 @@ public class IMService extends Service {
      * 是否正在视频聊天，独占
      */
     public static boolean isVideo;
-    /**
-     * 视频UI界面是否创建完成
-     */
-    public static  boolean VIDEO_UI_CREATE = false;
+//    /**
+//     * 视频UI界面是否创建完成
+//     */
+//    public static  boolean VIDEO_UI_CREATE = false;
 
     private Roster mRoster;
     /**
@@ -176,6 +180,14 @@ public class IMService extends Service {
     }
 
 
+    //当前设备状态:锁屏、点亮、解锁
+    public int status = 0;
+    //锁屏、唤醒相关
+    private ScreenListener screenListener;
+    private KeyguardManager km;
+    private KeyguardManager.KeyguardLock kl;
+    private PowerManager pm;
+    private PowerManager.WakeLock wl;
 
 
 
@@ -215,6 +227,7 @@ public class IMService extends Service {
         //System.out.println("====================  服务被销毁  =====================");
         clearxx();
         conn.disconnect();
+        screenListener.unregisterListener();
         super.onDestroy();
     }
 
@@ -307,11 +320,115 @@ public class IMService extends Service {
                 /*====================  从服务器上同步群组信息end  =====================*/
                 isCreate = true;
 
+                // 查询视频聊天会话令牌
                 HttpUtil.okhttpPost_queryVideoSession();
+
+
+
+                screenListener = new ScreenListener(IMService.this);
+                screenListener.begin(new ScreenListener.ScreenStateListener() {
+                    @Override
+                    public void onUserPresent() {
+                        System.out.println("====================  用户解锁屏幕  =====================");
+                        status = 0;
+                    }
+                    @Override
+                    public void onScreenOn() {
+                        System.out.println("====================  用户点亮屏幕  =====================");
+                        status = 1;
+                    }
+                    @Override
+                    public void onScreenOff() {
+                        System.out.println("====================  用户熄灭屏幕  =====================");
+                        status = 2;
+                    }
+                });
 
             }
         });
     }
+
+
+    /**
+     * 唤醒设备并接收视频call进消息
+     * @param form
+     */
+    private void wakeAndShowVideoComing(String form){
+        //获取电源管理器对象
+        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if(!pm.isScreenOn()){
+            //获取PowerManager.WakeLock对象，后面的参数|表示同时传入两个值，最后的是调试用的Tag
+            wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
+            //点亮屏幕
+            wl.acquire();
+            wl.release();
+            //得到键盘锁管理器对象
+            km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+            kl = km.newKeyguardLock("unLock");
+            //解锁
+            kl.disableKeyguard();
+            JumpVideoComing(form);
+        }
+    }
+
+    /**
+     * 弹出锁屏状态下的视频call进窗口
+     * @param form
+     */
+    private void JumpVideoComing(String form) {
+        Intent intent1 = new Intent();
+        intent1.putExtra("sourceid", form);
+        intent1.putExtra("sourcename", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.NICKNAME));
+        intent1.putExtra("sourceface", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.AVATARURL));
+        String app_package_flag = getResources().getString(R.string.app_package_flag);
+        intent1.setAction(app_package_flag+".activity.VideoChatScreen");
+        intent1.addCategory("android.intent.category.DEFAULT");
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent1);
+    }
+
+    /**
+     * 唤醒
+     * @param b -
+     */
+    private void wakeAndUnlock(boolean b) {
+        if (b) {
+            //获取电源管理器对象
+            pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if(!pm.isScreenOn()){
+                //获取PowerManager.WakeLock对象，后面的参数|表示同时传入两个值，最后的是调试用的Tag
+                wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
+
+                //点亮屏幕
+                wl.acquire();
+                wl.release();
+                //得到键盘锁管理器对象
+                km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+                kl = km.newKeyguardLock("unLock");
+
+                //解锁
+                kl.disableKeyguard();
+                //jump();
+            }
+        } else {
+            //锁屏
+            kl.reenableKeyguard();
+
+            //释放wakeLock，关灯
+            wl.release();
+        }
+    }
+
+    /**
+     * 创建弹窗
+     */
+    private void jump() {
+        Intent intent = new Intent(this, JumpActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+
 
     /**
      *群聊邀请的监听
@@ -704,13 +821,13 @@ public class IMService extends Service {
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
                         public void run() {
-                            while (!IMService.VIDEO_UI_CREATE){
-                                SystemClock.sleep(500);
-                            }
+//                            while (!IMService.VIDEO_UI_CREATE){
+//                                SystemClock.sleep(500);
+//                            }
                             //发送广播，通知对方视频正忙
                             Intent intent = new Intent();
                             intent.setAction(Const.VIDEO_WORKING_BROADCAST_ACTION);
-                            intent.putExtra("msg", "对方正忙，无法进行视频聊天。");
+                            intent.putExtra("msg", "视频通话结束。");
                             sendBroadcast(intent);
                         }
                     });
@@ -720,10 +837,12 @@ public class IMService extends Service {
                     //如果我正在视频
                     if(IMService.isVideo){
                         //主动拒绝视频
-                        callbackRefuseVideoMsg(message.getFrom());
+                        callbackRefuseVideoMsg(message.getFrom(),"我正在视频通话，请稍后再联系。");
                     }else
                     //我空闲
                     {
+                        //保存视频申请的消息到本地数据库
+                        saveMessage(session_account, message);
                         enterVideoActivity(message.getFrom());
                     }
                 }else if(jpe.getProperty(Const.MSGFLAG).equals(Const.MSGFLAG_IMG)){
@@ -773,17 +892,18 @@ public class IMService extends Service {
 
 
     /**
-     * 主动拒绝视频
+     * 主动回绝视频，附带自定义消息文本
      */
-    private void callbackRefuseVideoMsg(String mTargetAccount) {
+    public void callbackRefuseVideoMsg(String mTargetAccount,String text) {
         //1、创建一个消息
         Message msg = new Message();
         JivePropertiesExtension jpe = new JivePropertiesExtension();
         msg.setFrom(IMService.mCurAccount);
         msg.setTo(mTargetAccount);
-        msg.setBody("拒绝视频");
+        msg.setBody(text);
         msg.setType(Message.Type.chat);
         jpe.setProperty(Const.VIDEO_STATE, Const.MSGFLAG_VIDEO_WORKING);
+        jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_VIDEO);
         msg.addExtension(jpe);
         //调用服务内的发送消息方法
         sendMessage(msg);
@@ -797,15 +917,22 @@ public class IMService extends Service {
     private void enterVideoActivity(String form) {
         //System.out.println("====================  IMService.isVideo  =====================" + IMService.isVideo);
         if (!IMService.isVideo) {
-            Intent intent1 = new Intent();
-            intent1.putExtra("sourceid", form);
-            intent1.putExtra("sourcename", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.NICKNAME));
-            intent1.putExtra("sourceface", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.AVATARURL));
-            String app_package_flag = getResources().getString(R.string.app_package_flag);
-            intent1.setAction(app_package_flag+".activity.VideoChatScreen");
-            intent1.addCategory("android.intent.category.DEFAULT");
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent1);
+            //设备点亮正常
+            if(this.status!=2){
+                Intent intent1 = new Intent();
+                intent1.putExtra("sourceid", form);
+                intent1.putExtra("sourcename", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.NICKNAME));
+                intent1.putExtra("sourceface", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.AVATARURL));
+                String app_package_flag = getResources().getString(R.string.app_package_flag);
+                intent1.setAction(app_package_flag+".activity.VideoChatScreen");
+                intent1.addCategory("android.intent.category.DEFAULT");
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent1);
+            }else{
+                //设备被锁屏时
+                wakeAndShowVideoComing(form);
+                //jump();
+            }
         }
     }
 

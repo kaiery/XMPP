@@ -15,6 +15,7 @@ import com.softfun_xmpp.activity.ExpertActivity;
 import com.softfun_xmpp.adapter.GridAdapter;
 import com.softfun_xmpp.bbs.BBSIndexActivity;
 import com.softfun_xmpp.bbs.INFOActivity;
+import com.softfun_xmpp.bbs.INFOOrangesActivity;
 import com.softfun_xmpp.bean.FeatureBtnBean;
 import com.softfun_xmpp.components.TagsGridView;
 
@@ -137,7 +138,7 @@ public class BtnGridViewFragment extends Fragment {
                                 startActivity(intent);
                                 break;
                             case "11":
-                                intent.setClass(getContext(), INFOActivity.class);
+                                intent.setClass(getContext(), INFOOrangesActivity.class);
                                 intent.putExtra("title", mList.get(position).getBtnname());
                                 intent.putExtra("code",mList.get(position).getBtcode());
                                 startActivity(intent);
