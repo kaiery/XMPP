@@ -108,7 +108,7 @@ public class AsmackUtils {
 
     /**
      * 通过 account 获取 联系人表中的字段值
-     *
+     * 此方法有问题，不能频繁的查询数据库，需要一次性取出
      * @param account
      * @param field
      * @return
@@ -124,6 +124,7 @@ public class AsmackUtils {
         String[] columns = new String[]{field};
         String where = ContactsDbHelper.ContactTable.ACCOUNT + "=?";
         String[] args = new String[]{account};
+        System.err.println("   "+field);
         Cursor cursor = context.getContentResolver().query(ContactsProvider.URI_CONTACT, columns, where, args, null);
         if (cursor!=null && cursor.getCount() > 0) {
             cursor.moveToFirst();
