@@ -108,6 +108,10 @@ public class Const {
      */
     public static final String MSGFLAG_VIDEO_WORKING = "working";
     /**
+     * 我的视频状态空闲
+     */
+    public static final String MSGFLAG_VIDEO_IDLE = "idle";
+    /**
      * 群聊邀请
      */
     public static final String MSGFLAG_GROUP_INVITE = "msgflag_group_invite";

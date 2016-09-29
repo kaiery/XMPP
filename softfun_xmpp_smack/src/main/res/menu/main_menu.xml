@@ -12,7 +12,9 @@
         app:showAsAction="ifRoom|collapseActionView"/>
 
 
-    <!--这种方式可以在浮动菜单中显示icon-->
+    <!--这种方式可以在浮动菜单中显示icon
+    @drawable/abc_ic_menu_moreoverflow_mtrl_alpha
+    -->
     <item
         android:icon="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
         android:id="@+id/action_settings"

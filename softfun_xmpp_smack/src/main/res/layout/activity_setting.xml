@@ -22,6 +22,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <!--每一行-->
+            <RelativeLayout
+                android:id="@id/item6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_click_color"
+                android:paddingBottom="@dimen/activity_horizontal_margin_half"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_horizontal_margin_half">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/activity_horizontal_margin_half"
+                    android:paddingTop="@dimen/activity_horizontal_margin_half"
+                    android:text="视频设置"
+                    android:textColor="@color/colorBlackText"
+                    android:textSize="@dimen/font_body"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_navigate_next_grey600_36dp"/>
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#FF909090"/>
+            <!--每一行END-->
 
             <!--每一行-->
             <RelativeLayout

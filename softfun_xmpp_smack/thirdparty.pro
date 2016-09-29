@@ -48,3 +48,7 @@
 -keep class me.nereo.multi_image_selector.** { *; }
 
 -keep class fr.castorflex.** { *; }
+
+#RTC
+-keep class org.webrtc.** {*;}
+-keep class de.tavendo.autobahn.** {*;}

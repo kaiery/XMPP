@@ -1,8 +1,10 @@
 package com.softfun_xmpp.activity;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -27,6 +29,7 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -45,7 +49,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.opentok.android.demo.opentoksamples.UIActivity;
 import com.softfun_xmpp.R;
 import com.softfun_xmpp.application.GlobalSoundPool;
 import com.softfun_xmpp.bean.ImagePickBean;
@@ -71,6 +74,7 @@ import com.tb.emoji.Emoji;
 import com.tb.emoji.EmojiUtil;
 import com.tb.emoji.FaceFragment;
 
+import org.appspot.apprtc.CallActivity;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.jiveproperties.packet.JivePropertiesExtension;
 
@@ -82,6 +86,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
 
 import cn.edu.zafu.coreprogress.listener.impl.UIProgressListener;
@@ -90,6 +95,29 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.softfun_xmpp.activity.MainActivity.CONNECTION_REQUEST;
+import static com.softfun_xmpp.activity.MainActivity.commandLineRun;
+import static com.softfun_xmpp.activity.MainActivity.keyprefAecDump;
+import static com.softfun_xmpp.activity.MainActivity.keyprefAudioBitrateType;
+import static com.softfun_xmpp.activity.MainActivity.keyprefAudioBitrateValue;
+import static com.softfun_xmpp.activity.MainActivity.keyprefAudioCodec;
+import static com.softfun_xmpp.activity.MainActivity.keyprefCamera2;
+import static com.softfun_xmpp.activity.MainActivity.keyprefCaptureQualitySlider;
+import static com.softfun_xmpp.activity.MainActivity.keyprefCaptureToTexture;
+import static com.softfun_xmpp.activity.MainActivity.keyprefDisableBuiltInAec;
+import static com.softfun_xmpp.activity.MainActivity.keyprefDisableBuiltInAgc;
+import static com.softfun_xmpp.activity.MainActivity.keyprefDisableBuiltInNs;
+import static com.softfun_xmpp.activity.MainActivity.keyprefEnableLevelControl;
+import static com.softfun_xmpp.activity.MainActivity.keyprefFps;
+import static com.softfun_xmpp.activity.MainActivity.keyprefHwCodecAcceleration;
+import static com.softfun_xmpp.activity.MainActivity.keyprefNoAudioProcessingPipeline;
+import static com.softfun_xmpp.activity.MainActivity.keyprefOpenSLES;
+import static com.softfun_xmpp.activity.MainActivity.keyprefResolution;
+import static com.softfun_xmpp.activity.MainActivity.keyprefVideoBitrateType;
+import static com.softfun_xmpp.activity.MainActivity.keyprefVideoBitrateValue;
+import static com.softfun_xmpp.activity.MainActivity.keyprefVideoCallEnabled;
+import static com.softfun_xmpp.activity.MainActivity.keyprefVideoCodec;
+import static com.softfun_xmpp.activity.MainActivity.sharedPref;
 import static com.softfun_xmpp.utils.ToolsUtil.dip2px;
 import static com.softfun_xmpp.utils.ToolsUtil.hideSoftInput;
 import static com.softfun_xmpp.utils.ToolsUtil.isKeyBoardShow;
@@ -281,11 +309,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mMinItemWidth = (int) (outMetrics.widthPixels * 0.15f);
 
         //先给mAdapter构造方法内一个空的cursor
-        mAdapter = new MyCursorAdapter(this,null,true);
+        mAdapter = new MyCursorAdapter(this, null, true);
         mLv.setAdapter(mAdapter);
         //初始化加载器管理器
         manager = getSupportLoaderManager();
-        manager.initLoader(0,null,this);
+        manager.initLoader(0, null, this);
 
 
         mUserphone = AsmackUtils.getVcardInfo(IMService.conn, mTargetAccount, Const.USERPHONE);
@@ -313,7 +341,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void loadHistoryMsg() {
         isLoadHistoryMsg = true;
-        manager.restartLoader(0,null,this);
+        manager.restartLoader(0, null, this);
     }
 
     //// TODO: 2016-03-10 表情布局
@@ -364,54 +392,54 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         int count;
-        if(mAdapter.getCursor()!=null){
+        if (mAdapter.getCursor() != null) {
             count = mAdapter.getCount();
-        }else{
+        } else {
             count = 0;
         }
-        count = count+20;
-        String[] sqlWhereArgs = new String[]{IMService.mCurAccount, mTargetAccount, mTargetAccount, IMService.mCurAccount, Message.Type.chat.name(), count+"", "0"};
-        return new CursorLoader(ChatActivity.this,SmsProvider.URI_SMS, null, null, sqlWhereArgs, null);
+        count = count + 20;
+        String[] sqlWhereArgs = new String[]{IMService.mCurAccount, mTargetAccount, mTargetAccount, IMService.mCurAccount, Message.Type.chat.name(), count + "", "0"};
+        return new CursorLoader(ChatActivity.this, SmsProvider.URI_SMS, null, null, sqlWhereArgs, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data!=null){
-            if(data.getCount()>0){
+        if (data != null) {
+            if (data.getCount() > 0) {
 
-                if(isLoadHistoryMsg){
+                if (isLoadHistoryMsg) {
                     int currentPosition = mAdapter.getCount();
                     mAdapter.swapCursor(data);
                     isLoadHistoryMsg = false;
                     mLv.refreshFinish();
                     mLv.setSelection(mAdapter.getCount() - currentPosition);
-                }else{
+                } else {
                     mAdapter.swapCursor(data);
                     isLoadHistoryMsg = false;
                     mLv.setSelection(mAdapter.getCount() - 1);
                 }
 
-            }else{
+            } else {
                 mAdapter.swapCursor(null);
-                if(isLoadHistoryMsg){
+                if (isLoadHistoryMsg) {
                     mLv.refreshFinish();
                 }
                 isLoadHistoryMsg = false;
             }
-        }else{
+        } else {
             mAdapter.swapCursor(null);
-            if(isLoadHistoryMsg){
+            if (isLoadHistoryMsg) {
                 mLv.refreshFinish();
             }
             isLoadHistoryMsg = false;
         }
     }
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if(mAdapter!=null)
+        if (mAdapter != null)
             mAdapter.swapCursor(null);
     }
-
 
 
     private class MyCursorAdapter extends CursorAdapter {
@@ -554,7 +582,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     holder.iv_ex.setVisibility(View.VISIBLE);
                     holder.iv_ex.setmView(holder.fl_item_chat);
                     holder.iv_ex.setB(false);
-                    ImageLoader.getInstance().displayImage(imgThumbUrl,holder.iv_ex,ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif());
+                    ImageLoader.getInstance().displayImage(imgThumbUrl, holder.iv_ex, ImageLoaderUtils.getOptions_CacheInMem_CacheInDisk_Exif());
 
                     holder.iv_ex.setOnClickListener(new ItemImageClickListener(convertView, position));
                 }
@@ -570,15 +598,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         public void bindView(View view, Context context, Cursor cursor) {
 
         }
-        public String getPositionValue(int position,String field){
+
+        public String getPositionValue(int position, String field) {
             mCursor.moveToPosition(position);
-            return mCursor.getString(mCursor.getColumnIndex( field ));
+            return mCursor.getString(mCursor.getColumnIndex(field));
         }
 
-        public int getPositionIntValue(int position,String field){
+        public int getPositionIntValue(int position, String field) {
             mCursor.moveToPosition(position);
             return mCursor.getInt(mCursor.getColumnIndex(field));
         }
+
         class ViewHolder {
             ImageView iv_avater;
             TextView tv_stamp;
@@ -598,9 +628,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void setAdapterOrNotify() {
         //System.out.println("====================  manager.restartLoader  ChatActiviy =====================");
-        manager.restartLoader(0,null,this);
+        manager.restartLoader(0, null, this);
     }
-
 
 
     /**
@@ -628,13 +657,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     /**
      * 录音点击事件
      */
     private class ItemRecordClickListener implements View.OnClickListener {
         private final View view;
         private final int position;
+
         public ItemRecordClickListener(View convertView, int position) {
             this.view = convertView;
             this.position = position;
@@ -705,7 +734,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     /**
      * * 查看图片（画廊）
      *
@@ -740,7 +768,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(Const.EXIT_CHAT_ACTION)){
+            if (intent.getAction().equals(Const.EXIT_CHAT_ACTION)) {
                 finish();
             }
         }
@@ -809,7 +837,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             //录入框点击事件
             case R.id.et_private_chat_text: {
-                if (isShowMore&&mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
+                if (isShowMore && mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
                     mLlPrivateChatExt.setVisibility(View.GONE);
                     mLlMoreExt.setVisibility(View.GONE);
                     isShowMore = false;
@@ -877,18 +905,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 selectImage();
                 break;
             }
-            case R.id.bt_private_chat_callphone:{
+            case R.id.bt_private_chat_callphone: {
                 //拨打电话
-                Intent  intent2=new Intent();
+                Intent intent2 = new Intent();
                 intent2.setAction("android.intent.action.CALL");
                 intent2.addCategory("android.intent.category.DEFAULT");
-                intent2.setData(Uri.parse("tel:"+mUserphone));
+                intent2.setData(Uri.parse("tel:" + mUserphone));
                 startActivity(intent2);
                 break;
             }
-            case R.id.bt_private_chat_callsms:{
+            case R.id.bt_private_chat_callsms: {
                 //发送短信
-                Intent sendIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+mUserphone));
+                Intent sendIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + mUserphone));
                 sendIntent.putExtra("sms_body", "");
                 startActivity(sendIntent);
                 break;
@@ -954,7 +982,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * @param recordtime
      */
     private void sentMsg(final String msgText, final String flag, final String recordurl, final long recordlen, final double recordtime) {
-        if(IMService.conn!=null && IMService.conn.isConnected()){
+        if (IMService.conn != null && IMService.conn.isConnected()) {
             ThreadUtils.runInThread(new Runnable() {
                 @Override
                 public void run() {
@@ -994,7 +1022,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     });
                 }
             });
-        }else{
+        } else {
             ToastUtils.showToastSafe("没有网络");
         }
     }
@@ -1006,6 +1034,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 上传录音文件
+     *
      * @param recordurl
      * @param msg
      */
@@ -1099,7 +1128,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * 选择图片
      */
     private void selectImage() {
-        if(IMService.conn!=null && IMService.conn.isConnected()){
+        if (IMService.conn != null && IMService.conn.isConnected()) {
             Intent intent = new Intent(this, MultiImageSelectorActivity.class);
             // 是否显示调用相机拍照
             intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
@@ -1110,7 +1139,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             // 默认选择图片,回填选项(支持String ArrayList)
             intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, mSelectPath);
             startActivityForResult(intent, REQUEST_IMAGE);
-        }else{
+        } else {
             ToastUtils.showToastSafe("没有网络");
         }
     }
@@ -1119,7 +1148,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * 视频申请
      */
     private void sentMsg() {
-        if(IMService.conn!=null && IMService.conn.isConnected()){
+        if (IMService.conn != null && IMService.conn.isConnected()) {
+            final String roomId = Integer.toString((new Random()).nextInt(100000000));
+            System.err.println("roomid:="+roomId);
             ThreadUtils.runInThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1131,20 +1162,166 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     msg.setBody("视频申请");
                     msg.setType(Message.Type.chat);
                     jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_VIDEO);
+                    jpe.setProperty("roomid",roomId);
                     msg.addExtension(jpe);
                     //调用服务内的发送消息方法
                     mImService.sendMessage(msg);
                 }
             });
+//            Intent intent = new Intent(this, UIActivity.class);
+//            intent.putExtra("mTargetNickName", mTargetNickName);
+//            intent.putExtra("mTargetAccount", mTargetAccount.substring(0, mTargetAccount.lastIndexOf("@")) + "@" + Const.APP_PACKAGENAME);
+//            startActivity(intent);
+            connectToRoom(roomId,false,false,0);
 
-            Intent intent = new Intent(this, UIActivity.class);
-            //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra("mTargetNickName", mTargetNickName);
-            intent.putExtra("mTargetAccount", mTargetAccount.substring(0, mTargetAccount.lastIndexOf("@")) + "@" + Const.APP_PACKAGENAME);
-            startActivity(intent);
-        }else{
+        } else {
             ToastUtils.showToastSafe("没有网络");
         }
+    }
+
+
+    /**
+     * 连接房间
+     *
+     * @param roomId         -
+     * @param commandLineRun_ -
+     * @param loopback       -
+     * @param runTimeMs      -
+     */
+    private void connectToRoom(String roomId, boolean commandLineRun_, boolean loopback, int runTimeMs) {
+        commandLineRun = commandLineRun_;
+        // roomId is random for loopback.
+        if (loopback) {
+            roomId = Integer.toString((new Random()).nextInt(100000000));
+        }
+        //String roomUrl = sharedPref.getString(keyprefRoomServerUrl, getString(R.string.pref_room_server_url_default));
+        String roomUrl = "http://"+IMService.RTC_ROOMSERVER;
+        System.err.println("roomUrl:"+roomUrl);
+        // Video call enabled flag.
+        boolean videoCallEnabled = sharedPref.getBoolean(keyprefVideoCallEnabled, Boolean.valueOf(getString(R.string.pref_videocall_default)));
+        // Use Camera2 option.
+        boolean useCamera2 = sharedPref.getBoolean(keyprefCamera2, Boolean.valueOf(getString(R.string.pref_camera2_default)));
+        // Get default codecs.
+        String videoCodec = sharedPref.getString(keyprefVideoCodec, getString(R.string.pref_videocodec_default));
+        String audioCodec = sharedPref.getString(keyprefAudioCodec, getString(R.string.pref_audiocodec_default));
+        // Check HW codec flag.
+        boolean hwCodec = sharedPref.getBoolean(keyprefHwCodecAcceleration, Boolean.valueOf(getString(R.string.pref_hwcodec_default)));
+        // Check Capture to texture.
+        boolean captureToTexture = sharedPref.getBoolean(keyprefCaptureToTexture, Boolean.valueOf(getString(R.string.pref_capturetotexture_default)));
+        // Check Disable Audio Processing flag.
+        boolean noAudioProcessing = sharedPref.getBoolean(keyprefNoAudioProcessingPipeline, Boolean.valueOf(getString(R.string.pref_noaudioprocessing_default)));
+        // Check Disable Audio Processing flag.
+        boolean aecDump = sharedPref.getBoolean(keyprefAecDump, Boolean.valueOf(getString(R.string.pref_aecdump_default)));
+        // Check OpenSL ES enabled flag.
+        boolean useOpenSLES = sharedPref.getBoolean(keyprefOpenSLES, Boolean.valueOf(getString(R.string.pref_opensles_default)));
+        // Check Disable built-in AEC flag.
+        boolean disableBuiltInAEC = sharedPref.getBoolean(keyprefDisableBuiltInAec, Boolean.valueOf(getString(R.string.pref_disable_built_in_aec_default)));
+        // Check Disable built-in AGC flag.
+        boolean disableBuiltInAGC = sharedPref.getBoolean(keyprefDisableBuiltInAgc, Boolean.valueOf(getString(R.string.pref_disable_built_in_agc_default)));
+        // Check Disable built-in NS flag.
+        boolean disableBuiltInNS = sharedPref.getBoolean(keyprefDisableBuiltInNs, Boolean.valueOf(getString(R.string.pref_disable_built_in_ns_default)));
+        // Check Enable level control.
+        boolean enableLevelControl = sharedPref.getBoolean(keyprefEnableLevelControl, Boolean.valueOf(getString(R.string.pref_enable_level_control_key)));
+        // 得到视频分辨率设置
+        int videoWidth = 0;
+        int videoHeight = 0;
+        String resolution = sharedPref.getString(keyprefResolution, getString(R.string.pref_resolution_default));
+        String[] dimensions = resolution.split("[ x]+");
+        if (dimensions.length == 2) {
+            try {
+                videoWidth = Integer.parseInt(dimensions[0]);
+                videoHeight = Integer.parseInt(dimensions[1]);
+            } catch (NumberFormatException e) {
+                videoWidth = 0;
+                videoHeight = 0;
+                Log.e("rtc", "错误的视频分辨率设置: " + resolution);
+            }
+        }
+        // Get camera fps from settings.
+        int cameraFps = 0;
+        String fps = sharedPref.getString(keyprefFps, getString(R.string.pref_fps_default));
+        String[] fpsValues = fps.split("[ x]+");
+        if (fpsValues.length == 2) {
+            try {
+                cameraFps = Integer.parseInt(fpsValues[0]);
+            } catch (NumberFormatException e) {
+                Log.e("rtc", "错误的相机fps设置: " + fps);
+            }
+        }
+        // Check capture quality slider flag.
+        boolean captureQualitySlider = sharedPref.getBoolean(keyprefCaptureQualitySlider, Boolean.valueOf(getString(R.string.pref_capturequalityslider_default)));
+        // Get video and audio start bitrate.
+        int videoStartBitrate = 0;
+        String bitrateTypeDefault = getString(
+                R.string.pref_startvideobitrate_default);
+        String bitrateType = sharedPref.getString(
+                keyprefVideoBitrateType, bitrateTypeDefault);
+        if (!bitrateType.equals(bitrateTypeDefault)) {
+            String bitrateValue = sharedPref.getString(keyprefVideoBitrateValue, getString(R.string.pref_startvideobitratevalue_default));
+            videoStartBitrate = Integer.parseInt(bitrateValue);
+        }
+        int audioStartBitrate = 0;
+        bitrateTypeDefault = getString(R.string.pref_startaudiobitrate_default);
+        bitrateType = sharedPref.getString(keyprefAudioBitrateType, bitrateTypeDefault);
+        if (!bitrateType.equals(bitrateTypeDefault)) {
+            String bitrateValue = sharedPref.getString(keyprefAudioBitrateValue, getString(R.string.pref_startaudiobitratevalue_default));
+            audioStartBitrate = Integer.parseInt(bitrateValue);
+        }
+        // Check statistics display option.
+        //boolean displayHud = sharedPref.getBoolean(keyprefDisplayHud, Boolean.valueOf(getString(R.string.pref_displayhud_default)));
+        //boolean tracing = sharedPref.getBoolean(keyprefTracing, Boolean.valueOf(getString(R.string.pref_tracing_default)));
+        // Start AppRTCDemo activity.
+        Log.d("rtc", "连接到房间 " + roomId + " at URL " + roomUrl);
+        if (validateUrl(roomUrl)) {
+            Uri uri = Uri.parse(roomUrl);
+            Intent intent = new Intent(this, CallActivity.class);
+            intent.setData(uri);
+            intent.putExtra(CallActivity.EXTRA_ROOMID, roomId);
+            intent.putExtra(CallActivity.EXTRA_LOOPBACK, loopback);
+            intent.putExtra(CallActivity.EXTRA_VIDEO_CALL, videoCallEnabled);
+            intent.putExtra(CallActivity.EXTRA_CAMERA2, useCamera2);
+            intent.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, videoWidth);
+            intent.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, videoHeight);
+            intent.putExtra(CallActivity.EXTRA_VIDEO_FPS, cameraFps);
+            intent.putExtra(CallActivity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, captureQualitySlider);
+            intent.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, videoStartBitrate);
+            intent.putExtra(CallActivity.EXTRA_VIDEOCODEC, videoCodec);
+            intent.putExtra(CallActivity.EXTRA_HWCODEC_ENABLED, hwCodec);
+            intent.putExtra(CallActivity.EXTRA_CAPTURETOTEXTURE_ENABLED, captureToTexture);
+            intent.putExtra(CallActivity.EXTRA_NOAUDIOPROCESSING_ENABLED, noAudioProcessing);
+            intent.putExtra(CallActivity.EXTRA_AECDUMP_ENABLED, aecDump);
+            intent.putExtra(CallActivity.EXTRA_OPENSLES_ENABLED, useOpenSLES);
+            intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_AEC, disableBuiltInAEC);
+            intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_AGC, disableBuiltInAGC);
+            intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_NS, disableBuiltInNS);
+            intent.putExtra(CallActivity.EXTRA_ENABLE_LEVEL_CONTROL, enableLevelControl);
+            intent.putExtra(CallActivity.EXTRA_AUDIO_BITRATE, audioStartBitrate);
+            intent.putExtra(CallActivity.EXTRA_AUDIOCODEC, audioCodec);
+            //intent.putExtra(CallActivity.EXTRA_DISPLAY_HUD, displayHud);
+            //intent.putExtra(CallActivity.EXTRA_TRACING, tracing);
+            intent.putExtra(CallActivity.EXTRA_CMDLINE, commandLineRun);
+            intent.putExtra(CallActivity.EXTRA_RUNTIME, runTimeMs);
+
+            intent.putExtra("mTargetNickName", mTargetNickName);
+            intent.putExtra("mTargetAccount", mTargetAccount.substring(0, mTargetAccount.lastIndexOf("@")) + "@" + Const.APP_PACKAGENAME);
+
+            startActivityForResult(intent, CONNECTION_REQUEST);
+        }
+    }
+    private boolean validateUrl(String url) {
+        if (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) {
+            return true;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(getText(R.string.invalid_url_title))
+                .setMessage(getString(R.string.invalid_url_text, url))
+                .setCancelable(false)
+                .setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).create().show();
+        return false;
     }
 
 
@@ -1307,14 +1484,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         if (isShowFace) {
             closeFace();
-        }else if (mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
+        } else if (mLlPrivateChatExt.getVisibility() == View.VISIBLE) {
             mLlPrivateChatExt.setVisibility(View.GONE);
             mLlMoreExt.setVisibility(View.GONE);
-        }else {
+        } else {
             super.onBackPressed();
         }
     }
-
 
 
     //---------------内容观察者---------------//
@@ -1394,7 +1570,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-
 
 
 }

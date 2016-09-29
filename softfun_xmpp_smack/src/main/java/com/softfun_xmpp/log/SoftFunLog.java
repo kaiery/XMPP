@@ -53,7 +53,7 @@ public class SoftFunLog {
             out.write(type+"  "+ ToolsUtil.getCurrentStamp()+":  "+conent);
             out.newLine();
         } catch  (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally  {
             try  {
                 if (out != null) {

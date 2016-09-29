@@ -23,6 +23,8 @@ import com.softfun_xmpp.utils.SpUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
 import com.softfun_xmpp.utils.ToastUtils;
 
+import org.appspot.apprtc.SettingsActivity;
+
 public class SettingActivity extends AppCompatActivity implements View.OnClickListener {
 
 
@@ -32,6 +34,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private RelativeLayout mItem3;
     private RelativeLayout mItem4;
     private RelativeLayout mItem5;
+    private RelativeLayout mItem6;
     private TextView mTvCache;
     private TextView mTvVer;
     private Intent intent_web;
@@ -43,6 +46,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         mItem3 = (RelativeLayout) findViewById(R.id.item3);
         mItem4 = (RelativeLayout) findViewById(R.id.item4);
         mItem5 = (RelativeLayout) findViewById(R.id.item5);
+        mItem6 = (RelativeLayout) findViewById(R.id.item6);
         mTvCache = (TextView) findViewById(R.id.tv_cache);
         mTvVer = (TextView) findViewById(R.id.tv_ver);
     }
@@ -67,6 +71,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         mItem3.setOnClickListener(this);
         mItem4.setOnClickListener(this);
         mItem5.setOnClickListener(this);
+        mItem6.setOnClickListener(this);
 
 
         initData();
@@ -102,9 +107,11 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(intent_web);
                 break;
             case R.id.item2:
+            {
                 Intent intent = new Intent(this,FeedBackActivity.class);
                 startActivity(intent);
                 break;
+            }
             case R.id.item3:
                 clearCache();
                 break;
@@ -116,6 +123,12 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 Intent intent1 = new Intent(this,AboutUsActivity.class);
                 startActivity(intent1);
                 break;
+            case R.id.item6:
+            {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            }
         }
     }
 

@@ -4,13 +4,11 @@
     <string name="app_copyright">\@浙江融创 版权所有</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="menu_settings">设置</string>
-
-    <string name="action_settings">设置</string>
+    <!--<string name="action_settings">设置</string>-->
     <string name="action_share">分享</string>
     <string name="action_help">帮助与反馈</string>
     <string name="action_add">添加好友</string>
@@ -30,13 +28,11 @@
     <string name="offline">离线</string>
     <string name="online">在线</string>
 
-
     <string name="recoder_normal">按住 说话</string>
     <string name="recoder_recodering">松开 结束</string>
     <string name="recoder_recodering_dialog">手指上滑，取消发送</string>
     <string name="recoder_want_cancel">松开手指，取消发送</string>
     <string name="recoder_too_short">录音时间太短</string>
-
 
     <!--无消息-->
     <string name="nodata_msg">目前您还没有消息动态</string>
@@ -44,11 +40,9 @@
     <string name="nodata_group">目前您还没有加入群组</string>
     <string name="networkbreak">世界上最遥远的距离就是没有网络。</string>
 
-
     <!--表情-->
     <string name="face_recently">最近</string>
     <string name="face_set_one">默认</string>
-
 
     <string name="swapStr">切换</string>
     <string name="endCall1">结束通话</string>
@@ -72,7 +66,6 @@
     <string name="permission_writeexternalstorage_granted">SD卡权限已允许</string>
     <string name="permission_notgranted">权限未允许.</string>
 
-
     <string name="chat_type_normal">基础群</string>
     <string name="chat_type_game">兴趣群</string>
     <string name="chat_type_city">同城群</string>
@@ -81,4 +74,171 @@
     <string name="chat_type_game_info">集聚相同兴趣、爱好的朋友</string>
     <string name="chat_type_city_info">发现同城的伙伴们</string>
     <string name="chat_type_sercet_info">生活、办公、私密</string>
+
+
+
+
+
+
+<!--rtc-->
+    <string name="settings_name" translatable="false">视频通讯设置</string>
+    <string name="disconnect_call">断开连接</string>
+    <string name="room_description">请输入一个房间名，房间名将共享给每一个人，请输入一个房间的名字，房间的名字是与大家分享的。</string>
+    <string name="favorites">收藏</string>
+    <string name="no_favorites">不收藏</string>
+    <string name="invalid_url_title">无效的URL</string>
+    <string name="invalid_url_text">您输入的URL或房间的名字导致无效的URL: %1$s
+    </string>
+    <string name="channel_error_title">连接错误</string>
+    <string name="connecting_to">连接到: %1$s</string>
+    <string name="missing_url">致命错误:缺少URL连接.</string>
+    <string name="camera2_texture_only_error">Camera2只支持捕获纹理。启用或禁用Camera2捕获纹理的选择。</string>
+    <string name="ok">确定</string>
+    <string name="switch_camera">切换前后摄像头</string>
+    <string name="capture_format_change_text">滑动改变捕获格式</string>
+    <string name="muted">静音</string>
+    <string name="toggle_debug">程序调式视图切换</string>
+    <string name="toggle_mic">切换麦克风开/关</string>
+    <string name="action_settings">设置</string>
+    <string name="action_loopback">环路连接</string>
+    <string name="connect_description">连接到房间</string>
+    <string name="add_favorite_description">加入收藏</string>
+
+    <!-- Settings strings. -->
+    <string name="pref_room_key">room_preference</string>
+    <string name="pref_room_list_key">room_list_preference</string>
+
+    <string name="pref_videosettings_key">video_settings_key</string>
+    <string name="pref_videosettings_title">视频设置.</string>
+
+    <string name="pref_videocall_key">videocall_preference</string>
+    <string name="pref_videocall_title">视频通话.</string>
+    <string name="pref_videocall_dlg">Enable video in a call.</string>
+    <string name="pref_videocall_default">true</string>
+
+    <string name="pref_camera2_key">camera2_preference</string>
+    <string name="pref_camera2_title">使用高级摄像头.</string>
+    <string name="pref_camera2_default">true</string>
+    <string name="pref_camera2_not_supported">只支持安卓5.0系统以上.</string>
+
+    <string name="pref_resolution_key">resolution_preference</string>
+    <string name="pref_resolution_title">视频分辨率.</string>
+    <string name="pref_resolution_dlg">本地视频分辨率.</string>
+    <string name="pref_resolution_default">Default</string>
+
+    <string name="pref_fps_key">fps_preference</string>
+    <string name="pref_fps_title">摄像头帧率.</string>
+    <string name="pref_fps_dlg">本地摄像头帧率.</string>
+    <string name="pref_fps_default">Default</string>
+
+    <string name="pref_capturequalityslider_key">capturequalityslider_preference</string>
+    <string name="pref_capturequalityslider_title">捕获质量滑块.</string>
+    <string name="pref_capturequalityslider_dlg">Enable slider for changing capture quality.</string>
+    <string name="pref_capturequalityslider_default">false</string>
+
+    <string name="pref_startvideobitrate_key">startvideobitrate_preference</string>
+    <string name="pref_startvideobitrate_title">开始视频比特率设置.</string>
+    <string name="pref_startvideobitrate_dlg">开始视频比特率设置.</string>
+    <string name="pref_startvideobitrate_default">Default</string>
+
+    <string name="pref_startvideobitratevalue_key">startvideobitratevalue_preference</string>
+    <string name="pref_startvideobitratevalue_title">视频编码器初始比特率.</string>
+    <string name="pref_startvideobitratevalue_dlg">视频编码器初始比特率 kbps.</string>
+    <string name="pref_startvideobitratevalue_default">1000</string>
+
+    <string name="pref_videocodec_key">videocodec_preference</string>
+    <string name="pref_videocodec_title">默认的视频编解码器.</string>
+    <string name="pref_videocodec_dlg">选择默认的视频编解码器.</string>
+    <string name="pref_videocodec_default">VP8</string>
+
+    <string name="pref_hwcodec_key">hwcodec_preference</string>
+    <string name="pref_hwcodec_title">视频编解码器硬件加速.</string>
+    <string name="pref_hwcodec_dlg">Use hardware accelerated video codec (if available).</string>
+    <string name="pref_hwcodec_default">true</string>
+
+    <string name="pref_capturetotexture_key">capturetotexture_preference</string>
+    <string name="pref_capturetotexture_title">视频捕捉表面纹理.</string>
+    <string name="pref_capturetotexture_dlg">Capture video to textures (if available).</string>
+    <string name="pref_capturetotexture_default">true</string>
+
+    <string name="pref_value_enabled">Enabled</string>
+    <string name="pref_value_disabled">Disabled</string>
+
+    <string name="pref_audiosettings_key">audio_settings_key</string>
+    <string name="pref_audiosettings_title">WebRTC音频设置.</string>
+
+    <string name="pref_startaudiobitrate_key">startaudiobitrate_preference</string>
+    <string name="pref_startaudiobitrate_title">音频比特率设置.</string>
+    <string name="pref_startaudiobitrate_dlg">音频比特率设置.</string>
+    <string name="pref_startaudiobitrate_default">Default</string>
+
+    <string name="pref_startaudiobitratevalue_key">startaudiobitratevalue_preference</string>
+    <string name="pref_startaudiobitratevalue_title">音频编码比特率.</string>
+    <string name="pref_startaudiobitratevalue_dlg">输入音频编码比特率 kbps.</string>
+    <string name="pref_startaudiobitratevalue_default">32</string>
+
+    <string name="pref_audiocodec_key">audiocodec_preference</string>
+    <string name="pref_audiocodec_title">默认的音频编解码器.</string>
+    <string name="pref_audiocodec_dlg">选择默认的音频编解码器.</string>
+    <string name="pref_audiocodec_default">OPUS</string>
+
+    <string name="pref_noaudioprocessing_key">audioprocessing_preference</string>
+    <string name="pref_noaudioprocessing_title">禁用音频处理.</string>
+    <string name="pref_noaudioprocessing_dlg">Disable audio processing pipeline.</string>
+    <string name="pref_noaudioprocessing_default">false</string>
+
+    <string name="pref_aecdump_key">aecdump_preference</string>
+    <string name="pref_aecdump_title">创建AEC转储.</string>
+    <string name="pref_aecdump_dlg">Enable diagnostic audio recordings.</string>
+    <string name="pref_aecdump_default">false</string>
+
+    <string name="pref_opensles_key">opensles_preference</string>
+    <string name="pref_opensles_title">对音频播放使用OpenSL ES.</string>
+    <string name="pref_opensles_dlg">Use OpenSL ES for audio playback.</string>
+    <string name="pref_opensles_default">false</string>
+
+    <string name="pref_disable_built_in_aec_key">disable_built_in_aec_preference</string>
+    <string name="pref_disable_built_in_aec_title">禁用硬件AEC.</string>
+    <string name="pref_disable_built_in_aec_dlg">Disable hardware AEC.</string>
+    <string name="pref_disable_built_in_aec_default">false</string>
+    <string name="pref_built_in_aec_not_available">Hardware AEC is not available</string>
+
+    <string name="pref_disable_built_in_agc_key">disable_built_in_agc_preference</string>
+    <string name="pref_disable_built_in_agc_title">禁用硬件AGC.</string>
+    <string name="pref_disable_built_in_agc_dlg">Disable hardware AGC.</string>
+    <string name="pref_disable_built_in_agc_default">false</string>
+    <string name="pref_built_in_agc_not_available">Hardware AGC is not available</string>
+
+    <string name="pref_disable_built_in_ns_key">disable_built_in_ns_preference</string>
+    <string name="pref_disable_built_in_ns_title">禁用硬件NS.</string>
+    <string name="pref_disable_built_in_ns_dlg">Disable hardware NS.</string>
+    <string name="pref_disable_built_in_ns_default">false</string>
+    <string name="pref_built_in_ns_not_available">Hardware NS is not available</string>
+
+    <string name="pref_enable_level_control_key">enable_level_control_preference</string>
+    <string name="pref_enable_level_control_title">开启层级控制.</string>
+    <string name="pref_enable_level_control_default">false</string>
+
+    <string name="pref_speakerphone_key">speakerphone_preference</string>
+    <string name="pref_speakerphone_title">喇叭扩音器.</string>
+    <string name="pref_speakerphone_dlg">喇叭扩音器.</string>
+    <string name="pref_speakerphone_default">auto</string>
+
+    <string name="pref_miscsettings_key">misc_settings_key</string>
+    <string name="pref_miscsettings_title">其他设置.</string>
+
+    <string name="pref_room_server_url_key">room_server_url_preference</string>
+    <string name="pref_room_server_url_title">房间服务器URL.</string>
+    <string name="pref_room_server_url_dlg">输入一个房间服务器URL.</string>
+    <string name="pref_room_server_url_default" translatable="false">http://120.76.215.22:8080</string>
+
+    <string name="pref_displayhud_key">displayhud_preference</string>
+    <string name="pref_displayhud_title">显示调用统计数据.</string>
+    <string name="pref_displayhud_dlg">Display call statistics.</string>
+    <string name="pref_displayhud_default" translatable="false">false</string>
+
+    <string name="pref_tracing_key">tracing_preference</string>
+    <string name="pref_tracing_title">调试性能跟踪.</string>
+    <string name="pref_tracing_dlg">Debug performance tracing.</string>
+    <string name="pref_tracing_default" translatable="false">false</string>
 </resources>

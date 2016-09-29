@@ -2,6 +2,7 @@
 <manifest package="com.softfun_xmpp"
           xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
 
@@ -24,9 +25,14 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
 
     <uses-feature android:name="android.hardware.camera"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
 
     <application
         android:name=".application.GlobalContext"
@@ -78,7 +84,6 @@
         </activity>
 
 
-
         <!-- 联系人内容提供者 -->
         <provider
             android:name=".provider.ContactsProvider"
@@ -94,7 +99,6 @@
             android:name=".provider.GroupProvider"
             android:authorities="com.softfun_xmpp.provider.GroupProvider"
             android:exported="false"/>
-
 
 
         <!-- 连接服务 -->
@@ -306,8 +310,8 @@
         <!-- 申请视频 -->
         <activity
             android:name=".activity.VideoChatScreen"
-            android:launchMode="singleInstance"
             android:exported="false"
+            android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
             <intent-filter>
                 <action android:name="com.softfun_xmpp.activity.VideoChatScreen"/>
@@ -327,46 +331,74 @@
             android:name="com.soundcloud.android.crop.CropImageActivity"
             android:exported="false"/>
 
+
+        <!--APPRTC-->
+        <activity
+            android:name="org.appspot.apprtc.ConnectActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+        <activity
+            android:name="org.appspot.apprtc.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name="org.appspot.apprtc.CallActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="fullUser"
+            android:theme="@style/CallActivityTheme">
+            <intent-filter>
+                <action android:name="org.appspot.apprtc.test"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data
+                    android:host="120.76.215.22"
+                    android:port="8080"
+                    android:scheme="https"/>
+                <data
+                    android:host="120.76.215.22"
+                    android:port="8080"
+                    android:scheme="http"/>
+            </intent-filter>
+        </activity>
+
+
+
+
+
         <!-- opentok -->
-        <activity
-            android:name="com.opentok.android.demo.opentoksamples.MultipartyActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.opentok.android.demo.opentoksamples.OpenTokSubclassing"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.opentok.android.demo.opentoksamples.UIActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.opentok.android.demo.opentoksamples.OpenTokHelloWorldUI"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.opentok.android.demo.opentoksamples.HelloWorldActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.opentok.android.demo.opentoksamples.OpenTokHelloWorld"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <!--<service-->
-        <!--android:name="com.opentok.android.demo.services.ClearNotificationService"-->
+        <!--<activity-->
+        <!--android:name="com.opentok.android.demo.opentoksamples.MultipartyActivity"-->
+        <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
         <!--android:exported="false">-->
-        <!--<intent-filter android:label="@string/clearNotificationService">-->
-        <!--<action android:name="com.opentok.android.demo.services.ClearNotificationService"/>-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.opentok.android.demo.opentoksamples.OpenTokSubclassing"/>-->
+
+        <!--<category android:name="android.intent.category.DEFAULT"/>-->
         <!--</intent-filter>-->
-        <!--</service>-->
+        <!--</activity>-->
+        <!--<activity-->
+        <!--android:name="com.opentok.android.demo.opentoksamples.UIActivity"-->
+        <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
+        <!--android:exported="false">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.opentok.android.demo.opentoksamples.OpenTokHelloWorldUI"/>-->
 
+        <!--<category android:name="android.intent.category.DEFAULT"/>-->
+        <!--</intent-filter>-->
+        <!--</activity>-->
+        <!--<activity-->
+        <!--android:name="com.opentok.android.demo.opentoksamples.HelloWorldActivity"-->
+        <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
+        <!--android:exported="false">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.opentok.android.demo.opentoksamples.OpenTokHelloWorld"/>-->
 
+        <!--<category android:name="android.intent.category.DEFAULT"/>-->
+        <!--</intent-filter>-->
+        <!--</activity>-->
     </application>
 
 </manifest>

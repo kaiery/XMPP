@@ -8,10 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -57,6 +59,7 @@ import com.softfun_xmpp.utils.VipResouce;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     //导航视图
@@ -93,9 +96,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private IMService mImService;
 
 
+    //rtc偏好
+    //视频聊天参数-------------------------------------
+    public static final int CONNECTION_REQUEST = 1;
+    public static boolean commandLineRun = false;
+    public static SharedPreferences sharedPref;
+    public static String keyprefVideoCallEnabled;
+    public static String keyprefCamera2;
+    public static String keyprefResolution;
+    public static String keyprefFps;
+    public static String keyprefCaptureQualitySlider;
+    public static String keyprefVideoBitrateType;
+    public static String keyprefVideoBitrateValue;
+    public static String keyprefVideoCodec;
+    public static String keyprefAudioBitrateType;
+    public static String keyprefAudioBitrateValue;
+    public static String keyprefAudioCodec;
+    public static String keyprefHwCodecAcceleration;
+    public static String keyprefCaptureToTexture;
+    public static String keyprefNoAudioProcessingPipeline;
+    public static String keyprefAecDump;
+    public static String keyprefOpenSLES;
+    public static String keyprefDisableBuiltInAec;
+    public static String keyprefDisableBuiltInAgc;
+    public static String keyprefDisableBuiltInNs;
+    public static String keyprefEnableLevelControl;
+    //public static String keyprefDisplayHud;
+    //public static String keyprefTracing;
+    //public static String keyprefRoomServerUrl;
+    public static String keyprefRoom;
+    /**
+     * 初始化rtc默认偏好
+     */
+    private void initRTCPreference() {
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        keyprefVideoCallEnabled = getString(R.string.pref_videocall_key);
+        keyprefCamera2 = getString(R.string.pref_camera2_key);
+        keyprefResolution = getString(R.string.pref_resolution_key);
+        keyprefFps = getString(R.string.pref_fps_key);
+        keyprefCaptureQualitySlider = getString(R.string.pref_capturequalityslider_key);
+        keyprefVideoBitrateType = getString(R.string.pref_startvideobitrate_key);
+        keyprefVideoBitrateValue = getString(R.string.pref_startvideobitratevalue_key);
+        keyprefVideoCodec = getString(R.string.pref_videocodec_key);
+        keyprefHwCodecAcceleration = getString(R.string.pref_hwcodec_key);
+        keyprefCaptureToTexture = getString(R.string.pref_capturetotexture_key);
+        keyprefAudioBitrateType = getString(R.string.pref_startaudiobitrate_key);
+        keyprefAudioBitrateValue = getString(R.string.pref_startaudiobitratevalue_key);
+        keyprefAudioCodec = getString(R.string.pref_audiocodec_key);
+        keyprefNoAudioProcessingPipeline = getString(R.string.pref_noaudioprocessing_key);
+        keyprefAecDump = getString(R.string.pref_aecdump_key);
+        keyprefOpenSLES = getString(R.string.pref_opensles_key);
+        keyprefDisableBuiltInAec = getString(R.string.pref_disable_built_in_aec_key);
+        keyprefDisableBuiltInAgc = getString(R.string.pref_disable_built_in_agc_key);
+        keyprefDisableBuiltInNs = getString(R.string.pref_disable_built_in_ns_key);
+        keyprefEnableLevelControl = getString(R.string.pref_enable_level_control_key);
+        //keyprefDisplayHud = getString(R.string.pref_displayhud_key);
+        //keyprefTracing = getString(R.string.pref_tracing_key);
+        //keyprefRoomServerUrl = getString(R.string.pref_room_server_url_key);
+        keyprefRoom = getString(R.string.pref_room_key);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initRTCPreference();
         setContentView(R.layout.main);
 
         SystemVars.getInstance().setMainActivity(this);

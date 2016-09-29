@@ -44,7 +44,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 public class HttpUtil {
     /**
      * 静态初始化组件
@@ -1570,11 +1569,11 @@ public class HttpUtil {
     }
 
     /**
-     * 查询视频聊天会话令牌
+     * 查询RTC信息
      */
-    public static void okhttpPost_queryVideoSession() {
+    public static void okhttpPost_queryRTC() {
         try {
-            String url = context.getResources().getString(R.string.app_server)+"queryVideoSession";
+            String url = context.getResources().getString(R.string.app_server)+"queryRTCinfo";
             RequestBody formBody = new FormBody.Builder()
                     .build();
             Request request = new Request.Builder()
@@ -1590,15 +1589,16 @@ public class HttpUtil {
             JSONObject jsonObject = new JSONObject(response.body().string());
             if(jsonObject.getBoolean("success")){
                 JSONObject map = jsonObject.getJSONObject("datamap");
-                JSONObject jsonUserBean = map.getJSONObject("VideoSessionBean");
+                JSONObject jsonUserBean = map.getJSONObject("RTCBean");
                 if(jsonUserBean!=null){
-                    IMService.token = jsonUserBean.getString("token");
-                    IMService.session_id = jsonUserBean.getString("session_id");
-                    IMService.api_key = jsonUserBean.getString("api_key");
+                    IMService.RTC_ROOMSERVER = jsonUserBean.getString("roomserver");
+                    IMService.RTC_ICESERVER = jsonUserBean.getString("iceserver");
+                    IMService.RTC_USERNAME = jsonUserBean.getString("username");
+                    IMService.RTC_PASSWORD = jsonUserBean.getString("password");
                 }
             }
         }catch (Exception e){
-            //System.out.println("网络访问异常:okhttpPost_queryVideoSession");
+            //System.out.println("网络访问异常:okhttpPost_queryRTC");
             e.printStackTrace();
         }
     }

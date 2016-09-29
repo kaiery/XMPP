@@ -17,6 +17,7 @@ import com.softfun_xmpp.utils.ThreadUtils;
 
 public class SplashActivity extends BaseNoActionActivity implements View.OnClickListener {
 
+    private static final String TAG = "SplashActivity";
     private volatile boolean isEntered;
     private Button bt_enterApp;
     private boolean is_autologin = false;
@@ -38,8 +39,12 @@ public class SplashActivity extends BaseNoActionActivity implements View.OnClick
             String uriStr  = uri.getScheme()+"://"+uri.getHost()+":"+uri.getPort()+"/"+uri.getPath();
             String parameters = uriStr.substring(uriStr.lastIndexOf("/")+1);
             String[] paramenterList = parameters.split(",");
-            pUsername = CipherUtils.decrypt(paramenterList[0],CipherUtils.getKey());
-            pPassword = CipherUtils.decrypt(paramenterList[1],CipherUtils.getKey());
+            try {
+                pUsername = CipherUtils.decryptDES(paramenterList[0], paramenterList[2]);
+                pPassword = CipherUtils.decryptDES(paramenterList[1], paramenterList[2]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if(!TextUtils.isEmpty(pUsername) && !TextUtils.isEmpty(pPassword)){
                 is_autologin = true;
             }

@@ -102,11 +102,15 @@ public class IMService extends Service {
     public static String mCurAddress;
 
 
-    //视频聊天会话令牌--------------------------------------------
-    public static String session_id;
-    public static String token;
-    public static String api_key;
-    //--------------------------------------------
+    //视频聊天配置-------------------------------------
+    public static  String RTC_ROOMSERVER ;
+    public static  String RTC_ICESERVER ;
+    public static  String RTC_USERNAME ;
+    public static  String RTC_PASSWORD ;
+
+
+
+
 
     public static Map<String,List<GroupMemberBean>> mGroupMemberMap;
 
@@ -321,8 +325,7 @@ public class IMService extends Service {
                 isCreate = true;
 
                 // 查询视频聊天会话令牌
-                HttpUtil.okhttpPost_queryVideoSession();
-
+                HttpUtil.okhttpPost_queryRTC();
 
 
                 screenListener = new ScreenListener(IMService.this);
@@ -347,6 +350,8 @@ public class IMService extends Service {
             }
         });
     }
+
+
 
 
     /**
@@ -843,7 +848,9 @@ public class IMService extends Service {
                     {
                         //保存视频申请的消息到本地数据库
                         saveMessage(session_account, message);
-                        enterVideoActivity(message.getFrom());
+                        //房间号
+                        String roomid=jpe.getProperty("roomid")+"";
+                        enterVideoActivity(message.getFrom(),roomid);
                     }
                 }else if(jpe.getProperty(Const.MSGFLAG).equals(Const.MSGFLAG_IMG)){
                     showNotification(session_account,nickname,message.getBody(),message.getType().name(),nickname,avatarurl,"");
@@ -910,11 +917,31 @@ public class IMService extends Service {
     }
 
     /**
+     * 主动发送一条视频结束的消息
+     */
+    public void callbackIdleVideoMsg(String mTargetAccount,String text){
+        //1、创建一个消息
+        Message msg = new Message();
+        JivePropertiesExtension jpe = new JivePropertiesExtension();
+        msg.setFrom(IMService.mCurAccount);
+        msg.setTo(mTargetAccount);
+        msg.setBody(text);
+        msg.setType(Message.Type.chat);
+        jpe.setProperty(Const.VIDEO_STATE, Const.MSGFLAG_VIDEO_IDLE);
+        jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_TEXT);
+        msg.addExtension(jpe);
+        //调用服务内的发送消息方法
+        sendMessage(msg);
+    }
+
+
+    /**
      * 进入视频申请页面
      *
      * @param form -
+     * @param roomid
      */
-    private void enterVideoActivity(String form) {
+    private void enterVideoActivity(String form, String roomid) {
         //System.out.println("====================  IMService.isVideo  =====================" + IMService.isVideo);
         if (!IMService.isVideo) {
             //设备点亮正常
@@ -923,6 +950,8 @@ public class IMService extends Service {
                 intent1.putExtra("sourceid", form);
                 intent1.putExtra("sourcename", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.NICKNAME));
                 intent1.putExtra("sourceface", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.AVATARURL));
+                //房间号
+                intent1.putExtra("roomid",roomid);
                 String app_package_flag = getResources().getString(R.string.app_package_flag);
                 intent1.setAction(app_package_flag+".activity.VideoChatScreen");
                 intent1.addCategory("android.intent.category.DEFAULT");
