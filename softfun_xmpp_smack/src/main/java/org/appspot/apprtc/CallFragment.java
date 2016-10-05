@@ -129,7 +129,7 @@ public class CallFragment extends Fragment {
     if (args != null) {
       String contactName = args.getString(CallActivity.EXTRA_ROOMID);
       String targetName = args.getString("mTargetNickName");
-      contactView.setText("正在与等待 "+targetName+" 接入...");
+      contactView.setText("正在等待 "+targetName+" 接入...");
       videoCallEnabled = args.getBoolean(CallActivity.EXTRA_VIDEO_CALL, true);
       captureSliderEnabled = videoCallEnabled
           && args.getBoolean(CallActivity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, false);

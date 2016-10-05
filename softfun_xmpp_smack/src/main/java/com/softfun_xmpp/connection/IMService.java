@@ -809,7 +809,7 @@ public class IMService extends Service {
      */
     private class MyMessageListener implements ChatMessageListener {
         @Override
-        public void processMessage(Chat chat, Message message) {
+        public void processMessage(Chat chat, final Message message) {
             if ( (message.getBody()!=null || !message.getBody().equals(""))  && message.getType().name().equals(Message.Type.chat.name())  ) {
                 JivePropertiesExtension jpe = (JivePropertiesExtension) message.getExtension(JivePropertiesExtension.NAMESPACE);
 
@@ -826,13 +826,23 @@ public class IMService extends Service {
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
                         public void run() {
-//                            while (!IMService.VIDEO_UI_CREATE){
-//                                SystemClock.sleep(500);
-//                            }
                             //发送广播，通知对方视频正忙
                             Intent intent = new Intent();
                             intent.setAction(Const.VIDEO_WORKING_BROADCAST_ACTION);
                             intent.putExtra("msg", "视频通话结束。");
+                            sendBroadcast(intent);
+                        }
+                    });
+                }else if(TagertVideoState.equals(Const.MSGFLAG_VIDEO_IDLE)){
+                    final String targetjid = message.getFrom();
+                    ThreadUtils.runInThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //发送广播，通知对方视频正忙
+                            Intent intent = new Intent();
+                            intent.setAction(Const.VIDEO_IDEL_BROADCAST_ACTION);
+                            intent.putExtra("msg", "视频通话结束。");
+                            intent.putExtra("targetjid", targetjid);
                             sendBroadcast(intent);
                         }
                     });

@@ -28,6 +28,7 @@ import com.softfun_xmpp.R;
 import com.softfun_xmpp.application.GlobalSoundPool;
 import com.softfun_xmpp.connection.IMService;
 import com.softfun_xmpp.constant.Const;
+import com.softfun_xmpp.utils.AsmackUtils;
 import com.softfun_xmpp.utils.ImageLoaderUtils;
 import com.softfun_xmpp.utils.ToastUtils;
 
@@ -155,6 +156,7 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
         // 注册对方忙的时候 的动态广播消息
         IntentFilter filter_dynamic = new IntentFilter();
         filter_dynamic.addAction(Const.VIDEO_WORKING_BROADCAST_ACTION);
+        filter_dynamic.addAction(Const.VIDEO_IDEL_BROADCAST_ACTION);
         registerReceiver(dynamicReceiver, filter_dynamic);
         //IMService.VIDEO_UI_CREATE = true;
     }
@@ -227,10 +229,10 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
     /**
      * 连接房间
      *
-     * @param roomId         -
+     * @param roomId          -
      * @param commandLineRun_ -
-     * @param loopback       -
-     * @param runTimeMs      -
+     * @param loopback        -
+     * @param runTimeMs       -
      */
     private void connectToRoom(String roomId, boolean commandLineRun_, boolean loopback, int runTimeMs) {
         commandLineRun = commandLineRun_;
@@ -239,7 +241,7 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
             roomId = Integer.toString((new Random()).nextInt(100000000));
         }
         //String roomUrl = sharedPref.getString(keyprefRoomServerUrl, getString(R.string.pref_room_server_url_default));
-        String roomUrl = "http://"+IMService.RTC_ROOMSERVER;
+        String roomUrl = "http://" + IMService.RTC_ROOMSERVER;
         // Video call enabled flag.
         boolean videoCallEnabled = sharedPref.getBoolean(keyprefVideoCallEnabled, Boolean.valueOf(getString(R.string.pref_videocall_default)));
         // Use Camera2 option.
@@ -374,9 +376,14 @@ public class VideoChatScreen extends Activity implements View.OnClickListener {
     private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            String msg = intent.getStringExtra("msg");
             if (intent.getAction().equals(Const.VIDEO_WORKING_BROADCAST_ACTION)) {
-                final String msg = intent.getStringExtra("msg");
                 ToastUtils.showToastSafe(msg);//"对方正忙，无法进行视频聊天"
+                //设置我不再视频聊天
+                IMService.isVideo = false;
+                finish();
+            } else if (intent.getAction().equals(Const.VIDEO_IDEL_BROADCAST_ACTION) && AsmackUtils.filterAccount(sourceid).equals(AsmackUtils.filterAccount(intent.getStringExtra("targetjid")))) {
+                ToastUtils.showToastSafe(msg);//"对方现在取消视频申请了，所以我现在也要退出这个界面"
                 //设置我不再视频聊天
                 IMService.isVideo = false;
                 finish();

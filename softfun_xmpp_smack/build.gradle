@@ -13,8 +13,8 @@ android {
         applicationId "com.softfun_xmpp"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 51
-        versionName "51.0"
+        versionCode 52
+        versionName "52.0"
     }
     buildTypes {
         release {

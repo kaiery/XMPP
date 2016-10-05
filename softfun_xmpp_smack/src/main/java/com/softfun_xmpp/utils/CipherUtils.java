@@ -86,7 +86,7 @@ public final class CipherUtils {
     /**
      * DES的向量键
      */
-    private static byte[] key = {0x63, 0x79, 0x68, 0x67, 0x30, 0x32, 0x33, 0x34};
+    private static byte[] ivkey = {0x63, 0x79, 0x68, 0x67, 0x30, 0x32, 0x33, 0x34};
     /**
      * @param encryptString
      *            需要加密的明文
@@ -97,12 +97,12 @@ public final class CipherUtils {
      */
     public static String encryptDES(String encryptString, String encryptKey)
             throws Exception {
-        // 实例化IvParameterSpec对象，使用指定的初始化向量
-        IvParameterSpec zeroIv = new IvParameterSpec(key);
         // 实例化SecretKeySpec类，根据字节数组来构造SecretKey
         SecretKeySpec key = new SecretKeySpec(encryptKey.getBytes(), ALGORITHM);
         // 创建密码器
         Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        // 实例化IvParameterSpec对象，使用指定的初始化向量
+        IvParameterSpec zeroIv = new IvParameterSpec(ivkey);
         // 用秘钥初始化Cipher对象
         cipher.init(Cipher.ENCRYPT_MODE, key, zeroIv);
         // 执行加密操作
@@ -123,7 +123,7 @@ public final class CipherUtils {
             throws Exception {
         byte[] byteMi = Base64.decode(decrypString, Base64.DEFAULT);
         // 实例化IvParameterSpec对象，使用指定的初始化向量
-        IvParameterSpec zeroIv = new IvParameterSpec(key);
+        IvParameterSpec zeroIv = new IvParameterSpec(ivkey);
         // 实例化SecretKeySpec类，根据字节数组来构造SecretKey
         SecretKeySpec key = new SecretKeySpec(decryptKey.getBytes(), ALGORITHM);
         // 创建密码器

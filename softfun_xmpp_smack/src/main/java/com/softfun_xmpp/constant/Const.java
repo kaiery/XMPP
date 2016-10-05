@@ -251,6 +251,11 @@ public class Const {
     public static final String VIDEO_WORKING_BROADCAST_ACTION = "com.softfun.video_working_broadcast_action";
 
     /**
+     *对方视频转变为空闲的广播action
+     */
+    public static final String VIDEO_IDEL_BROADCAST_ACTION = "com.softfun.video_idel_broadcast_action";
+
+    /**
      * 自动登录常量标记
      */
     public static final String AUTOLOGIN = "autologin";
