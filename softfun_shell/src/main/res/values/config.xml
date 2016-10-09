@@ -34,6 +34,7 @@
     <string-array name="softfun_app_packages_list">
         <item>com.softfun_xmpp</item>
         <item>com.softfun_fxzh</item>
+        <item>com.softfun_gtjg</item>
         <item>com.softfun_hjjg</item>
         <item>com.softfun_lyxc</item>
         <item>com.softfun_yjzh</item>
@@ -45,6 +46,7 @@
     <string-array name="softfun_app_name_list">
         <item>农技110</item>
         <item>防汛指挥</item>
+        <item>国土监管</item>
         <item>环境监管</item>
         <item>林业巡查</item>
         <item>应急指挥</item>

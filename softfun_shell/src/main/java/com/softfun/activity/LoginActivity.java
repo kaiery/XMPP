@@ -12,8 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.softfun.R;
@@ -25,14 +23,14 @@ import com.softfun.utils.SpUtils;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
-    private ImageView mIvPic;
+//    private ImageView mIvPic;
     private EditText mEtUsername;
     private EditText mEtPassword;
     private Button mBtnLogin;
     private ProgressBar mPb;
 
     private void assignViews() {
-        mIvPic = (ImageView) findViewById(R.id.iv_pic);
+//        mIvPic = (ImageView) findViewById(R.id.iv_pic);
         mEtUsername = (EditText) findViewById(R.id.et_username);
         mEtPassword = (EditText) findViewById(R.id.et_password);
         mBtnLogin = (Button) findViewById(R.id.btn_login);
@@ -67,9 +65,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         wm.getDefaultDisplay().getMetrics(dm);
 
 
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mIvPic.getLayoutParams();
-        layoutParams.height = dm.heightPixels/2;
-        mIvPic.setLayoutParams(layoutParams);
+//        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mIvPic.getLayoutParams();
+//        layoutParams.height = dm.heightPixels/2;
+//        mIvPic.setLayoutParams(layoutParams);
         mEtUsername.setText(SpUtils.get(Const.USERNAME,"")+"");
         mEtPassword.setText(SpUtils.get(Const.PASSWORD,"")+"");
     }
