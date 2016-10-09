@@ -27,7 +27,6 @@
         android:hint="用户名"
         android:lines="1"
         android:maxLines="1"
-        android:singleLine="true"
         android:textSize="@dimen/font_body"/>
 
     <EditText

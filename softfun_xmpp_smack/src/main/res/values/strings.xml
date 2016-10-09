@@ -15,7 +15,7 @@
     <string name="action_searchuser">搜索用户</string>
     <string name="action_searchgroup">搜索群组</string>
     <string name="action_addgroup">创建群组</string>
-    <string name="action_search">搜索...</string>
+    <string name="action_search">搜索…</string>
     <string name="action_sent">发送</string>
     <string name="action_applyfriend">新朋友</string>
     <string name="tab_messages">消息</string>

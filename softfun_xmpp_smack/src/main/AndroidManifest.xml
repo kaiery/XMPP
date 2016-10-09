@@ -82,8 +82,25 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <!-- 申请视频 -->
+        <activity
+            android:name=".activity.VideoChatScreen"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
+            <intent-filter>
+                <action android:name="com.softfun_xmpp.activity.VideoChatScreen"/>
 
-
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <!--唤醒普通窗口-->
+        <activity
+            android:name=".activity.JumpActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
+        </activity>
         <!-- 联系人内容提供者 -->
         <provider
             android:name=".provider.ContactsProvider"
@@ -307,25 +324,7 @@
             android:exported="false"
             android:theme="@style/MyMaterialTheme"/>
 
-        <!-- 申请视频 -->
-        <activity
-            android:name=".activity.VideoChatScreen"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
-            <intent-filter>
-                <action android:name="com.softfun_xmpp.activity.VideoChatScreen"/>
 
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <!--唤醒普通窗口-->
-        <activity
-            android:name=".activity.JumpActivity"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
-        </activity>
         <!-- 图片裁剪 -->
         <activity
             android:name="com.soundcloud.android.crop.CropImageActivity"

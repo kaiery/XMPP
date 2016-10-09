@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.3"
 
     sourceSets.main {
         jniLibs.srcDir 'libs'
@@ -13,16 +13,11 @@ android {
         applicationId "com.softfun_xmpp"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 52
-        versionName "52.0"
+        versionCode 54
+        versionName "54.0"
     }
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles 'thirdparty.pro','android.pro','javaBean.pro'
-        }
-        debug {
-            debuggable true
             minifyEnabled false
             proguardFiles 'thirdparty.pro','android.pro','javaBean.pro'
         }
@@ -43,7 +38,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
 
     //圆形进度
-    compile project(':progressbar_circular')
+    compile 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
     //滚动组件
     compile project(':WheelPicker')
     compile 'com.squareup.okhttp3:okhttp:3.2.0'

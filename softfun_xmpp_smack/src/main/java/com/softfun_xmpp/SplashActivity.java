@@ -34,10 +34,11 @@ public class SplashActivity extends BaseNoActionActivity implements View.OnClick
         //获取隐式意图调用app时传递的参数，用户名和密码
         Intent intent = getIntent();
         Uri uri = intent.getData();
-        //System.out.println("====================  隐式接收的数据  ===================== " + uri);
+        //System.out.println("===========  隐式接收的数据  =============== " + uri);
         if(uri!=null){
-            String uriStr  = uri.getScheme()+"://"+uri.getHost()+":"+uri.getPort()+"/"+uri.getPath();
-            String parameters = uriStr.substring(uriStr.lastIndexOf("/")+1);
+            String uriStr  = uri.getScheme()+"://"+uri.getHost()+":"+uri.getPort()+uri.getPath();
+            String path = (uri.getPath().substring(0,1).equals("/"))?uri.getPath().substring(1):uri.getPath();
+            String parameters = path.substring(path.indexOf("/")+1);//这里的加密值可能会产生/号
             String[] paramenterList = parameters.split(",");
             try {
                 pUsername = CipherUtils.decryptDES(paramenterList[0], paramenterList[2]);
