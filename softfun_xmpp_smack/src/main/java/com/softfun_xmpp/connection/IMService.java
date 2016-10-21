@@ -138,10 +138,10 @@ public class IMService extends Service {
      * 是否正在视频聊天，独占
      */
     public static boolean isVideo;
-//    /**
-//     * 视频UI界面是否创建完成
-//     */
-//    public static  boolean VIDEO_UI_CREATE = false;
+    /**
+     * 是否正在获取对方视频聊天的状态，独占
+     */
+    public static boolean isGetStatus;
 
     private Roster mRoster;
     /**
@@ -358,7 +358,7 @@ public class IMService extends Service {
      * 唤醒设备并接收视频call进消息
      * @param form
      */
-    private void wakeAndShowVideoComing(String form){
+    private void wakeAndShowVideoComing(String form,String roomid){
         //获取电源管理器对象
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if(!pm.isScreenOn()){
@@ -372,7 +372,7 @@ public class IMService extends Service {
             kl = km.newKeyguardLock("unLock");
             //解锁
             kl.disableKeyguard();
-            JumpVideoComing(form);
+            JumpVideoComing(form,roomid);
         }
     }
 
@@ -380,11 +380,13 @@ public class IMService extends Service {
      * 弹出锁屏状态下的视频call进窗口
      * @param form
      */
-    private void JumpVideoComing(String form) {
+    private void JumpVideoComing(String form,String roomid) {
         Intent intent1 = new Intent();
         intent1.putExtra("sourceid", form);
         intent1.putExtra("sourcename", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.NICKNAME));
         intent1.putExtra("sourceface", AsmackUtils.getFieldByAccountFromContactTable(form, ContactsDbHelper.ContactTable.AVATARURL));
+        //房间号
+        intent1.putExtra("roomid",roomid);
         String app_package_flag = getResources().getString(R.string.app_package_flag);
         intent1.setAction(app_package_flag+".activity.VideoChatScreen");
         intent1.addCategory("android.intent.category.DEFAULT");
@@ -812,7 +814,6 @@ public class IMService extends Service {
         public void processMessage(Chat chat, final Message message) {
             if ( (message.getBody()!=null || !message.getBody().equals(""))  && message.getType().name().equals(Message.Type.chat.name())  ) {
                 JivePropertiesExtension jpe = (JivePropertiesExtension) message.getExtension(JivePropertiesExtension.NAMESPACE);
-
                 //接收到消息，保存消息
                 String session_account = chat.getParticipant();
                 session_account = AsmackUtils.filterAccount(session_account);
@@ -820,8 +821,8 @@ public class IMService extends Service {
                 String avatarurl = AsmackUtils.getFieldByAccountFromContactTable(session_account,ContactsDbHelper.ContactTable.AVATARURL);
                 //System.out.println("####接收到的消息#######session_account:" + session_account + "   " + message.getFrom() + "      " + message.getTo());
 
-                //如果接收到对方的视频状态为working
-                String TagertVideoState = jpe.getProperty(Const.VIDEO_STATE)+"";
+                //如果接收到对方的视频状态为 working【对方视频忙】，idel【对方视频从忙转为空闲】，free【对方视频空闲】
+                String TagertVideoState = jpe.getProperty(Const.VIDEO_STATE)==null?"":jpe.getProperty(Const.VIDEO_STATE).toString()+"";
                 if(TagertVideoState.equals(Const.MSGFLAG_VIDEO_WORKING)){
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
@@ -838,7 +839,7 @@ public class IMService extends Service {
                     ThreadUtils.runInThread(new Runnable() {
                         @Override
                         public void run() {
-                            //发送广播，通知对方视频正忙
+                            //发送广播，通知对方视频从忙转为空闲
                             Intent intent = new Intent();
                             intent.setAction(Const.VIDEO_IDEL_BROADCAST_ACTION);
                             intent.putExtra("msg", "视频通话结束。");
@@ -846,16 +847,23 @@ public class IMService extends Service {
                             sendBroadcast(intent);
                         }
                     });
+                }else if(TagertVideoState.equals(Const.MSGFLAG_VIDEO_FREE)){
+                    //发送广播，通知我自己，对方视频状态空闲，这我进入视频通话界面，对方进入视频响铃界面
+                    Intent intent = new Intent();
+                    intent.setAction(Const.VIDEO_FREE_BROADCAST_ACTION);
+                    sendBroadcast(intent);
                 }else
                 //如果是视频申请
                 if (jpe.getProperty(Const.MSGFLAG).equals(Const.MSGFLAG_VIDEO)) {
                     //如果我正在视频
-                    if(IMService.isVideo){
+                    if(IMService.isVideo || IMService.isGetStatus ){
                         //主动拒绝视频
-                        callbackRefuseVideoMsg(message.getFrom(),"我正在视频通话，请稍后再联系。");
-                    }else
+                        callbackRefuseVideoMsg(AsmackUtils.filterAccount(message.getFrom()),"我正在视频通话，请稍后再联系。");
+                    }else if(!IMService.isVideo && !IMService.isGetStatus )
                     //我空闲
                     {
+                        //告诉对方，我视频空闲，可以进行视频通话，我进入响铃页面，对方进入视频通话界面
+                        callbackFreeVideoMsg(AsmackUtils.filterAccount(message.getFrom()),"我的视频空闲");
                         //保存视频申请的消息到本地数据库
                         saveMessage(session_account, message);
                         //房间号
@@ -927,6 +935,24 @@ public class IMService extends Service {
     }
 
     /**
+     * 告知视频申请方，我目前的状态为视频空闲
+     */
+    public void callbackFreeVideoMsg(String mTargetAccount,String text) {
+        //1、创建一个消息
+        Message msg = new Message();
+        JivePropertiesExtension jpe = new JivePropertiesExtension();
+        msg.setFrom(IMService.mCurAccount);
+        msg.setTo(mTargetAccount);
+        msg.setBody(text);
+        msg.setType(Message.Type.chat);
+        jpe.setProperty(Const.VIDEO_STATE, Const.MSGFLAG_VIDEO_FREE);
+        jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_VIDEO);
+        msg.addExtension(jpe);
+        //调用服务内的发送消息方法
+        sendMessage(msg);
+    }
+
+    /**
      * 主动发送一条视频结束的消息
      */
     public void callbackIdleVideoMsg(String mTargetAccount,String text){
@@ -969,7 +995,7 @@ public class IMService extends Service {
                 startActivity(intent1);
             }else{
                 //设备被锁屏时
-                wakeAndShowVideoComing(form);
+                wakeAndShowVideoComing(form,roomid);
                 //jump();
             }
         }

@@ -1,10 +1,12 @@
 package com.softfun_xmpp.activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.net.Uri;
@@ -113,6 +115,7 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
     private Button bt_sms;
     private Button bt_call;
     private Button bt_friendsprofile_add;
+    private String roomId;
 
 
     @Override
@@ -280,32 +283,10 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
                 sendIntent.putExtra("sms_body", "");
                 startActivity(sendIntent);
                 break;
+            //申请视频
             case R.id.bt_videochat:
-                //申请视频
-                final String roomId = Integer.toString((new Random()).nextInt(100000000));
-                ThreadUtils.runInThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //1、创建一个消息
-                        Message msg = new Message();
-                        JivePropertiesExtension jpe = new JivePropertiesExtension();
-                        msg.setFrom(IMService.mCurAccount);
-                        msg.setTo(mAccount);
-                        msg.setBody("视频申请");
-                        msg.setType(Message.Type.chat);
-                        jpe.setProperty(Const.MSGFLAG,Const.MSGFLAG_VIDEO);
-                        jpe.setProperty("roomid",roomId);
-                        msg.addExtension(jpe);
-                        //调用服务内的发送消息方法
-                        mImService.sendMessage(msg);
-                    }
-                });
-
-//                Intent intent1 = new Intent(this, UIActivity.class);
-//                intent1.putExtra("mTargetNickName",mNickName);
-//                intent1.putExtra("mTargetAccount",mAccount.substring(0,mAccount.lastIndexOf("@"))+"@"+Const.APP_PACKAGENAME );
-//                startActivityForResult(intent1,Const.RESULT_VIDEO_EVALUATE);
-                connectToRoom(roomId,false,false,0);
+                // 延迟
+                delayDialog();
                 break;
             case R.id.bt_msgchat:
                 if(mImService.isMyFriends(mAccount)){
@@ -327,6 +308,47 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
     }
 
 
+    /**
+     * 延迟对话框
+     */
+    private void delayDialog() {
+        Intent intent = new Intent(this, DialogActivity.class);
+        Bundle bundle = new Bundle();
+        DialogBean dialogBean = new DialogBean();
+        dialogBean.setTitle("提示");
+        dialogBean.setContent("视频聊天正在启动，请稍后。");
+        dialogBean.setDialogType(DialogBean.DialogType.tip);
+        dialogBean.setButtonType(DialogBean.ButtonType.none);
+        bundle.putSerializable("dialogBean", dialogBean);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+
+    /**
+     * 发送视频聊天申请
+     */
+    private void sentApplyVideoMessage() {
+        //申请视频
+        roomId = Integer.toString((new Random()).nextInt(100000000));
+        ThreadUtils.runInThread(new Runnable() {
+            @Override
+            public void run() {
+                //1、创建一个消息
+                Message msg = new Message();
+                JivePropertiesExtension jpe = new JivePropertiesExtension();
+                msg.setFrom(IMService.mCurAccount);
+                msg.setTo(mAccount);
+                msg.setBody("视频申请");
+                msg.setType(Message.Type.chat);
+                jpe.setProperty(Const.MSGFLAG,Const.MSGFLAG_VIDEO);
+                jpe.setProperty("roomid", roomId);
+                msg.addExtension(jpe);
+                //调用服务内的发送消息方法
+                mImService.sendMessage(msg);
+            }
+        });
+    }
 
     /**
      * 连接房间
@@ -476,6 +498,8 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("requestCode:"+requestCode);
+        System.out.println("resultCode:"+resultCode);
         if(requestCode == Const.RESULT_VIDEO_EVALUATE){
             Intent intent = new Intent(this,EvaluateActivity.class);
             intent.putExtra(Const.USERNAME,mAccount.substring(0,mAccount.lastIndexOf("@")));
@@ -495,6 +519,31 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
 
 
 
+
+
+
+    /**
+     * 广播接受者
+     * 发送视频申请消息
+     */
+    private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Const.VIDEO_STARTING_BROADCAST_ACTION)){
+                //发送视频申请消息
+                sentApplyVideoMessage();
+            }
+            if(intent.getAction().equals(Const.VIDEO_FREE_BROADCAST_ACTION)){
+                //进入视频通话界面
+                connectToRoom(roomId,false,false,0);
+            }
+            if(intent.getAction().equals(Const.VIDEO_WORKING_BROADCAST_ACTION)){
+                //对方视频正忙，我给出提示即可。
+                ToastUtils.showToastSafe_Long("对方视频正忙。");
+            }
+        }
+    };
+
     /**
      * 初始化绑定服务
      */
@@ -503,6 +552,16 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
         Intent service = new Intent(this, IMService.class);
         //绑定
         bindService(service, mMyServiceConnection, Context.BIND_AUTO_CREATE);
+
+        //注册广播接收者
+        IntentFilter filter_dynamic = new IntentFilter();
+        //视频正在启动的广播接收者
+        filter_dynamic.addAction(Const.VIDEO_STARTING_BROADCAST_ACTION);
+        //对方视频空闲，我可以进入视频通话界面的广播action
+        filter_dynamic.addAction(Const.VIDEO_FREE_BROADCAST_ACTION);
+        //对方视频正忙，我给出提示即可。
+        filter_dynamic.addAction(Const.VIDEO_WORKING_BROADCAST_ACTION);
+        registerReceiver(dynamicReceiver, filter_dynamic);
     }
     @Override
     public void onDestroy() {
@@ -510,6 +569,10 @@ public class ExpertProfileActivity extends AppCompatActivity implements View.OnC
         if (mMyServiceConnection != null) {
             unbindService(mMyServiceConnection);
         }
+
+        //释放广播接收者
+        unregisterReceiver(dynamicReceiver);
+
         super.onDestroy();
     }
 

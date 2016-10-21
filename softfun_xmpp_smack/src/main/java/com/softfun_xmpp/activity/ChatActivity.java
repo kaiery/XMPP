@@ -51,6 +51,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.softfun_xmpp.R;
 import com.softfun_xmpp.application.GlobalSoundPool;
+import com.softfun_xmpp.bean.DialogBean;
 import com.softfun_xmpp.bean.ImagePickBean;
 import com.softfun_xmpp.components.ImageChatBubbleEx;
 import com.softfun_xmpp.components.ImageViewPage;
@@ -204,6 +205,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isLoadHistoryMsg = false;
     private boolean isShowMore;
     private String mUserphone;
+    /**
+     * 视频通话房间号
+     */
+    private String roomId;
 
 
     @Override
@@ -764,12 +769,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 广播接受者
      * 退出与此好友聊天，此好友已被删除 的动态
+     * 发送视频申请消息
      */
     private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Const.EXIT_CHAT_ACTION)) {
                 finish();
+            }
+            if(intent.getAction().equals(Const.VIDEO_STARTING_BROADCAST_ACTION)){
+                //发送视频申请消息
+                sentApplyVideoMessage();
+            }
+            if(intent.getAction().equals(Const.VIDEO_FREE_BROADCAST_ACTION)){
+                //进入视频通话界面
+                connectToRoom(roomId,false,false,0);
+            }
+            if(intent.getAction().equals(Const.VIDEO_WORKING_BROADCAST_ACTION)){
+                //对方视频正忙，我给出提示即可。
+                ToastUtils.showToastSafe_Long("对方视频正忙。");
+                IMService.isGetStatus = false;
             }
         }
     };
@@ -779,7 +798,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         // 退出与此好友聊天，此好友已被删除 的动态广播消息
         IntentFilter filter_dynamic = new IntentFilter();
         filter_dynamic.addAction(Const.EXIT_CHAT_ACTION);
+        //视频正在启动的广播接收者
+        filter_dynamic.addAction(Const.VIDEO_STARTING_BROADCAST_ACTION);
+        //对方视频空闲，我可以进入视频通话界面的广播action
+        filter_dynamic.addAction(Const.VIDEO_FREE_BROADCAST_ACTION);
+        //对方视频正忙，我给出提示即可。
+        filter_dynamic.addAction(Const.VIDEO_WORKING_BROADCAST_ACTION);
         registerReceiver(dynamicReceiver, filter_dynamic);
+
+
 
         mEtPrivateChatText.setOnClickListener(this);
         mIvPrivateChatFace.setOnClickListener(this);
@@ -896,8 +923,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
             //视频申请按钮
             case R.id.bt_private_chat_video: {
-                //发送视频申请消息
-                sentApplyVideoMessage();
+                // 延迟
+                delayDialog();
                 break;
             }
             case R.id.bt_private_chat_image: {
@@ -922,6 +949,23 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
         }
+    }
+
+    /**
+     * 延迟对话框
+     */
+    private void delayDialog() {
+        IMService.isGetStatus = true;
+        Intent intent = new Intent(this, DialogActivity.class);
+        Bundle bundle = new Bundle();
+        DialogBean dialogBean = new DialogBean();
+        dialogBean.setTitle("提示");
+        dialogBean.setContent("视频聊天正在启动，请稍后。");
+        dialogBean.setDialogType(DialogBean.DialogType.tip);
+        dialogBean.setButtonType(DialogBean.ButtonType.none);
+        bundle.putSerializable("dialogBean", dialogBean);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
 
@@ -1109,7 +1153,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 msg.setType(Message.Type.chat);
                 jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_TEXT);
                 msg.addExtension(jpe);
-                //System.out.println("------------------------ " + msg.toXML());
+                System.out.println("------------------------ " + msg.toXML());
                 //调用服务内的发送消息方法
                 mImService.sendMessage(msg);
                 //清空输入框
@@ -1149,12 +1193,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void sentMsg() {
         if (IMService.conn != null && IMService.conn.isConnected()) {
-            final String roomId = Integer.toString((new Random()).nextInt(100000000));
-            System.err.println("roomid:="+roomId);
+            roomId = Integer.toString((new Random()).nextInt(100000000));
             ThreadUtils.runInThread(new Runnable() {
                 @Override
                 public void run() {
-                    //1、创建一个消息
+                    //1、创建一个消息，获取对方的状态，【视频正忙，视频空闲】
                     Message msg = new Message();
                     JivePropertiesExtension jpe = new JivePropertiesExtension();
                     msg.setFrom(IMService.mCurAccount);
@@ -1162,18 +1205,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     msg.setBody("视频申请");
                     msg.setType(Message.Type.chat);
                     jpe.setProperty(Const.MSGFLAG, Const.MSGFLAG_VIDEO);
-                    jpe.setProperty("roomid",roomId);
+                    jpe.setProperty("roomid", roomId);
                     msg.addExtension(jpe);
                     //调用服务内的发送消息方法
                     mImService.sendMessage(msg);
                 }
             });
-//            Intent intent = new Intent(this, UIActivity.class);
-//            intent.putExtra("mTargetNickName", mTargetNickName);
-//            intent.putExtra("mTargetAccount", mTargetAccount.substring(0, mTargetAccount.lastIndexOf("@")) + "@" + Const.APP_PACKAGENAME);
-//            startActivity(intent);
-            connectToRoom(roomId,false,false,0);
-
         } else {
             ToastUtils.showToastSafe("没有网络");
         }

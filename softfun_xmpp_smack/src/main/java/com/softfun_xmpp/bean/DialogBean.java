@@ -13,11 +13,11 @@ public class DialogBean implements Serializable {
 
 
     public enum ButtonType {
-        onebutton, twobutton;
+        onebutton, twobutton,none
     }
 
     public enum DialogType{
-        tologin,tip,toTick;
+        tologin,tip,toTick
     }
 
     public String getTitle() {

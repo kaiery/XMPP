@@ -108,9 +108,13 @@ public class Const {
      */
     public static final String MSGFLAG_VIDEO_WORKING = "working";
     /**
-     * 我的视频状态空闲
+     * 我的视频状态从正忙变为空闲
      */
     public static final String MSGFLAG_VIDEO_IDLE = "idle";
+    /**
+     * 我的视频状态为空闲
+     */
+    public static final String MSGFLAG_VIDEO_FREE = "free";
     /**
      * 群聊邀请
      */
@@ -171,7 +175,7 @@ public class Const {
     /**
      * 视频聊天对专家进行评价的请求码
      */
-    public static int RESULT_VIDEO_EVALUATE = 2;
+    public static int RESULT_VIDEO_EVALUATE = 1;
     /**
      * 群类型：基础群
      */
@@ -249,12 +253,18 @@ public class Const {
      *对方视频忙的广播action
      */
     public static final String VIDEO_WORKING_BROADCAST_ACTION = "com.softfun.video_working_broadcast_action";
-
+    /**
+     *对方视频空闲，我可以进入视频通话界面的广播action
+     */
+    public static final String VIDEO_FREE_BROADCAST_ACTION = "com.softfun.video_free_broadcast_action";
     /**
      *对方视频转变为空闲的广播action
      */
     public static final String VIDEO_IDEL_BROADCAST_ACTION = "com.softfun.video_idel_broadcast_action";
-
+    /**
+     * 视频组件正在启动
+     */
+    public static final String VIDEO_STARTING_BROADCAST_ACTION = "com.softfun.video_starting_broadcast_action";
     /**
      * 自动登录常量标记
      */

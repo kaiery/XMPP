@@ -6,6 +6,8 @@
                 android:orientation="vertical">
 
     <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rl_dlg_dlg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -39,9 +41,9 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/tv_dialog_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:padding="@dimen/activity_horizontal_margin_half"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/font_caption"
-            android:padding="@dimen/activity_horizontal_margin_half"
             tools:text="确定"
             />
 
@@ -53,11 +55,35 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_toLeftOf="@id/tv_dialog_ok"
+            android:padding="@dimen/activity_horizontal_margin_half"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/font_caption"
-            android:padding="@dimen/activity_horizontal_margin_half"
             tools:text="取消"
             />
     </RelativeLayout>
 
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/ll_dlg_tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="@drawable/panle_dialog_light_background"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlackText"
+            android:textSize="@dimen/font_caption"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="视频正在启动\n请稍后"
+            />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </RelativeLayout>

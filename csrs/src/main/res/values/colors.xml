@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryAlpha">#442196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#2196F3</color>
+    <color name="colorTabLine">#6A6E7C</color>
+    <color name="colorSelectDisable">#B6B6B6</color>
+    <color name="colorTabDisable">#ff6A6E7C</color>
+    <color name="colorTabActive">#ff6495ED</color>
+    <color name="colorGreen">#FF1AD150</color>
+    <color name="colorGreenDark">#228B22</color>
+    <color name="colorGreenLight">#87A96B</color>
+    <color name="colorBlueLight">#B0E0E6</color>
+
+    <color name="colorMenuActive">#FF673AB7</color>
+
+    <color name="colorContentGroup">#E7E7E7</color>
+    <color name="colorSecondText">#727272</color>
+    <color name="colorSoftFunColor">#2196F3</color>
+    <color name="colorSoftFunColorPress">#1976D2</color>
+    <color name="colorSoftFunDarkColor">#1D19D2</color>
+    <color name="colorItemClick">#F5F5F5</color>
+
+    <color name="colorLightGray">#e1e1e1</color>
+    <color name="colorDarkGray">#DCDCDC</color>
+    <color name="colorBlackText">#FF202020</color>
+    <color name="colorDarkBlackGray">#88000000</color>
+    <color name="colorMaskActivity">#9000</color>
+
+    <color name="colorLightBlack">#444444</color>
+
+    <color name="color6B">#6b6b6b</color>
+    <color name="colorE6">#E6E6E6</color>
+
+    <color name="colorBackGround">#eeeeee</color>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <color name="grey">#363636</color>
+    <color name="dark_grey">#282828</color>
+    <color name="trans_dark_grey">#80282828</color>
+    <color name="white">#ffffff</color>
+    <color name="trans_white">#20ffffff</color>
+    <color name="trans">#00000000</color>
+    <color name="blue">#cc33b5e5</color>
+    <color name="black_grey">#ff1f1f1f</color>
+    <color name="init_gradient">#ff98CE00</color>
+    <color name="color0_gradient">#ff98CE00</color>
+    <color name="color1_gradient">#8098CE00</color>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <integer-array name="colors">
+        <item>@color/holo_blue_dark</item>
+        <item>@color/holo_yellow_dark</item>
+        <item>@color/holo_green_dark</item>
+        <item>@color/holo_purple_dark</item>
+        <item>@color/holo_red_dark</item>
+    </integer-array>
+
+    <integer-array name="gplus_colors">
+        <item>@color/holo_blue_dark</item>
+        <item>@color/holo_yellow_dark</item>
+        <item>@color/holo_green_dark</item>
+        <item>@color/holo_purple_dark</item>
+        <item>@color/holo_red_dark</item>
+    </integer-array>
+
+    <integer-array name="pocket_bar_colors">
+        <item>@color/pocket_color_1</item>
+        <item>@color/pocket_color_1</item>
+        <item>@color/pocket_color_1</item>
+        <item>@color/pocket_color_1</item>
+        <item>@color/pocket_color_2</item>
+        <item>@color/pocket_color_2</item>
+        <item>@color/pocket_color_2</item>
+        <item>@color/pocket_color_2</item>
+        <item>@color/pocket_color_3</item>
+        <item>@color/pocket_color_3</item>
+        <item>@color/pocket_color_3</item>
+        <item>@color/pocket_color_3</item>
+        <item>@color/pocket_color_4</item>
+        <item>@color/pocket_color_4</item>
+        <item>@color/pocket_color_4</item>
+        <item>@color/pocket_color_4</item>
+    </integer-array>
+
+    <integer-array name="pocket_background_colors">
+        <item>@color/pocket_color_1</item>
+        <item>@color/pocket_color_2</item>
+        <item>@color/pocket_color_3</item>
+        <item>@color/pocket_color_4</item>
+    </integer-array>
+
+    <color name="pocket_color_1">#85edb9</color>
+    <color name="pocket_color_2">#34bdb7</color>
+    <color name="pocket_color_3">#ee4458</color>
+    <color name="pocket_color_4">#fcb74d</color>
+
+    <color name="gplus_color_1">#3e802f</color>
+    <color name="gplus_color_2">#f4b400</color>
+    <color name="gplus_color_3">#427fed</color>
+    <color name="gplus_color_4">#b23424</color>
+
+    <color name="holo_blue_dark">#0099cc</color>
+    <color name="holo_yellow_dark">#ff8800</color>
+    <color name="holo_green_dark">#669900</color>
+    <color name="holo_purple_dark">#9933cc</color>
+    <color name="holo_red_dark">#cc0000</color>
+</resources>

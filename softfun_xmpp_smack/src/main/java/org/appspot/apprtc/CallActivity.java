@@ -206,6 +206,7 @@ public class CallActivity extends Activity
         //绑定
         bindService(service, mMyServiceConnection, BIND_AUTO_CREATE);
         IMService.isVideo = true;
+        IMService.isGetStatus = false;
         mUserAccount = IMService.mCurAccount;
         mNickName = IMService.mCurNickName;
         mTargetAccount = getIntent().getStringExtra("mTargetAccount");
@@ -260,7 +261,13 @@ public class CallActivity extends Activity
         }
         //设置我不再视频聊天
         IMService.isVideo = false;
-        disconnect();
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                disconnect();
+            }
+        });
     }
 
 

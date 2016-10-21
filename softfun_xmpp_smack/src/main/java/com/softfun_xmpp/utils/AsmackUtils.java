@@ -124,7 +124,7 @@ public class AsmackUtils {
         String[] columns = new String[]{field};
         String where = ContactsDbHelper.ContactTable.ACCOUNT + "=?";
         String[] args = new String[]{account};
-        System.err.println("   "+field);
+        //System.err.println("   "+field);
         Cursor cursor = context.getContentResolver().query(ContactsProvider.URI_CONTACT, columns, where, args, null);
         if (cursor!=null && cursor.getCount() > 0) {
             cursor.moveToFirst();

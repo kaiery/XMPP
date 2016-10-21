@@ -35,6 +35,8 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private RelativeLayout mItem4;
     private RelativeLayout mItem5;
     private RelativeLayout mItem6;
+    private RelativeLayout mItem7;
+    private RelativeLayout mItem8;
     private TextView mTvCache;
     private TextView mTvVer;
     private Intent intent_web;
@@ -47,6 +49,8 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         mItem4 = (RelativeLayout) findViewById(R.id.item4);
         mItem5 = (RelativeLayout) findViewById(R.id.item5);
         mItem6 = (RelativeLayout) findViewById(R.id.item6);
+        mItem7 = (RelativeLayout) findViewById(R.id.item7);
+        mItem8 = (RelativeLayout) findViewById(R.id.item8);
         mTvCache = (TextView) findViewById(R.id.tv_cache);
         mTvVer = (TextView) findViewById(R.id.tv_ver);
     }
@@ -72,7 +76,8 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         mItem4.setOnClickListener(this);
         mItem5.setOnClickListener(this);
         mItem6.setOnClickListener(this);
-
+        mItem7.setOnClickListener(this);
+        mItem8.setOnClickListener(this);
 
         initData();
     }
@@ -127,6 +132,18 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             {
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
+                break;
+            }
+            case R.id.item7:{
+                intent_web.putExtra(Const.WEB_TITLE,"历史更新");
+                intent_web.putExtra(Const.WEB_URL,getResources().getString(R.string.app_server)+getResources().getString(R.string.app_history_weburl));
+                startActivity(intent_web);
+                break;
+            }
+            case R.id.item8:{
+                intent_web.putExtra(Const.WEB_TITLE,"版权申明");
+                intent_web.putExtra(Const.WEB_URL,getResources().getString(R.string.app_server)+getResources().getString(R.string.app_copyright_weburl));
+                startActivity(intent_web);
                 break;
             }
         }
