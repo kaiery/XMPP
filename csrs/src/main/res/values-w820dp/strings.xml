@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_settings">设置</string>
+    <string name="action_settings">设置</string>
+    <string name="action_share">分享</string>
+    <string name="action_help">帮助与反馈</string>
+    <string name="action_add">添加好友</string>
+    <string name="action_searchuser">搜索用户</string>
+    <string name="action_searchgroup">搜索群组</string>
+    <string name="action_addgroup">创建群组</string>
+    <string name="action_search">搜索…</string>
+    <string name="action_sent">发送</string>
+    <string name="action_applyfriend">新朋友</string>
+</resources>

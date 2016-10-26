@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:id="@+id/ll_inflate"
+              android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_tab_toolbar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_tab_toolbar"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/font_12sp"
+        tools:text="标签"/>
+</LinearLayout>

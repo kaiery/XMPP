@@ -68,8 +68,8 @@
     </style>
     <!-- 抽屉内菜单样式-->
     <style name="NavigationDrawerStyle">
-        <item name="android:textSize">@dimen/font_body</item><!-- 抽屉内菜单名称样式-->
-        <item name="android:listPreferredItemHeight">@dimen/font_body</item><!-- 抽屉内菜单条目高度-->
+        <item name="android:textSize">@dimen/font_15sp</item><!-- 抽屉内菜单名称样式-->
+        <item name="android:listPreferredItemHeight">@dimen/font_15sp</item><!-- 抽屉内菜单条目高度-->
         <item name="colorPrimary">@color/colorMenuActive</item>
     </style>
 
@@ -112,6 +112,15 @@
 
 
 
-
+    <style name="setting">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
 
 </resources>

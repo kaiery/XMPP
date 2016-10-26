@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/ll_nav_header"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/nav_header_height"
+                android:gravity="bottom"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:id="@+id/iv_nav_header_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        tools:src="#55dd0000"
+        />
+
+
+    <ImageView
+        android:id="@+id/iv_nav_header_userface"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin_half"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="45dp"
+        android:background="@drawable/image_circular_border"
+        android:padding="1dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_nav_header_showname"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_nav_header_userface"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:gravity="center_horizontal"
+        android:text="姓名"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="@dimen/font_17sp"/>
+
+    <ImageView
+        android:id="@+id/iv_nav_header_vip"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_below="@id/iv_nav_header_userface"
+        android:layout_toRightOf="@id/tv_nav_header_showname"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:textSize="@dimen/font_15sp"/>
+
+</RelativeLayout>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rl_dlg_dlg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/panle_dialog_light_background"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/colorBlackText"
+            android:textSize="@dimen/font_21sp"
+            tools:text="提示"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dialog_title"
+            android:textColor="@color/colorBlackText"
+            android:textSize="@dimen/font_15sp"
+            tools:text="您是否需要退出，重新登录？"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tv_dialog_content"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:padding="@dimen/activity_horizontal_margin_half"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/font_13sp"
+            tools:text="确定"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dialog_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_toLeftOf="@id/tv_dialog_ok"
+            android:padding="@dimen/activity_horizontal_margin_half"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/font_13sp"
+            tools:text="取消"
+            />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/ll_dlg_tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="@drawable/panle_dialog_light_background"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlackText"
+            android:textSize="@dimen/font_13sp"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="视频正在启动\n请稍后"
+            />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</RelativeLayout>

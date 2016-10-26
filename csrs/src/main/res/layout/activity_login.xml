@@ -50,7 +50,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:maxLines="1"
-                    android:textSize="@dimen/font_body"/>
+                    android:textSize="@dimen/font_15sp"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -69,7 +69,7 @@
                     android:imeOptions="actionGo"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:textSize="@dimen/font_body"/>
+                    android:textSize="@dimen/font_15sp"/>
 
             </android.support.design.widget.TextInputLayout>
 

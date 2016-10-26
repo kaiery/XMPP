@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <!--这个可以用fragment替代-->
+    <include layout="@layout/fragment_container"/>
+
+
+    <!--添加app:layout_behavior="com.fanzhang.softfun.customclass.ScrollAwareFABBehavior"-->
+    <!--目的在于使用随滚动而隐藏FAB-->
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_marginRight="@dimen/fab_margin"-->
+        <!--android:layout_marginBottom="@dimen/fab_margin_bottom"-->
+        <!--android:src="@drawable/pencil"-->
+        <!--app:layout_behavior="com.fanzhang.softfun.customclass.ScrollAwareFABBehavior"-->
+        <!--/>-->
+
+
+
+</LinearLayout>

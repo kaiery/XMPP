@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--添加app空间-->
+    <!--<item-->
+        <!--android:id="@+id/nav_chat"-->
+        <!--android:checkable="true"-->
+        <!--android:checked="true"-->
+        <!--android:icon="@drawable/ic_menu_chat"-->
+        <!--android:title="互动交流"/>-->
+    <item
+        android:id="@+id/nav_profile"
+        android:checkable="false"
+        android:icon="@drawable/ic_menu_profile"
+        android:title="个人中心"/>
+    <item
+        android:id="@+id/nav_blog"
+        android:checkable="false"
+        android:icon="@drawable/ic_menu_blog"
+        android:title="我的动态"/>
+    <item
+        android:id="@+id/nav_fav"
+        android:checkable="false"
+        android:icon="@drawable/ic_menu_fav"
+        android:title="我的收藏"/>
+    <item
+        android:id="@+id/nav_setting"
+        android:checkable="false"
+        android:icon="@drawable/ic_menu_setting"
+        android:title="系统设置"/>
+    <item
+        android:id="@+id/nav_exit"
+        android:checkable="false"
+        android:icon="@drawable/ic_menu_power"
+        android:title="账户退出"/>
+</menu>

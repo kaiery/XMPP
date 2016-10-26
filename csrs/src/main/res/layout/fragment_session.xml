@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:orientation="vertical"
+              android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <include layout="@layout/fragment_autoviewpager"
+             android:layout_height="100dp"
+             android:layout_width="match_parent"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/colorPrimary"/>
+
+    <include layout="@layout/fragment_btn"
+             android:layout_height="215dp"
+             android:layout_width="match_parent"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/colorPrimary"/>
+
+
+</LinearLayout>

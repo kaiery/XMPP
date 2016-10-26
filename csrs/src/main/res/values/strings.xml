@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">社保助手</string>
-    <string name="app_sharedpreferences">sbzs</string>
-
     <!-- Strings related to login -->
     <string name="prompt_email">用户名/手机号码/身份证号码/QQ号码</string>
     <string name="prompt_password">密码</string>
@@ -12,4 +10,35 @@
     <string name="error_invalid_password">密码太短</string>
     <string name="error_incorrect_password">密码不正确</string>
     <string name="error_field_required">此处必填</string>
+
+
+    <string name="menu_settings">设置</string>
+    <string name="action_settings">设置</string>
+    <string name="action_share">分享</string>
+    <string name="action_help">帮助与反馈</string>
+    <string name="action_add">添加好友</string>
+    <string name="action_searchuser">搜索用户</string>
+    <string name="action_searchgroup">搜索群组</string>
+    <string name="action_addgroup">创建群组</string>
+    <string name="action_search">搜索…</string>
+    <string name="action_sent">发送</string>
+    <string name="action_applyfriend">新朋友</string>
+    <string name="navigation_drawer_open">打开</string>
+    <string name="navigation_drawer_close">关闭</string>
+
+
+
+
+
+    <string name="tab_1">主页</string>
+    <string name="tab_2">发现</string>
+    <string name="tab_3">我的</string>
+    <string name="tab_4">预设1</string>
+    <string name="tab_5">预设2</string>
+
+    <string name="menu_1">主页</string>
+    <string name="menu_2">发现</string>
+    <string name="menu_3">我的</string>
+    <string name="menu_4">预设1</string>
+    <string name="menu_5">预设2</string>
 </resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_menu_search"
+        android:orderInCategory="0"
+        android:title="@string/action_search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView"/>
+
+
+    <!--这种方式可以在浮动菜单中显示icon
+    @drawable/abc_ic_menu_moreoverflow_mtrl_alpha
+    -->
+    <item
+        android:icon="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/action_add"
+                android:icon="@android:drawable/ic_input_add"
+                android:orderInCategory="1"
+                android:title="@string/action_add"
+                app:showAsAction="always"/>
+            <item
+                android:id="@+id/action_addgroup"
+                android:icon="@android:drawable/ic_input_add"
+                android:orderInCategory="1"
+                android:title="@string/action_addgroup"
+                app:showAsAction="always"/>
+        </menu>
+    </item>
+
+
+
+
+
+
+</menu>

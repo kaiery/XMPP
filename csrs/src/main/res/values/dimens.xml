@@ -9,17 +9,24 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_margin_bottom">71dp</dimen>
     <dimen name="tab_height">50dp</dimen>
-    <dimen name="tab_fontsize">12sp</dimen>
-    <dimen name="tab_smallfontsize">10sp</dimen>
 
-    <dimen name="font_button">15sp</dimen>
-    <dimen name="font_caption">13sp</dimen>
-    <dimen name="font_body">15sp</dimen>
-    <dimen name="font_subheading">17sp</dimen>
-    <dimen name="font_title">21sp</dimen>
-    <dimen name="font_title_small">20sp</dimen>
-    <dimen name="font_display">34sp</dimen>
-    <dimen name="font_headine">24sp</dimen>
+
+    <dimen name="font_12sp">12sp</dimen>
+    <dimen name="font_10sp">10sp</dimen>
+    <!--font_button   font_body -->
+    <dimen name="font_15sp">15sp</dimen>
+    <!--font_caption-->
+    <dimen name="font_13sp">13sp</dimen>
+    <!--font_subheading-->
+    <dimen name="font_17sp">17sp</dimen>
+    <!--font_title-->
+    <dimen name="font_21sp">21sp</dimen>
+    <!--font_title_small-->
+    <dimen name="font_20sp">20sp</dimen>
+    <!--font_display-->
+    <dimen name="font_34sp">34sp</dimen>
+    <!--font_headine-->
+    <dimen name="font_24sp">24sp</dimen>
 
     <!--fab数值-->
     <dimen name="fab_size_normal">56dp</dimen>
