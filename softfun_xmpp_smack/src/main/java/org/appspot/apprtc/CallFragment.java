@@ -12,6 +12,7 @@ package org.appspot.apprtc;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.softfun_xmpp.R;
+import com.softfun_xmpp.utils.ToastUtils;
 
 import org.webrtc.RendererCommon.ScalingType;
 
@@ -84,7 +86,20 @@ public class CallFragment extends Fragment {
     cameraSwitchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        callEvents.onCameraSwitch();
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras();// 得到摄像头的个数
+        System.out.println("====================  摄像头个数：  ====================="+cameraCount);
+        if(cameraCount>1){
+
+          try {
+            callEvents.onCameraSwitch();
+          } catch (Exception e) {
+            ToastUtils.showToastSafe_Long("出错了！！！！！！！！！");
+            e.printStackTrace();
+          }
+        }
+
       }
     });
 

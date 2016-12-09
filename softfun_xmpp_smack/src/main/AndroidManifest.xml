@@ -353,11 +353,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
 
                 <data
-                    android:host="120.76.215.22"
+                    android:host="218.205.117.94"
                     android:port="8080"
                     android:scheme="https"/>
                 <data
-                    android:host="120.76.215.22"
+                    android:host="218.205.117.94"
                     android:port="8080"
                     android:scheme="http"/>
             </intent-filter>

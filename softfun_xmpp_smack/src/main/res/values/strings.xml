@@ -230,7 +230,7 @@
     <string name="pref_room_server_url_key">room_server_url_preference</string>
     <string name="pref_room_server_url_title">房间服务器URL.</string>
     <string name="pref_room_server_url_dlg">输入一个房间服务器URL.</string>
-    <string name="pref_room_server_url_default" translatable="false">http://120.76.215.22:8080</string>
+    <string name="pref_room_server_url_default" translatable="false">http://218.205.117.94:8080</string>
 
     <string name="pref_displayhud_key">displayhud_preference</string>
     <string name="pref_displayhud_title">显示调用统计数据.</string>

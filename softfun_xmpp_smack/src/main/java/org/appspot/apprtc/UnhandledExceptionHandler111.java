@@ -29,7 +29,7 @@ import java.io.StringWriter;
  * Thread.setDefaultUncaughtExceptionHandler()而不是Thread.setUncaughtExceptionHandler(),
  * 适用于后台线程
  */
-public class UnhandledExceptionHandler
+public class UnhandledExceptionHandler111
         implements Thread.UncaughtExceptionHandler {
     private static final String TAG = "AppRTCDemoActivity";
     private final Activity activity;
@@ -43,7 +43,7 @@ public class UnhandledExceptionHandler
      * Thread.setDefaultUncaughtExceptionHandler()而不是Thread.setUncaughtExceptionHandler(),
      * 适用于后台线程
      */
-    public UnhandledExceptionHandler(final Activity activity) {
+    public UnhandledExceptionHandler111(final Activity activity) {
         this.activity = activity;
     }
 

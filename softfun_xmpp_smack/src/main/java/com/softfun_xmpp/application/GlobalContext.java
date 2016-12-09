@@ -27,6 +27,11 @@ public class GlobalContext extends Application {
 
         //初始化
         initImageLoader(getApplicationContext());
+
+
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        //注册crashHandler
+        crashHandler.init(getApplicationContext());
     }
 
 

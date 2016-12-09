@@ -50,7 +50,7 @@ public class MultiMemberActivity extends AppCompatActivity {
 
         mGroupJid = AsmackUtils.filterGroupJid(getIntent().getStringExtra(Const.GROUP_JID));
         mMaster = getIntent().getStringExtra(Const.GROUP_FIELD_MASTER);
-        mMaster = mMaster.substring(0,mMaster.lastIndexOf("@"));
+        mMaster = (!mMaster.contains("@"))?mMaster:mMaster.substring(0,mMaster.lastIndexOf("@"));
         myUsername = AsmackUtils.filterAccountToUserName(IMService.mCurAccount);
         mLv = (ListView) findViewById(R.id.lv);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);

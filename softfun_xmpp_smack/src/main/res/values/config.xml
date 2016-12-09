@@ -2,18 +2,18 @@
 <resources>
     <string name="app_packagename">softfun</string>
     <!--======================================web==========================================-->
-    <string name="app_server">http://111.1.62.169/SoftFun/</string>
-    <!--<string name="app_server">http://192.168.0.112/SoftFun/</string>-->
+    <!--<string name="app_server">http://111.1.62.169/SoftFun/</string>-->
+    <string name="app_server">http://218.205.117.94/SoftFun/</string>
 
     <!--======================================openfire==========================================-->
-    <string name="socket_ip">111.1.62.169</string>
-    <!--<string name="socket_ip">192.168.0.112</string>-->
+    <!--<string name="socket_ip">111.1.62.169</string>-->
+    <string name="socket_ip">218.205.117.94</string>
     <integer name="socket_port">5222</integer>
     <!--======================================openfire==========================================-->
 
 
     <!--老系统地址-->
-    <string name="app_server_n110">http://111.1.62.169:7001/nj110/</string>
+    <string name="app_server_n110">http://218.205.117.94/nj110/</string>
     <!--使用帮助地址-->
     <string name="app_help_weburl">webHtml/help.html</string>
     <!--历史更新地址-->

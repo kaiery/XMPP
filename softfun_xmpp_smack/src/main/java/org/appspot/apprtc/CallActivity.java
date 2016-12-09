@@ -279,8 +279,7 @@ public class CallActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Thread.setDefaultUncaughtExceptionHandler(
-                new UnhandledExceptionHandler(this));
+        //Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
         // 设置窗口风格fullscreen-window大小。添加内容之前需要做的
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(

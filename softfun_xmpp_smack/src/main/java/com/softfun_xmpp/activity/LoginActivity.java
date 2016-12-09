@@ -1,8 +1,13 @@
 package com.softfun_xmpp.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +25,7 @@ import com.softfun_xmpp.constant.Const;
 import com.softfun_xmpp.utils.SpUtils;
 import com.softfun_xmpp.utils.StringUtils;
 import com.softfun_xmpp.utils.ThreadUtils;
+import com.softfun_xmpp.utils.ToastUtils;
 
 public class LoginActivity extends BaseNoActionActivity implements View.OnClickListener {
 
@@ -31,7 +37,7 @@ public class LoginActivity extends BaseNoActionActivity implements View.OnClickL
     private TextView mTvSignup;
     private RelativeLayout mMask;
     private ConnManager manager;
-
+    private static final int permsRequestCode = 200;
     private void assignViews() {
         mIv = (ImageView) findViewById(R.id.iv);
         mEtUsername = (EditText) findViewById(R.id.et_username);
@@ -69,6 +75,11 @@ public class LoginActivity extends BaseNoActionActivity implements View.OnClickL
             mMask.setVisibility(View.VISIBLE);
             //自动登录
             login(pUsername, pPassword);
+        }
+
+        //授权
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
+            getPermission();
         }
     }
 
@@ -190,5 +201,55 @@ public class LoginActivity extends BaseNoActionActivity implements View.OnClickL
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+
+
+    /**
+     * ANDROID6 权限申请
+     */
+    private void getPermission() {
+        if (  (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) ) {
+            //申请WRITE_EXTERNAL_STORAGE权限
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.CALL_PHONE,
+                            Manifest.permission.PROCESS_OUTGOING_CALLS,
+                            Manifest.permission.SEND_SMS,
+                            Manifest.permission.READ_SMS,
+                            Manifest.permission.RECEIVE_SMS,
+                            Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.READ_PHONE_STATE
+                    }, permsRequestCode );
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode){
+            case 200:
+                for (int i = 0; i < grantResults.length; i++) {
+                    boolean Accepted = grantResults[i]==PackageManager.PERMISSION_GRANTED;
+                    if(Accepted){
+                        //System.out.println(permissions[i]+"授权");
+                    }else{
+                        //System.out.println(permissions[i]+"拒绝授权");
+                        ToastUtils.showToastSafe_Long("请授权，否则系统无法正常工作。");
+                        finish();
+                    }
+                }
+                ////System.out.println("====================  授权完毕  =====================");
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

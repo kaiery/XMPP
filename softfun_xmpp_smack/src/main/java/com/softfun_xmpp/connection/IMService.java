@@ -812,6 +812,7 @@ public class IMService extends Service {
     private class MyMessageListener implements ChatMessageListener {
         @Override
         public void processMessage(Chat chat, final Message message) {
+            System.out.println("------------接收到消息------------ " + message.toXML());
             if ( (message.getBody()!=null || !message.getBody().equals(""))  && message.getType().name().equals(Message.Type.chat.name())  ) {
                 JivePropertiesExtension jpe = (JivePropertiesExtension) message.getExtension(JivePropertiesExtension.NAMESPACE);
                 //接收到消息，保存消息

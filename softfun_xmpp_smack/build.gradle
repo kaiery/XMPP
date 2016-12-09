@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     sourceSets.main {
         jniLibs.srcDir 'libs'
@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.softfun_xmpp"
         minSdkVersion 17
-        targetSdkVersion 24
-        versionCode 56
-        versionName "56.0"
+        targetSdkVersion 25
+        versionCode 59
+        versionName "59.0"
     }
     buildTypes {
         release {
@@ -27,16 +27,14 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'com.android.support:cardview-v7:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:cardview-v7:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile files('libs/jpinyin-1.0.jar')
-
     compile 'com.google.code.gson:gson:2.7'
-
     //圆形进度
     compile 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
     //滚动组件
@@ -52,9 +50,8 @@ dependencies {
     compile project(':multi-image-selector')
     //裁剪
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-
-    compile "org.igniterealtime.smack:smack-android-extensions:4.1.7"
-    compile "org.igniterealtime.smack:smack-experimental:4.1.7"
+    compile 'org.igniterealtime.smack:smack-android-extensions:4.1.7'
+    compile 'org.igniterealtime.smack:smack-experimental:4.1.7'
     compile 'org.igniterealtime.smack:smack-android:4.1.7'
     // Optional for XMPPTCPConnection
     compile 'org.igniterealtime.smack:smack-tcp:4.1.7'
@@ -65,7 +62,6 @@ dependencies {
     //rtc
     compile files('libs/autobanh.jar')
     compile files('libs/libjingle_peerconnection.jar')
-
 }
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'
